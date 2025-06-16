@@ -1,132 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Teacher Timetables – Live PDF Upload</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teacher Timetables</title>
 <style>
-/* ── layout & palette (same colours as before) ─────────────────────────── */
-body{font-family:Arial, sans-serif;margin:0;display:flex;flex-direction:column;min-height:100vh}
-header{background:#f4f6ff;padding:12px 20px;border-bottom:1px solid #c3cae0}
-input[type=file]{display:none}
-label.btn{background:#2d6cdf;color:#fff;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:14px}
-#status{font-size:14px;margin-left:12px;color:#666}
-#root{flex:1}
-section{padding:20px;page-break-after:always}
-h2{margin:0 0 10px;font-size:16px}
-table{border-collapse:collapse;width:100%}
-th,td{border:1px solid #ccc;padding:4px 6px;text-align:center;font-size:12px}
-th{background:#d7dde8}
-td{background:#fffbe8}
-td:first-child{background:#d9f0ff;font-weight:600;width:120px}
-@media print{header{display:none} body{margin:0}}
+  body{font-family:Arial,sans-serif;margin:0}
+  section{padding:20px;page-break-after:always}
+  h2{margin:0 0 10px;font-size:16px}
+  table{border-collapse:collapse;width:100%}
+  th,td{border:1px solid #ccc;padding:4px 6px;text-align:center;font-size:12px}
+  th{background:#d7dde8} td{background:#fffbe8}
+  td.day{background:#d9f0ff;font-weight:600;width:120px;text-align:left}
 </style>
 </head>
 <body>
-
-<header>
-  <label class="btn">
-      Choose PDF & Update
-      <input id="filePicker" type="file" accept="application/pdf">
-  </label>
-  <span id="status">No file loaded</span>
-</header>
-
-<div id="root"><p style="padding:20px">Load a timetable PDF to begin…</p></div>
-
-<!-- ── PDF.js (core + worker) ──────────────────────────────────────────── -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
-<script>
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.worker.min.js';
-</script>
+<div id="root">Loading timetable…</div>
 
 <script>
-/* ── constant block list (same as python version) ──────────────────────── */
-const BLOCKS=[
- "07:15-07:45","07:45-08:15","08:15-08:45","08:45-09:15",
- "09:15-09:45","09:45-10:00",
- "09:45-10:15","10:00-10:30","10:15-10:30",
- "10:30-11:00","11:00-11:30","11:30-12:00","12:00-12:30",
- "12:30-13:00","13:00-13:30","13:30-14:00","14:00-14:30",
- "14:30-15:00","15:00-15:30"
-];
+const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
+fetch('teacher_schedules.json')
+  .then(r=>r.json())
+  .then(db=>{
+     const root=document.getElementById('root'); root.innerHTML='';
+     Object.entries(db).forEach(([name,{blocks,days}])=>{
+         const sec=document.createElement('section');
+         sec.innerHTML = `<h2>NAMA GURU: ${name}</h2>`;
+         sec.appendChild(makeTable(blocks,days));
+         root.appendChild(sec);
+     });
+  })
+  .catch(e=>document.getElementById('root').textContent='⚠ '+e);
 
-/* ── helpers ───────────────────────────────────────────────────────────── */
-const $=sel=>document.querySelector(sel);
-const status=txt=>$('#status').textContent=txt;
-
-$('#filePicker').addEventListener('change',e=>{
-  const file=e.target.files[0];
-  if(!file){status('No file chosen');return}
-  status('Parsing…');
-  loadPDF(file).then(db=>{
-     renderAll(db);
-     status(`Loaded “${file.name}” – ${Object.keys(db).length} teachers`);
-  }).catch(err=>{
-     console.error(err);
-     status('⚠️ '+err.message);
+function makeTable(blocks,days){
+  const t=document.createElement('table');
+  const hr=t.insertRow(); hr.insertCell().outerHTML='<th>Day</th>';
+  blocks.forEach(b=>hr.insertCell().outerHTML='<th>'+b.replace('-',' - ')+'</th>');
+  DAYS.forEach(d=>{
+     const tr=t.insertRow();
+     tr.insertCell().outerHTML='<td class="day">'+d+'</td>';
+     (days[d]||[]).forEach(c=>{
+        const td=tr.insertCell(); if(c) td.textContent=c;
+     });
   });
-});
-
-/* ── main PDF-parsing pipeline ─────────────────────────────────────────── */
-async function loadPDF(file){
-  const arrayBuffer = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({data:arrayBuffer}).promise;
-  const data={};
-
-  for(let p=1;p<=pdf.numPages;p++){
-    const page = await pdf.getPage(p);
-    const text = await page.getTextContent({normalizeWhitespace:true});
-    const raw  = text.items.map(i=>i.str).join('\n'); // keep line feel
-
-    const m = /(?:NAMA GURU|Teacher)\s*:\s*(.+)/i.exec(raw);
-    if(!m) continue;                 // skip cover/introduction pages
-    const name = m[1].trim();
-
-    let seg;
-    try{
-      seg = raw.split('PH')[1].split('MORNING ASSEMBLY')[0];
-    }catch{continue}
-
-    const rows = seg.split(/\n+/).filter(r=>/\d/.test(r));
-    const rowTitles = rows.map(r=>r.replace(/\s{2,}.*/,'').trim());
-    const table = rows.map(r=>{
-      const cells = r.split(/\s{2,}/).map(c=>c.trim());
-      return (cells.concat(Array(BLOCKS.length))).slice(0,BLOCKS.length);
-    });
-
-    data[name]={blocks:BLOCKS,rows:table,rowTitles};
-  }
-  if(!Object.keys(data).length) throw new Error('No timetable found');
-  return data;
-}
-
-/* ── rendering (same logic as earlier examples) ────────────────────────── */
-function renderAll(db){
-  const root=$('#root');
-  root.innerHTML='';
-  for(const [name,info] of Object.entries(db)){
-    const sec=document.createElement('section');
-    sec.appendChild(Object.assign(document.createElement('h2'),{textContent:'NAMA GURU: '+name}));
-    sec.appendChild(buildTable(info));
-    root.appendChild(sec);
-  }
-}
-function buildTable({blocks,rows,rowTitles}){
-  const tbl=document.createElement('table');
-  const head=tbl.insertRow();
-  head.insertCell().outerHTML='<th>Nama/Masa</th>';
-  blocks.forEach(b=>head.insertCell().outerHTML='<th>'+b.replace('-',' - ')+'</th>');
-  rows.forEach((cells,i)=>{
-    const tr=tbl.insertRow();
-    tr.insertCell().textContent=rowTitles[i]||'';
-    cells.forEach(c=>{
-      const td=tr.insertCell();
-      if(c) td.textContent=c;
-    });
-  });
-  return tbl;
+  return t;
 }
 </script>
 </body>
