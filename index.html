@@ -6,96 +6,127 @@
 <title>Teacher Timetables</title>
 
 <style>
-  body{font-family:Arial,Helvetica,sans-serif;margin:0}
-  section{padding:20px;page-break-after:always}
-  h2{margin:0 0 12px;font-size:16px}
+  /* ---- basic look --------------------------------------------------- */
+  body      { font-family: Arial, Helvetica, sans-serif; margin: 0; }
+  section   { padding: 20px; page-break-after: always; }
+  h2        { margin: 0 0 12px; font-size: 16px; }
 
-  table{border-collapse:collapse;width:100%}
-  th,td{border:1px solid #ccc;padding:4px 6px;text-align:center;font-size:12px}
-  th{background:#d7dde8}              /* header cells */
-  td{background:#fffbe8}              /* normal cells */
-  td.day{background:#d9f0ff;font-weight:600;width:120px;text-align:left}
-  @media print{body{margin:0}}
+  table     { border-collapse: collapse; width: 100%; }
+  th, td    { border: 1px solid #ccc; padding: 4px 6px; font-size: 12px;
+              text-align: center; }
+  th        { background: #d7dde8; }
+  td        { background: #fffbe8; }
+  td.day    { background: #d9f0ff; font-weight: 600; width: 120px;
+              text-align: left; }
+  @media print { body{margin:0} }
 </style>
 </head>
 <body>
 
-<div id="root" style="padding:20px">Loading timetable…</div>
+<div id="root" style="padding:20px">Loading timetable …</div>
 
 <script>
-/* ─── constants ───────────────────────────────────────────────────────── */
-const FULL   = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
-const ABBR   = ["Mo","Tu","We","Th","Fr"];
+/* ─────────────────────────── constants ─────────────────────────────── */
+const FULL  = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
+const ABBR  = ["Mo","Tu","We","Th","Fr"];
 const BLOCKS = [
   "07:15-07:45","07:45-08:15","08:15-08:45","08:45-09:15",
   "09:15-09:45","09:45-10:00",
   "09:45-10:15","10:00-10:30","10:15-10:30",
   "10:30-11:00","11:00-11:30","11:30-12:00","12:00-12:30",
-  "12:30-13:00","13:30-14:00","14:00-14:30",
+  "12:30-13:00","13:00-13:30","13:30-14:00","14:00-14:30",
   "14:30-15:00","15:00-15:30"
-]; /* ↑ you can edit if your school day changes */
+];
 
-/* ─── fetch + render ──────────────────────────────────────────────────── */
+/* ─────────────────── fetch + main render entry point ───────────────── */
 fetch('teacher_schedules.json')
   .then(r => r.json())
   .then(renderAll)
-  .catch(e => document.getElementById('root')
-           .textContent = '⚠️  '+e.message);
+  .catch(err => document.getElementById('root')
+          .textContent = '⚠ ' + err.message);
 
 function renderAll(db){
   const root = document.getElementById('root');
-  root.innerHTML = '';                              // wipe “Loading…”
+  root.innerHTML = '';
 
-  Object.entries(db).forEach(([name, obj])=>{
-      const section = document.createElement('section');
-      section.innerHTML = `<h2>NAMA GURU: ${name}</h2>`;
-      section.appendChild(buildTable(obj));
-      root.appendChild(section);
+  Object.entries(db).forEach(([name, teacherObj])=>{
+      const sec = document.createElement('section');
+      sec.innerHTML = `<h2>NAMA GURU: ${name}</h2>`;
+      sec.appendChild(buildTable(teacherObj));
+      root.appendChild(sec);
   });
 }
 
-/* ─── universal table builder (handles both JSON schemas) ────────────── */
-function buildTable(teacher){
+/* ───────────────── schema-agnostic table builder ───────────────────── */
+function buildTable(t){
+  /* recognise which layout this teacher uses */
+  const hasAbbr = ABBR.some(k => k in t);
+  const hasDays = ('days' in t);
+  const hasRows = ('rows' in t);
 
-  // decide which schema we have
-  const isNew = ABBR.some(k => Object.prototype.hasOwnProperty.call(teacher,k));
-
-  // build a helper that returns the subject(s) for [day,block]
-  let cellContent;
-  if(isNew){   // NEW: teacher.Mo["07:15-07:45"] -> ["4SN2"]
-      cellContent = (dayIdx, block) => {
-          const arr = (teacher[ABBR[dayIdx]] || {})[block] || [];
-          return arr.join(', ');
-      };
-  }else{       // OLD: teacher.days["Monday"][index]
-      cellContent = (dayIdx, blockIdx) => {
-          const arr = (teacher.days[FULL[dayIdx]] || []);
-          return arr[blockIdx] || '';
-      };
+  let tbl;
+  if (hasAbbr)          tbl = fromAbbr(t);
+  else if (hasDays)     tbl = fromDays(t.blocks, t.days);
+  else if (hasRows)     tbl = fromRows(t.blocks, t.rows, t.rowTitles||[]);
+  else {                // unknown schema
+      tbl = document.createElement('div');
+      tbl.textContent = '⚠ Unrecognised data';
   }
+  return tbl;
+}
 
-  /* build DOM table */
+/* ---------- helpers for the three recognised schemas ---------------- */
+function headerRow(tbl, blocks){
+  const h = tbl.insertRow();
+  h.insertCell().outerHTML = '<th>Day</th>';
+  blocks.forEach(b => h.insertCell().outerHTML =
+      `<th>${b.replace('-', ' - ')}</th>`);
+}
+
+function fromAbbr(teacher){
   const tbl = document.createElement('table');
+  headerRow(tbl, BLOCKS);
 
-  // header row
-  const head = tbl.insertRow();
-  head.insertCell().outerHTML = '<th>Day</th>';
-  BLOCKS.forEach(b => head.insertCell().outerHTML =
-      `<th>${b.replace('-',' - ')}</th>`);
-
-  // body rows
-  FULL.forEach((dayName, dIdx)=>{
+  FULL.forEach((dayName, dIdx) => {
       const tr = tbl.insertRow();
       tr.insertCell().outerHTML = `<td class="day">${dayName}</td>`;
-
-      BLOCKS.forEach((block,bIdx)=>{
-          const td = tr.insertCell();
-          const text = isNew ? cellContent(dIdx, block)
-                             : cellContent(dIdx, bIdx);
-          if(text) td.textContent = text;
+      BLOCKS.forEach(block => {
+          const txt = ((teacher[ABBR[dIdx]] || {})[block] || []).join(', ');
+          const td  = tr.insertCell();
+          if (txt) td.textContent = txt;
       });
   });
+  return tbl;
+}
 
+function fromDays(blocks, days){
+  const tbl = document.createElement('table');
+  headerRow(tbl, blocks);
+
+  FULL.forEach(dayName => {
+      const tr = tbl.insertRow();
+      tr.insertCell().outerHTML = `<td class="day">${dayName}</td>`;
+      (days[dayName] || []).forEach(cell=>{
+          const td = tr.insertCell();
+          if (cell) td.textContent = cell;
+      });
+  });
+  return tbl;
+}
+
+function fromRows(blocks, rows, titles){
+  const tbl = document.createElement('table');
+  headerRow(tbl, blocks);
+
+  rows.forEach((row, idx) => {
+      const tr = tbl.insertRow();
+      tr.insertCell().outerHTML =
+          `<td class="day">${titles[idx] || 'Row '+(idx+1)}</td>`;
+      row.forEach(cell=>{
+          const td = tr.insertCell();
+          if(cell) td.textContent = cell;
+      });
+  });
   return tbl;
 }
 </script>
