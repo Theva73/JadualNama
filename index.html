@@ -113,18 +113,20 @@ function fromDays(blocks, days){
   });
   return tbl;
 }
-
 function fromRows(blocks, rows, titles){
   const tbl = document.createElement('table');
   headerRow(tbl, blocks);
 
+  // If there are exactly 5 physical rows, assume Mon-Fri order.
+  const label = rows.length === 5 ? FULL : titles;
+
   rows.forEach((row, idx) => {
       const tr = tbl.insertRow();
       tr.insertCell().outerHTML =
-          `<td class="day">${titles[idx] || 'Row '+(idx+1)}</td>`;
-      row.forEach(cell=>{
+          `<td class="day">${label[idx] || 'Row '+(idx+1)}</td>`;
+      row.forEach(c=>{
           const td = tr.insertCell();
-          if(cell) td.textContent = cell;
+          if (c) td.textContent = c;
       });
   });
   return tbl;
