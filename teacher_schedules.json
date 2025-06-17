@@ -1,3716 +1,872 @@
 {
-  "Zuraiha": {
+  "GURU EN ABD AZIZ BIN MOHAMED MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "HA PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "HA PH"
-      }
-    },
-    "Tu": {},
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      }
-    },
-    "Th": {},
-    "Fr": {}
-  },
-  "Kamisi": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH BM"
-      }
-    },
-    "Tu": {},
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      }
-    },
-    "Th": {
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "P"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "P"
-      }
-    },
-    "Fr": {}
-  },
-  "Wan": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH RI"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "ARIZMI/3 PH PI AL-BUKHA RI"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ARIZMI/3 PI AL-BUKHA RI"
-      },
-      "8:15": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "8:45": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "9:15": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "9:45": {
-        "subject": "D",
-        "venue": null,
-        "raw": "NDI BA"
-      }
+      "7:00": "Z",
+      "7:15": "Z",
+      "7:45": "Z PH"
     },
     "Tu": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ARIZMI/3 PI AL-BUKHA"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ARIZMI/3 PI AL-BUKHA"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI BA"
-      },
-      "8:15": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "8:45": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "1:00": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "1:30": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      }
+      "GURU:": "4T",
+      "9:45": "4T",
+      "10:0010:1510:3011:0011:3012:0012:30": "TAW 5T",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "TAW 4T 5T"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "8:45": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "9:15": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA ,1T"
-      }
+      "GURU:": ",1T",
+      "7:15": "KOKO",
+      "9:45": ",1T",
+      "10:0010:1510:3011:0011:3012:0012:30": "TA TA 4PTS 4PTS W W",
+      "7:45": "KOKO",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "TA TA 4PTS 4PTS W W ,1T"
     },
     "Th": {
-      "7:00": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "WARI BA ZMI"
-      },
-      "7:15": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "WARI BA ZMI"
-      },
-      "7:45": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "8:15": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "8:45": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "1:30": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "2:00": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "2:30": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "3:00": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      }
+      "7:15": "Z",
+      "7:45": "Z",
+      "9:45": "Z",
+      "10:0010:1510:3011:0011:3012:0012:30": "Z P",
+      "8:15": "Z P",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "Z P"
     },
     "Fr": {
-      "7:45": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "8:15": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA BA"
-      },
-      "8:45": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "9:15": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ALKH AWPAIR IZMI/3"
-      }
+      "10:0010:1510:3011:0011:3012:0012:30": "TA TA 4PTS 4PTS W W",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "TA TA 4PTS 4PTS W W"
     }
   },
-  "Zurina": {
+  "GURU GOWRY PARANISAMY MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "A PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "A PH"
-      }
+      "7:00": "RY",
+      "7:15": "RY",
+      "7:45": "RY PH",
+      "10:0010:1510:3011:0011:3012:0012:30": "5S3 SJ SJ",
+      "8:15": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "5S3 SJ SJ"
     },
     "Tu": {
-      "7:45": {
-        "subject": "IV",
-        "venue": null,
-        "raw": "IV"
-      },
-      "8:15": {
-        "subject": "IV",
-        "venue": null,
-        "raw": "IV"
-      }
+      "9:45": "4T",
+      "10:0010:1510:3011:0011:3012:0012:30": "SJ SJ 5T",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "SJ SJ 4T 5T"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO IV"
-      },
-      "8:15": {
-        "subject": "IV",
-        "venue": null,
-        "raw": "IV"
-      },
-      "8:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "9:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI ,1T"
-      }
+      "7:15": "KOKO",
+      "9:45": ",1T",
+      "10:0010:1510:3011:0011:3012:0012:30": "PL RY SJ IV C",
+      "2:00": "SJ",
+      "7:45": "KOKO",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PL RY SJ IV C ,1T",
+      "1:00": "PL RY C",
+      "2:30": "SJ"
     },
     "Th": {
-      "7:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "8:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "8:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      }
+      "GURU:": "SJ",
+      "7:15": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "SJ SJ SJ",
+      "7:45": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "SJ SJ SJ"
     },
     "Fr": {
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "A A P"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "A A P P"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "A P"
-      }
+      "GURU:": "RY P",
+      "8:15": "SJ",
+      "9:45": "RY",
+      "10:0010:1510:3011:0011:3012:0012:30": "RY RY P P SJ",
+      "8:45": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "RY RY P P SJ"
     }
   },
-  "Roslina": {
+  "GURU IMELDA SURIA AHMAD MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "NA PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "NA PH"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PB"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PB"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PB"
-      }
+      "7:00": "A",
+      "7:15": "A",
+      "7:45": "A PH",
+      "10:0010:1510:3011:0011:3012:0012:30": "A P MM",
+      "8:15": "MM",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "A P MM"
     },
     "Tu": {
-      "7:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      }
+      "7:15": "PJ",
+      "8:15": "MM",
+      "9:45": "4T",
+      "10:0010:1510:3011:0011:3012:0012:30": "MM 5T",
+      "7:45": "PJ",
+      "8:45": "MM",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "MM 4T 5T"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      }
+      "GURU:": "RIZMI 3P AJLK INDI/3",
+      "7:15": "KOKO",
+      "8:45": "RIZMI 3P",
+      "9:15": "RIZMI 3P",
+      "9:45": "RIZMI 3P AJLK INDI/3",
+      "7:45": "KOKO",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "RIZMI 3P AJLK INDI/3 ,1T"
     },
     "Th": {
-      "7:00": {
-        "subject": "RB",
-        "venue": null,
-        "raw": "RBT"
-      },
-      "7:15": {
-        "subject": "RB",
-        "venue": null,
-        "raw": "RBT"
-      },
-      "7:45": {
-        "subject": "RB",
-        "venue": null,
-        "raw": "RBT"
-      }
+      "7:15": "MM",
+      "7:45": "MM",
+      "8:15": "RI",
+      "10:0010:1510:3011:0011:3012:0012:30": "MM",
+      "8:45": "ALKINDI/3 PJ AL-BUKHA RI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "MM"
     },
     "Fr": {
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "9:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      }
+      "8:45": "PJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "A P",
+      "9:15": "PJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "A P"
     }
   },
-  "Ahmad": {
+  "GURU AZHARUDIN AB SAMAD MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "D PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "D PH PJ"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ALKINDI PJ PJ"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ALKINDI PJ"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      }
+      "7:00": "R",
+      "7:15": "R",
+      "7:45": "R PH",
+      "8:45": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "SJ",
+      "8:15": "SJ",
+      "9:15": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "SJ"
     },
     "Tu": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ 4T"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ 4T"
-      }
+      "8:45": "SJ",
+      "9:45": "4T",
+      "10:0010:1510:3011:0011:3012:0012:30": "SJ SJ 5T",
+      "9:15": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "SJ SJ 4T 5T"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "ALKINDI KOKO PJ"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ALKINDI PJ 3P"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "RIZMI/ PJ 3P AJLK INDI/3"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "RIZMI/ 3P AJLK 3P INDI/3 ,1T"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "RIZMI 3P AJLK INDI/3 ,1T"
-      }
+      "GURU:": "ZMI",
+      "7:15": "KOKO",
+      "8:45": "ZMI",
+      "9:15": "ZMI",
+      "9:45": "WARI SJ ZMI",
+      "10:0010:1510:3011:0011:3012:0012:30": "PL WARI R SJ SJ SJ ZMI C",
+      "7:45": "KOKO",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PL WARI R SJ SJ SJ ZMI C ,1T",
+      "1:00": "PL R C"
     },
     "Th": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ RI"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ALKINDI/3 PJ PJ AL-BUKHA RI"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ALKINDI/3 PJ AL-BUKHA RI"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5S3 PJ PJ"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5S3 PJ"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5S3 PJ"
-      }
+      "7:15": "PJ",
+      "9:15": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "SJ SJ SJ",
+      "7:45": "PJ",
+      "9:45": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "SJ SJ SJ"
     },
     "Fr": {
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      }
+      "7:15": "SJ",
+      "8:45": "PJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "PJ SJ",
+      "7:45": "SJ",
+      "9:15": "PJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PJ SJ"
     }
   },
-  "Eidayu": {
+  "GURU HANIM SURIA HUSSIN MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "U PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "U PH"
-      },
-      "8:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "9:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      }
+      "7:00": "M",
+      "7:15": "M",
+      "8:45": "PNG",
+      "10:0010:1510:3011:0011:3012:0012:30": "PN PNG G",
+      "7:45": "M PH",
+      "9:15": "PNG",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PN PNG G"
     },
     "Tu": {
-      "7:00": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "7:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "7:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "9:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM 4T"
-      }
+      "GURU:": "PN G",
+      "8:15": "PNG",
+      "9:15": "PN G",
+      "9:45": "PN G",
+      "10:0010:1510:3011:0011:3012:0012:30": "PNG PNG 5T",
+      "8:45": "PNG",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PN PNG PNG G 4T 5T"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      }
+      "GURU:": "PN G",
+      "7:15": "KOKO",
+      "8:45": "PNG",
+      "9:45": ",1T",
+      "10:0010:1510:3011:0011:3012:0012:30": "PN PN PNG G G",
+      "7:45": "KOKO",
+      "9:15": "PNG",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PN PN PNG G G ,1T"
     },
     "Th": {
-      "7:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      }
+      "7:15": "PN G",
+      "8:45": "PNG",
+      "10:0010:1510:3011:0011:3012:0012:30": "PN PNG G",
+      "7:45": "PN G",
+      "9:15": "PNG",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PN PNG G"
     },
-    "Fr": {}
+    "Fr": {
+      "7:15": "PNG",
+      "8:15": "PN G",
+      "10:0010:1510:3011:0011:3012:0012:30": "PNG",
+      "7:45": "PNG",
+      "8:45": "PN G",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PNG"
+    }
   },
-  "Efah": {
+  "GURU IRDA SYUHADA ISHAK MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      }
-    },
-    "Tu": {},
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO BM"
-      }
-    },
-    "Th": {},
-    "Fr": {}
-  },
-  "Gurchan": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "HAN PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "HAN PH PJ"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ PA"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PA"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PA"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PA"
-      }
+      "GURU:": "BI",
+      "7:15": "PH",
+      "7:45": "PH",
+      "9:15": "BI",
+      "9:45": "BI",
+      "10:0010:1510:3011:0011:3012:0012:30": "BI BI",
+      "8:15": "BI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "BI BI BI"
     },
     "Tu": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ 4T"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ 4T"
-      }
+      "7:15": "BI",
+      "8:15": "BI",
+      "9:45": "4T",
+      "10:0010:1510:3011:0011:3012:0012:30": "BI BI 5T",
+      "7:45": "BI",
+      "8:45": "BI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "BI BI 4T 5T"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PA ,1T"
-      }
+      "GURU:": "BI",
+      "7:15": "KOKO",
+      "8:45": "BI",
+      "9:45": ",1T",
+      "10:0010:1510:3011:0011:3012:0012:30": "BI BI",
+      "7:45": "KOKO",
+      "9:15": "BI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "BI BI ,1T"
     },
     "Th": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PA"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PA"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PA"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      }
+      "7:15": "BI",
+      "8:15": "BI",
+      "10:0010:1510:3011:0011:3012:0012:30": "LE BI T",
+      "7:45": "BI",
+      "8:45": "BI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "LE BI T",
+      "1:00": "LE T"
     },
     "Fr": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      }
+      "7:15": "BI",
+      "8:15": "BI",
+      "7:45": "BI",
+      "8:45": "BI"
     }
   },
-  "Nor": {
+  "GURU KARTINI YA'AKUB MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      }
-    },
-    "Tu": {},
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      }
-    },
-    "Th": {},
-    "Fr": {}
-  },
-  "Haslina": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "NA PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "NA PH"
-      }
-    },
-    "Tu": {},
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "5PTS1/ KOKO PI 5PTS2"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5PTS1/ PI 5PTS2"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI"
-      }
-    },
-    "Th": {
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5AP2 PI 5PTS 1/5PT"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5AP2 PI 5PTS 1/5PT"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5AP2/ PI 5PTS 1/5PT"
-      }
-    },
-    "Fr": {
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "4TS2 PI"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "4TS2 PI"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI"
-      }
-    }
-  },
-  "Iqbal": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5S3 PS"
-      }
+      "GURU:": "SJ",
+      "7:00": "NI",
+      "7:15": "NI",
+      "8:45": "SJ",
+      "9:45": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "SJ SJ",
+      "7:45": "NI PH",
+      "9:15": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "SJ SJ SJ",
+      "1:00": "SJ"
     },
     "Tu": {
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      }
+      "7:15": "SJ",
+      "9:15": "SJ",
+      "9:45": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "PL HARI NI SJ SJ SJ C 5T",
+      "1:00": "NI SJ",
+      "7:45": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "HARI SJ SJ SJ 4T 5T",
+      "1:30": "PL NI C"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO PS"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      }
+      "7:15": "KOKO",
+      "8:15": "5PTS1/ PM 5PTS2",
+      "9:15": "SJ",
+      "9:45": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "5S3 4TS1 PM PM",
+      "7:45": "KOKO",
+      "8:45": "5PTS1/ PM 5PTS2",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "5S3 4TS1 PM PM ,1T"
     },
     "Th": {
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5S3 PJ"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5S3 PJ"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5S3 PJ"
-      }
+      "7:15": "SJ",
+      "8:15": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "HARI 5S3 SJ PM",
+      "7:45": "SJ",
+      "8:45": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "HARI 5S3 SJ PM"
     },
     "Fr": {
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      }
+      "GURU:": "SJ",
+      "7:45": "4TS1 PM",
+      "9:45": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "5AP2 SJ PM 5PTS 1/5PT",
+      "8:15": "4TS1 PM",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "5AP2 SJ SJ PM 5PTS 1/5PT"
     }
   },
-  "Kalaivani": {
+  "GURU MALINA RAMLAN MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PN G"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PN G"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PN G"
-      }
+      "7:00": "A",
+      "7:15": "A",
+      "8:45": "MM",
+      "10:0010:1510:3011:0011:3012:0012:30": "5S1 MM FIZ 5S2 5S3",
+      "7:45": "A PH",
+      "9:15": "MM",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "5S1 MM FIZ 5S2 5S3"
     },
     "Tu": {
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PN G"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PN G 4T"
-      }
+      "7:15": "FIZ",
+      "8:15": "MM",
+      "9:45": "4T",
+      "10:0010:1510:3011:0011:3012:0012:30": "PL A FIZ C 5T",
+      "7:45": "FIZ",
+      "8:45": "MM",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PL A FIZ C 4T 5T",
+      "1:00": "PL A C"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PN G"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PN G ,1T"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PN G ,1T"
-      }
+      "GURU:": "MM",
+      "7:15": "KOKO",
+      "8:15": "MM",
+      "9:15": "MM",
+      "9:45": "MM",
+      "10:0010:1510:3011:0011:3012:0012:30": "5S3 IV",
+      "7:45": "KOKO",
+      "8:45": "MM",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "5S3 MM IV ,1T",
+      "1:00": "5S3 IV"
     },
     "Th": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ PNG"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PNG"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PNG"
-      }
+      "7:45": "MM",
+      "10:0010:1510:3011:0011:3012:0012:30": "4S1 IM 4S2 4S3",
+      "1:00": "FIZ",
+      "8:15": "MM",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "4S1 IM 4S2 4S3",
+      "1:30": "FIZ"
     },
     "Fr": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PNG"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PNG"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PNG"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PM"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PM"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PM"
-      }
+      "7:15": "FIZ",
+      "8:45": "FIZ",
+      "10:0010:1510:3011:0011:3012:0012:30": "MM",
+      "7:45": "FIZ",
+      "9:15": "FIZ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "MM"
     }
   },
-  "Lau": {
+  "GURU MOHD NAZRI AZIS MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      }
+      "GURU:": "SN",
+      "7:15": "PH",
+      "7:45": "PH",
+      "10:0010:1510:3011:0011:3012:0012:30": "SN SN SN",
+      "8:15": "SN",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "SN SN SN"
     },
     "Tu": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "8:45": {
-        "subject": "IV",
-        "venue": null,
-        "raw": "IV"
-      },
-      "9:15": {
-        "subject": "IV",
-        "venue": null,
-        "raw": "IV 4T"
-      },
-      "1:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5PTS1 BC 5PTS2"
-      },
-      "1:30": {
-        "subject": "BC",
-        "venue": null,
-        "raw": "BC"
-      }
+      "8:15": "SN",
+      "9:45": "4T",
+      "10:0010:1510:3011:0011:3012:0012:30": "SN 5T",
+      "1:00": "SN",
+      "8:45": "SN",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "SN 4T 5T",
+      "1:30": "SN"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "3P"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "RIZMI/ 3P AJLK INDI/3"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "RIZMI/ 3P AJLK 3P INDI/3 ,1T"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "RIZMI 3P AJLK INDI/3 ,1T"
-      },
-      "1:00": {
-        "subject": "BC",
-        "venue": null,
-        "raw": "BC"
-      },
-      "1:30": {
-        "subject": "BC",
-        "venue": null,
-        "raw": "BC"
-      }
+      "GURU:": "SN",
+      "7:15": "KOKO",
+      "8:15": "SN",
+      "9:45": ",1T",
+      "10:0010:1510:3011:0011:3012:0012:30": "SN SN",
+      "1:00": "SN",
+      "7:45": "KOKO",
+      "8:45": "SN",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "SN SN ,1T",
+      "1:30": "SN"
     },
     "Th": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ RI"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ALKINDI/3 PJ PJ AL-BUKHA RI"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ALKINDI/3 PJ AL-BUKHA RI"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5AP2 PJ BC 5PTS 1/5PT"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5AP2 BC 5PTS 1/5PT"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5AP2 BC 5PTS 1/5PT"
-      }
+      "GURU:": "HARI SN",
+      "8:45": "HARI",
+      "9:15": "HARI",
+      "9:45": "HARI SN",
+      "10:0010:1510:3011:0011:3012:0012:30": "SN SN",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "HARI SN SN SN"
     },
-    "Fr": {}
+    "Fr": {
+      "GURU:": "SN",
+      "7:45": "SN",
+      "10:0010:1510:3011:0011:3012:0012:30": "SN SN SN",
+      "8:15": "SN",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "SN SN SN"
+    }
   },
-  "Masjuki": {
+  "GURU MOHD RIDZUAN ROMLEE MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "JUKI PH RI"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "JUKI ARIZMI/3 PH PI AL-BUKHA RI"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ARIZMI/3 PI AL-BUKHA RI"
-      },
-      "8:15": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "8:45": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "9:15": {
-        "subject": "BA",
-        "venue": null,
-        "raw": "BA"
-      },
-      "1:00": {
-        "subject": "KKQ",
-        "venue": null,
-        "raw": "KKQ"
-      },
-      "1:30": {
-        "subject": "KKQ",
-        "venue": null,
-        "raw": "KKQ"
-      }
+      "7:00": "AN",
+      "7:15": "AN",
+      "7:45": "AN PH",
+      "8:45": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "4AP/ SJ PM SJ 4PTS",
+      "8:15": "SJ",
+      "9:15": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "4AP/ SJ PM SJ 4PTS",
+      "1:00": "SJ"
     },
     "Tu": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ARIZMI/3 PI AL-BUKHA"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ARIZMI/3 PI AL-BUKHA"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI"
-      }
+      "GURU:": "4T",
+      "7:15": "PJ",
+      "8:45": "SJ",
+      "9:45": "4T",
+      "10:0010:1510:3011:0011:3012:0012:30": "SJ 5T",
+      "7:45": "PJ",
+      "9:15": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "SJ 4T 5T"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI ,1T"
-      }
+      "GURU:": ",1T",
+      "7:15": "KOKO",
+      "8:15": "5PTS1/ PM 5PTS2",
+      "9:45": ",1T",
+      "10:0010:1510:3011:0011:3012:0012:30": "PL AN SJ SJ SJ C",
+      "7:45": "KOKO",
+      "8:45": "5PTS1/ PM 5PTS2",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PL AN SJ SJ SJ C ,1T",
+      "1:00": "PL AN C"
     },
     "Th": {
-      "7:15": {
-        "subject": "KKQ",
-        "venue": null,
-        "raw": "KKQ"
-      },
-      "7:45": {
-        "subject": "KKQ",
-        "venue": null,
-        "raw": "KKQ"
-      },
-      "8:15": {
-        "subject": "KKQ",
-        "venue": null,
-        "raw": "KKQ"
-      },
-      "1:00": {
-        "subject": "KKQ",
-        "venue": null,
-        "raw": "KKQ"
-      },
-      "1:30": {
-        "subject": "KKQ",
-        "venue": null,
-        "raw": "KKQ"
-      }
+      "7:15": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "SJ SJ SJ",
+      "7:45": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "SJ SJ SJ"
     },
     "Fr": {
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ALKH AWPAIR IZMI/3"
-      }
+      "7:15": "PJ",
+      "8:15": "SJ",
+      "8:45": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "5AP2/ PM 5PTS 1/5PT",
+      "7:45": "PJ",
+      "9:15": "PM",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "5AP2/ PM 5PTS 1/5PT"
     }
   },
-  "Masrizan": {
+  "GURU NURA IDRIS MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "IZAN PH RI"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "IZAN ARIZMI/3 PH PM AL-BUKHA RI"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ARIZMI/3 PM AL-BUKHA RI"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PM"
-      }
+      "GURU:": "BI",
+      "7:15": "PH",
+      "10:0010:1510:3011:0011:3012:0012:30": "BI BI BI",
+      "1:00": "BI",
+      "7:45": "PH",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "BI BI BI",
+      "1:30": "BI"
     },
     "Tu": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ARIZMI/3 PM AL-BUKHA"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ARIZMI/3 PM AL-BUKHA"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PM"
-      },
-      "8:45": {
-        "subject": "GE",
-        "venue": null,
-        "raw": "GE"
-      },
-      "9:15": {
-        "subject": "GE",
-        "venue": null,
-        "raw": "GE 4T"
-      }
+      "GURU:": "BI 5T",
+      "7:15": "BI",
+      "8:45": "BI",
+      "9:45": "4T",
+      "10:0010:1510:3011:0011:3012:0012:30": "BI BI BI 5T",
+      "7:45": "BI",
+      "9:15": "BI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "BI BI BI 4T 5T",
+      "1:00": "BI"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "8:45": {
-        "subject": "GE",
-        "venue": null,
-        "raw": "WARI GE ZMI"
-      },
-      "9:15": {
-        "subject": "GE",
-        "venue": null,
-        "raw": "WARI GE ZMI ,1T"
-      }
+      "7:15": "KOKO",
+      "8:15": "BI",
+      "9:45": ",1T",
+      "10:0010:1510:3011:0011:3012:0012:30": "BI BI",
+      "7:45": "KOKO",
+      "8:45": "BI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "BI BI ,1T"
     },
     "Th": {
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "IZAN PB"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "IZAN PB"
-      }
+      "GURU:": "BI",
+      "7:15": "BI",
+      "8:15": "BI",
+      "10:0010:1510:3011:0011:3012:0012:30": "LE BI BI BI T",
+      "7:45": "BI",
+      "8:45": "BI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "LE BI BI BI T",
+      "1:00": "LE T"
     },
     "Fr": {
-      "7:00": {
-        "subject": "GE",
-        "venue": null,
-        "raw": "NDI GE"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "NDI 4TS1 GE PM"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "4TS1 PM"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PM"
-      }
+      "7:45": "BI",
+      "9:15": "BI",
+      "9:45": "BI",
+      "8:15": "BI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "BI"
     }
   },
-  "Masrulhuda": {
+  "GURU NURASHIDAH BINTI IBRAHIM MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "UL PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "UL PH"
-      },
-      "8:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "9:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "9:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "1:00": {
-        "subject": "ASK",
-        "venue": null,
-        "raw": "ASK"
-      },
-      "1:30": {
-        "subject": "ASK",
-        "venue": null,
-        "raw": "ASK"
-      }
+      "7:00": "H",
+      "7:15": "H",
+      "7:45": "PH H H",
+      "8:15": "SHIDASHIDASHIDASHIDA PD H H",
+      "8:45": "PD H H",
+      "10:0010:1510:3011:0011:3012:0012:30": "MMT",
+      "9:15": "PD H",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "MMT"
     },
     "Tu": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI UL CT"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI UL CT"
-      },
-      "8:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "9:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI 4T"
-      },
-      "9:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI 4T"
-      },
-      "1:00": {
-        "subject": "ASK",
-        "venue": null,
-        "raw": "ASK"
-      },
-      "1:30": {
-        "subject": "ASK",
-        "venue": null,
-        "raw": "ASK"
-      }
+      "GURU:": "4T",
+      "7:15": "MMT",
+      "7:45": "MMT",
+      "8:15": "H",
+      "8:45": "SHIDASHIDA PD H H",
+      "9:15": "PD H",
+      "9:45": "MM",
+      "10:0010:1510:3011:0011:3012:0012:30": "PL SHIDA H C 5T",
+      "2:30": "MMT",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PL SHIDA H C 4T 5T",
+      "1:00": "PL SHIDA H C",
+      "3:00": "MMT"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "3P"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "RIZMI 3P AJLK INDI/3"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "RIZMI 3P AJLK 3P INDI/3 ,1T"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "RIZMI 3P AJLK INDI/3 ,1T"
-      },
-      "1:00": {
-        "subject": "ASK",
-        "venue": null,
-        "raw": "ASK"
-      },
-      "1:30": {
-        "subject": "ASK",
-        "venue": null,
-        "raw": "ASK"
-      }
+      "GURU:": ",1T",
+      "7:15": "KOKO",
+      "7:45": "KOKO",
+      "8:15": "H",
+      "8:45": "SHIDASHIDA PD H H",
+      "9:45": ",1T",
+      "9:15": "PD H",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": ",1T"
     },
     "Th": {
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ALKINDI/3 PJ AL-BUKHA RI"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ALKINDI/3 PJ AL-BUKHA RI"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ BI"
-      },
-      "9:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "9:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      }
+      "7:00": "H",
+      "7:15": "H",
+      "7:45": "PD H H",
+      "8:15": "SHIDASHIDASHIDA PD H H",
+      "10:0010:1510:3011:0011:3012:0012:30": "4S1/ SHIDA IM PD MMT 4S2/ H 4S3",
+      "8:45": "PD H",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "4S1/ SHIDA IM PD MMT 4S2/ H 4S3"
     },
     "Fr": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI UL CT"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI UL CT"
-      },
-      "8:15": {
-        "subject": "ASK",
-        "venue": null,
-        "raw": "ASK"
-      },
-      "8:45": {
-        "subject": "ASK",
-        "venue": null,
-        "raw": "ASK"
-      },
-      "9:15": {
-        "subject": "ASK",
-        "venue": null,
-        "raw": "ASK"
-      }
+      "7:00": "H",
+      "7:15": "H",
+      "7:45": "PD H H",
+      "8:15": "SHIDASHIDASHIDA PD H H",
+      "10:0010:1510:3011:0011:3012:0012:30": "MM MM MM T",
+      "8:45": "PD H",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "MM MM MM T"
     }
   },
-  "Masrulisah": {
+  "GURU RAIHAH ROSLI MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH MM"
-      },
-      "7:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "1:00": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "1:30": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      }
+      "7:00": "H",
+      "7:15": "H",
+      "7:45": "H PH",
+      "8:45": "MM",
+      "10:0010:1510:3011:0011:3012:0012:30": "MM MM",
+      "8:15": "MM",
+      "9:15": "MM",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "MM MM",
+      "1:00": "MM"
     },
     "Tu": {
-      "8:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "9:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM 4T"
-      }
+      "GURU:": "WARI MM",
+      "8:45": "MM ZMI",
+      "9:15": "MM ZMI",
+      "9:45": "WARI MM ZMI",
+      "10:0010:1510:3011:0011:3012:0012:30": "PL H MM C 5T",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PL WARI H MM MM ZMI C 4T 5T",
+      "1:00": "PL H C"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO MM"
-      },
-      "8:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "9:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM ,1T"
-      },
-      "9:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM ,1T"
-      }
+      "GURU:": "MM",
+      "7:15": "KOKO",
+      "8:15": "MM",
+      "9:15": "MM",
+      "9:45": "MM",
+      "10:0010:1510:3011:0011:3012:0012:30": "MM",
+      "7:45": "KOKO",
+      "8:45": "MM",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "MM MM ,1T"
     },
     "Th": {
-      "7:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM MM"
-      },
-      "9:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      }
+      "GURU:": "WARI MM",
+      "7:45": "MM",
+      "8:45": "ZMI",
+      "9:15": "ZMI",
+      "9:45": "WARI MM ZMI",
+      "10:0010:1510:3011:0011:3012:0012:30": "MM",
+      "8:15": "MM",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "WARI MM MM ZMI"
     },
     "Fr": {
-      "8:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "9:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      }
+      "GURU:": "MM",
+      "7:15": "MM",
+      "8:45": "MM",
+      "10:0010:1510:3011:0011:3012:0012:30": "MM MM",
+      "7:45": "MM",
+      "9:15": "MM",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "MM MM"
     }
   },
-  "Mohd": {
+  "GURU ROSIEATI ROSLAN MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "LI PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "LI PH SN"
-      },
-      "7:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "9:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      }
+      "GURU:": "SJ",
+      "7:00": "EATI",
+      "7:15": "EATI",
+      "7:45": "EATI PH",
+      "9:45": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "SJ SJ",
+      "8:15": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "SJ SJ SJ"
     },
     "Tu": {
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "9:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN 4T"
-      },
-      "9:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN 4T"
-      }
+      "8:15": "SJ",
+      "9:15": "SJ",
+      "9:45": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "EATI EATI 5S3 PB PB IS 5T",
+      "8:45": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "EATI EATI 5S3 PB PB IS 4T 5T"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO SN"
-      },
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      }
+      "GURU:": "SJ",
+      "7:15": "KOKO",
+      "9:15": "SJ",
+      "9:45": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "PL EATI SJ SJ SJ C",
+      "7:45": "KOKO",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PL EATI SJ SJ SJ C ,1T",
+      "1:00": "PL EATI C"
     },
     "Th": {
-      "7:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "NDI SN SN"
-      },
-      "9:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "NDI SN"
-      },
-      "9:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "NDI SN"
-      }
+      "GURU:": "SJ",
+      "8:15": "SJ",
+      "9:15": "SJ",
+      "9:45": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "RBT",
+      "8:45": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "SJ RBT"
     },
     "Fr": {
-      "7:00": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "7:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "7:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN SN"
-      },
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      }
+      "8:45": "RBT",
+      "10:0010:1510:3011:0011:3012:0012:30": "SJ",
+      "9:15": "RBT",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "SJ"
     }
   },
-  "Nazariah": {
+  "GURU SHAH RIDHA ABD JALIL MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      }
-    },
-    "Tu": {},
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      }
-    },
-    "Th": {},
-    "Fr": {}
-  },
-  "Nik": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH PS"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS PS"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5S3 PS"
-      }
-    },
-    "Tu": {},
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO PS"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      }
-    },
-    "Th": {
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      }
-    },
-    "Fr": {}
-  },
-  "Nivetha": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "HA PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "HA PH"
-      },
-      "7:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "8:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "1:00": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "1:30": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      }
+      "7:15": "PH",
+      "7:45": "PH",
+      "10:0010:1510:3011:0011:3012:0012:30": "PS",
+      "1:00": "PS",
+      "8:15": "PS",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PS",
+      "1:30": "PS"
     },
     "Tu": {
-      "8:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "9:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI 4T"
-      },
-      "9:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI 4T"
-      }
+      "GURU:": "4T",
+      "7:45": "PP S",
+      "9:45": "4T",
+      "10:0010:1510:3011:0011:3012:0012:30": "PS 5T",
+      "8:15": "PP S",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PS 4T 5T"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO BI"
-      },
-      "8:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "8:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "9:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI ,1T"
-      },
-      "9:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI ,1T"
-      }
+      "GURU:": ",1T",
+      "7:15": "KOKO",
+      "8:45": "PP S",
+      "9:15": "PP S",
+      "9:45": "PP S",
+      "10:0010:1510:3011:0011:3012:0012:30": "PP PP S S",
+      "7:45": "KOKO",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PP PP S S ,1T"
     },
     "Th": {
-      "7:00": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "7:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "8:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "8:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "9:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      }
+      "8:15": "PP S",
+      "8:45": "PP S",
+      "10:0010:1510:3011:0011:3012:0012:30": "PP PP S S",
+      "1:00": "PS",
+      "9:15": "PJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PP PP S S",
+      "1:30": "PS"
     },
     "Fr": {
-      "7:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "8:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "9:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      }
+      "8:45": "PP S",
+      "9:15": "PP S",
+      "9:45": "PP S"
     }
   },
-  "Norarfah": {
+  "GURU SITI NADIA BINTI JUNAIDI MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "H PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "H PH"
-      },
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "9:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "1:00": {
-        "subject": "FIZ",
-        "venue": null,
-        "raw": "FIZ"
-      },
-      "1:30": {
-        "subject": "FIZ",
-        "venue": null,
-        "raw": "FIZ"
-      }
+      "7:15": "PH",
+      "10:0010:1510:3011:0011:3012:0012:30": "4AP/ PI PI PI PI 4PTS",
+      "7:45": "PH",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "4AP/ PI PI PI PI 4PTS"
     },
     "Tu": {
-      "7:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN SN"
-      },
-      "9:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN 4T"
-      },
-      "9:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN 4T"
-      }
+      "GURU:": "4T",
+      "7:45": "PI",
+      "9:45": "4T",
+      "10:0010:1510:3011:0011:3012:0012:30": "BA 5T",
+      "2:30": "BA",
+      "8:15": "PI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "BA 4T 5T",
+      "3:00": "BA"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO SN"
-      },
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN SN"
-      },
-      "9:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN ,1T"
-      },
-      "9:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN ,1T"
-      }
+      "GURU:": ",1T",
+      "7:15": "KOKO",
+      "8:15": "5PTS1 PI 5PTS2",
+      "9:45": ",1T",
+      "10:0010:1510:3011:0011:3012:0012:30": "WARI 4TS1 BA PI ZMI",
+      "7:45": "KOKO",
+      "8:45": "5PTS1 PI 5PTS2",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "WARI 4TS1 BA PI ZMI ,1T"
     },
     "Th": {
-      "7:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:45": {
-        "subject": "FIZ",
-        "venue": null,
-        "raw": "SN FIZ"
-      },
-      "9:15": {
-        "subject": "FIZ",
-        "venue": null,
-        "raw": "FIZ"
-      }
+      "GURU:": "5AP2 PI 5PTS 1/5PT",
+      "7:15": "BA",
+      "9:15": "5AP2/ PI 5PTS 1/5PT",
+      "9:45": "5AP2/ PI 5PTS 1/5PT",
+      "10:0010:1510:3011:0011:3012:0012:30": "4S1/ BA PI 4TS1/ 4TS2",
+      "7:45": "BA",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "5AP2 4S1/ PI BA PI 5PTS 4TS1/ 1/5PT 4TS2"
     },
     "Fr": {
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "9:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      }
+      "7:45": "4TS1 PI",
+      "8:45": "PI",
+      "10:0010:1510:3011:0011:3012:0012:30": "5AP2/ PI PI PI 5PTS 1/5PT",
+      "8:15": "4TS1 PI",
+      "9:15": "PI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "5AP2/ PI PI PI 5PTS 1/5PT"
     }
   },
-  "Norosniza": {
+  "GURU SITI NUR SALMA BINTI RIZUAN MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "SNIZA PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "SNIZA PH"
-      },
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "9:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      }
+      "GURU:": "HARI BM",
+      "7:00": "A",
+      "7:15": "A",
+      "8:45": "BM",
+      "9:45": "HARI BM",
+      "10:0010:1510:3011:0011:3012:0012:30": "A BM B",
+      "7:45": "A PH",
+      "9:15": "BM",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "HARI A BM BM B",
+      "1:00": "A B"
     },
     "Tu": {
-      "7:00": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "7:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "7:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "9:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN 4T"
-      },
-      "9:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN 4T"
-      }
+      "GURU:": "NDI BM 4T",
+      "8:15": "BM",
+      "8:45": "BM",
+      "9:15": "NDI",
+      "9:45": "NDI BM",
+      "10:0010:1510:3011:0011:3012:0012:30": "BM SJ 5T",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "NDI BM BM SJ 4T 5T"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO BIO"
-      },
-      "8:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BIO"
-      },
-      "8:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BIO"
-      },
-      "9:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI O ,1T"
-      }
+      "GURU:": ",1T",
+      "7:15": "KOKO",
+      "9:45": ",1T",
+      "10:0010:1510:3011:0011:3012:0012:30": "NDI BM SJ",
+      "7:45": "KOKO",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "NDI BM SJ ,1T"
     },
     "Th": {
-      "7:00": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BIO"
-      },
-      "7:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BIO"
-      },
-      "7:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BIO"
-      }
+      "7:15": "BM",
+      "8:15": "SJ",
+      "10:0010:1510:3011:0011:3012:0012:30": "BM",
+      "1:00": "SJ",
+      "7:45": "BM",
+      "8:45": "SJ",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "BM",
+      "1:30": "SJ"
     },
     "Fr": {
-      "7:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "7:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "9:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      }
+      "7:00": "ZMI",
+      "7:15": "ZMI",
+      "7:45": "WARI BM ZMI",
+      "10:0010:1510:3011:0011:3012:0012:30": "NDI BM",
+      "8:15": "BM",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "NDI BM"
     }
   },
-  "Nur": {
+  "GURU THEVANDRAN A/L BATHUMALAI MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "AH PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "AH PH"
-      },
-      "8:15": {
-        "subject": "IV",
-        "venue": null,
-        "raw": "IV"
-      },
-      "8:45": {
-        "subject": "IV",
-        "venue": null,
-        "raw": "IV"
-      },
-      "9:15": {
-        "subject": "IV",
-        "venue": null,
-        "raw": "IV"
-      },
-      "1:00": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MMT"
-      },
-      "1:30": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MMT"
-      },
-      "2:00": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MMT"
-      }
+      "7:00": "A",
+      "7:15": "A",
+      "8:45": "BI",
+      "10:0010:1510:3011:0011:3012:0012:30": "BI BI BI BI",
+      "7:45": "A PH",
+      "9:15": "BI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "BI BI BI BI"
     },
     "Tu": {
-      "7:00": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MMT"
-      },
-      "7:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MMT"
-      },
-      "7:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MMT MM"
-      },
-      "8:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      }
+      "GURU:": "4T",
+      "8:15": "BI",
+      "9:45": "4T",
+      "10:0010:1510:3011:0011:3012:0012:30": "BI BI BI 5T",
+      "8:45": "BI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "BI BI BI 4T 5T"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO MM"
-      },
-      "8:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM T"
-      },
-      "9:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM T ,1T"
-      }
-    },
-    "Th": {},
-    "Fr": {
-      "7:00": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "7:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "7:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      }
-    }
-  },
-  "Nurhaziqah": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "AH PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "AH PH BM"
-      }
-    },
-    "Tu": {},
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO BM"
-      }
-    },
-    "Th": {},
-    "Fr": {}
-  },
-  "Nurul": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "AH PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "AH PH"
-      }
-    },
-    "Tu": {},
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      }
-    },
-    "Th": {},
-    "Fr": {}
-  },
-  "Ruhazana": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "ZANA PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "ZANA PH"
-      }
-    },
-    "Tu": {},
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "8:15": {
-        "subject": "TAW",
-        "venue": null,
-        "raw": "TAW"
-      },
-      "8:45": {
-        "subject": "TAW",
-        "venue": null,
-        "raw": "TAW"
-      },
-      "9:15": {
-        "subject": "TAW",
-        "venue": null,
-        "raw": "TAW ,1T"
-      }
-    },
-    "Th": {},
-    "Fr": {
-      "8:15": {
-        "subject": "TAW",
-        "venue": null,
-        "raw": "BM TAW"
-      },
-      "8:45": {
-        "subject": "TAW",
-        "venue": null,
-        "raw": "TAW"
-      },
-      "9:15": {
-        "subject": "TAW",
-        "venue": null,
-        "raw": "TAW"
-      }
-    }
-  },
-  "Saraswadi": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "SWAD PH I"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "SWAD PH I"
-      }
-    },
-    "Tu": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ALKINDI PJ"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ALKINDI PJ"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "1:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5PTS1/ BT 5PTS2"
-      }
-    },
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO PS"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PS"
-      }
+      "GURU:": ",1T",
+      "7:15": "KOKO",
+      "9:45": ",1T",
+      "10:0010:1510:3011:0011:3012:0012:30": "BI BI BI BI",
+      "7:45": "KOKO",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "BI BI BI BI ,1T"
     },
     "Th": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ALKINDI PJ"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ALKINDI PJ"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5AP2/ BT 5PTS 1/5PT"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5AP2/ BT 5PTS 1/5PT"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5AP2/ BT 5PTS 1/5PT"
-      }
+      "7:45": "BI",
+      "10:0010:1510:3011:0011:3012:0012:30": "LE A BI BI BI T",
+      "8:15": "BI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "LE A BI BI BI T",
+      "1:00": "LE A T"
     },
     "Fr": {
-      "7:00": {
-        "subject": "D",
-        "venue": null,
-        "raw": "S n W a AD I Ins"
-      },
-      "7:15": {
-        "subject": "D",
-        "venue": null,
-        "raw": "S n W a AD I Ins"
-      }
+      "GURU:": "BI",
+      "8:45": "BI",
+      "9:15": "BI",
+      "9:45": "BI",
+      "10:0010:1510:3011:0011:3012:0012:30": "BI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "BI BI"
     }
   },
-  "Sharul": {
+  "GURU ZUHDAH SAYED MORNING ASSEMBLY 1 2 3 4 5 REHAT 6 6 REHAT 7 8 9 10 11 12 13 14 15 16 700 715 745 815 845 915 945 945 1000101510301100113012001230 100 130 200 230 100 715 745 815 845 915 945 10001015103010301100113012001230 100 130 200 230 300 330": {
     "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "UL PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "UL PH PA"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PA"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PA"
-      }
+      "7:00": "AH",
+      "7:15": "AH",
+      "7:45": "AH PH",
+      "10:0010:1510:3011:0011:3012:0012:30": "5S1/ 4PTS/ PI PI PI 5S2/ 4AP 5S3",
+      "8:15": "PI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "5S1/ 4PTS/ PI PI PI 5S2/ 4AP 5S3"
     },
     "Tu": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ PJ"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "1:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PA"
-      },
-      "1:30": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PA"
-      }
+      "8:15": "PI",
+      "9:45": "4T",
+      "10:0010:1510:3011:0011:3012:0012:30": "PI 5T",
+      "8:45": "PI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "PI 4T 5T"
     },
     "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO PA"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PA"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PA"
-      }
+      "7:15": "KOKO",
+      "8:15": "5PTS1/ PI 5PTS2",
+      "9:45": ",1T",
+      "10:0010:1510:3011:0011:3012:0012:30": "5S3 4TS1 PI PI",
+      "7:45": "KOKO",
+      "8:45": "5PTS1/ PI 5PTS2",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "5S3 4TS1 PI PI ,1T"
     },
     "Th": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PJ"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PA"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PA"
-      }
+      "GURU:": "5AP2/ PI 5PTS 1/5PT",
+      "8:15": "PI",
+      "9:15": "5AP2/ PI 5PTS 1/5PT",
+      "9:45": "5AP2/ PI 5PTS 1/5PT",
+      "10:0010:1510:3011:0011:3012:0012:30": "4S1/ 5S3 PI PI 4TS1/ 4TS2",
+      "8:45": "PI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "5AP2/ 4S1/ 5S3 PI PI PI 5PTS 4TS1/ 1/5PT 4TS2"
     },
     "Fr": {
-      "8:15": {
-        "subject": "RB",
-        "venue": null,
-        "raw": "RBT"
-      },
-      "8:45": {
-        "subject": "RB",
-        "venue": null,
-        "raw": "RBT"
-      },
-      "9:15": {
-        "subject": "RB",
-        "venue": null,
-        "raw": "RBT"
-      }
+      "7:00": "na AH",
+      "7:15": "na AH",
+      "7:45": "na AH Ins",
+      "8:45": "PI",
+      "10:0010:1510:3011:0011:3012:0012:30": "5AP2/ PI 5PTS 1/5PT",
+      "8:15": "4TS1 PI",
+      "9:15": "PI",
+      "10:0010:1510:3010:3011:0011:3012:0012:30": "5AP2/ PI 5PTS 1/5PT"
     }
-  },
-  "Siti": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "DAH PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "DAH PH"
-      },
-      "1:00": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MMT"
-      },
-      "1:30": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MMT"
-      },
-      "2:00": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "2:30": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "3:00": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "3:30": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      }
-    },
-    "Tu": {
-      "7:00": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MMT"
-      },
-      "7:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MMT"
-      },
-      "7:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MMT MM"
-      },
-      "8:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      }
-    },
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO MM"
-      },
-      "8:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      }
-    },
-    "Th": {
-      "7:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "8:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM MM"
-      },
-      "9:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      }
-    },
-    "Fr": {
-      "7:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM T"
-      },
-      "8:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM MM T"
-      },
-      "8:45": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      },
-      "9:15": {
-        "subject": "MM",
-        "venue": null,
-        "raw": "MM"
-      }
-    }
-  },
-  "Suhaila": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "LA PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "LA PH"
-      },
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "9:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      }
-    },
-    "Tu": {
-      "7:00": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "7:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "7:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN SN"
-      },
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      }
-    },
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "9:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN ,1T"
-      },
-      "9:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN ,1T"
-      }
-    },
-    "Th": {
-      "7:00": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "7:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "7:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "9:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      }
-    },
-    "Fr": {
-      "8:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "9:15": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      },
-      "9:45": {
-        "subject": "SN",
-        "venue": null,
-        "raw": "SN"
-      }
-    }
-  },
-  "Tillaga": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "GA PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "GA PH"
-      },
-      "8:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "8:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "9:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "9:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "WARI BI ZMI"
-      },
-      "1:00": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "1:30": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      }
-    },
-    "Tu": {
-      "7:00": {
-        "subject": "D",
-        "venue": null,
-        "raw": "GA D"
-      },
-      "7:15": {
-        "subject": "D",
-        "venue": null,
-        "raw": "GA D"
-      },
-      "8:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "HARI BI"
-      },
-      "9:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "HARI BI 4T"
-      },
-      "9:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "HARI BI 4T"
-      }
-    },
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO BI"
-      },
-      "8:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "GA BI"
-      },
-      "8:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "GA BI D"
-      },
-      "9:15": {
-        "subject": "D",
-        "venue": null,
-        "raw": "GA D ,1T"
-      }
-    },
-    "Th": {
-      "7:00": {
-        "subject": "D",
-        "venue": null,
-        "raw": "GA D"
-      },
-      "7:15": {
-        "subject": "D",
-        "venue": null,
-        "raw": "GA D"
-      },
-      "8:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "8:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "9:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      }
-    },
-    "Fr": {
-      "7:00": {
-        "subject": "D",
-        "venue": null,
-        "raw": "GA D"
-      },
-      "7:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "GA D BI"
-      },
-      "7:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "8:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI BI"
-      },
-      "8:45": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      },
-      "9:15": {
-        "subject": "BI",
-        "venue": null,
-        "raw": "BI"
-      }
-    }
-  },
-  "Muhammad": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "ARI/3 PH PI ALKHAWA RIZMI"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ARI/3 PI ALKHAWA RIZMI"
-      },
-      "1:00": {
-        "subject": "KKQ",
-        "venue": null,
-        "raw": "KKQ"
-      }
-    },
-    "Tu": {
-      "7:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ARI/3 PI ALKHAWA"
-      },
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "ARI/3 PI ALKHAWA"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI KKQ"
-      },
-      "8:15": {
-        "subject": "KKQ",
-        "venue": null,
-        "raw": "KKQ"
-      },
-      "8:45": {
-        "subject": "KKQ",
-        "venue": null,
-        "raw": "KKQ"
-      }
-    },
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "5PTS1/ KOKO PI 5PTS2"
-      },
-      "8:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5PTS1/ PI 5PTS2"
-      },
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI"
-      },
-      "1:00": {
-        "subject": "KKQ",
-        "venue": null,
-        "raw": "KKQ"
-      },
-      "1:30": {
-        "subject": "KKQ",
-        "venue": null,
-        "raw": "KKQ"
-      },
-      "2:00": {
-        "subject": "KKQ",
-        "venue": null,
-        "raw": "KKQ"
-      }
-    },
-    "Th": {
-      "8:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5AP2/ PI 5PTS 1/5PT"
-      },
-      "9:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5AP2/ PI 5PTS 1/5PT"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "5AP2/ PI 5PTS 1/5PT"
-      },
-      "1:00": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI"
-      },
-      "1:30": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI"
-      }
-    },
-    "Fr": {
-      "7:15": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI"
-      },
-      "7:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "PI"
-      },
-      "9:45": {
-        "subject": "P",
-        "venue": null,
-        "raw": "3 PALI-B UKHA"
-      }
-    }
-  },
-  "Asiah": {
-    "Mo": {
-      "7:00": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      },
-      "7:15": {
-        "subject": "PH",
-        "venue": null,
-        "raw": "PH"
-      }
-    },
-    "Tu": {},
-    "We": {
-      "7:00": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:15": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      },
-      "7:45": {
-        "subject": "KOKO",
-        "venue": null,
-        "raw": "KOKO"
-      }
-    },
-    "Th": {},
-    "Fr": {}
   }
 }
