@@ -113,7 +113,7 @@ const BLOCKS = [
 
 /* ─────────────────── fetch + main render entry point ───────────────── */
 // Fetch the JSON data from the specified file
-fetch('Json_06.txt') // Changed to 'Json_06.txt' as per user's file
+fetch('teacher_schedules.json') // Changed to 'teacher_schedules.json' to match your GitHub repo
   .then(r => {
     if (!r.ok) {
       throw new Error(`HTTP error! status: ${r.status}`);
@@ -126,7 +126,7 @@ fetch('Json_06.txt') // Changed to 'Json_06.txt' as per user's file
     const root = document.getElementById('root');
     root.innerHTML = `<div style="color: red; font-weight: bold; padding: 20px;">
                         ⚠ Error loading timetable: ${err.message}.<br>
-                        Please ensure 'Json_06.txt' exists and is a valid JSON.
+                        Please ensure 'teacher_schedules.json' exists and is a valid JSON.
                       </div>`;
     console.error("Error loading timetable:", err);
   });
