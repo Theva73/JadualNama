@@ -17,18 +17,22 @@
             position: -webkit-sticky;
             position: sticky;
             left: 0;
-            background-color: white;
             z-index: 10;
         }
+        /* Ensure sticky column has the right background */
+        .sticky-col.day-header { background-color: #f3f4f6; }
+        .sticky-col.day-cell { background-color: #f9fafb; }
+
         .sticky-header th {
             position: -webkit-sticky;
             position: sticky;
             top: 0;
             z-index: 20;
+            background-color: #f3f4f6;
         }
         #loader {
             border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
+            border-top: 5px solid #3b82f6;
             border-radius: 50%;
             width: 50px;
             height: 50px;
@@ -88,7 +92,6 @@
         
         const VALID_SUBJECTS = ["PH", "KOKO", "P", "IV", "MM", "PNG", "PI", "LET", "PM", "BC", "FIZ", "KKQ", "RB", "GE", "NILAM", "ASK", "IB", "PLC", "SN", "DBM", "KIM", "PD", "RBT", "TAW", "PPS", "BI", "MMT", "D", "na Insan", "BA", "SJ", "PJ", "REHAT"];
         const VALID_VENUES = ["M.KOM 1", "M.KOM 2", "M3", "MAK.BIO", "MAK.KIM", "M2", "BENGKEL E", "B. LUKISAN", "B. DIGITAL", "BENGKEL. P", "B.NILAM", "PAK 21 A", "BENGKEL R"];
-        const DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
         const DAY_ABBREVIATIONS = { "Mo": "Monday", "Tu": "Tuesday", "We": "Wednesday", "Th": "Thursday", "Fr": "Friday" };
 
         const fileInput = document.getElementById('pdf-upload');
@@ -112,12 +115,11 @@
             try {
                 const pdfData = await readFile(file);
                 const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-                const fullText = await extractTextFromPdf(pdf);
-                const teachersData = parseTimetablesFromText(fullText);
+                const teachersData = await parsePdfWithCoordinates(pdf);
                 renderTimetables(teachersData);
             } catch (error) {
                 console.error("Error processing PDF:", error);
-                alert("Could not process the PDF. It might be corrupted or in an unsupported format.");
+                container.innerHTML = `<p class="text-center text-red-500 font-semibold">An error occurred while processing the PDF. It might be corrupted or in an unsupported format. Check the console for details.</p>`;
             } finally {
                 statusDisplay.classList.add('hidden');
             }
@@ -131,87 +133,88 @@
                 reader.readAsArrayBuffer(file);
             });
         }
-
-        async function extractTextFromPdf(pdf) {
-            let text = "";
+        
+        async function parsePdfWithCoordinates(pdf) {
+            const allTeachers = [];
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
                 const content = await page.getTextContent();
-                const strings = content.items.map(item => item.str);
-                text += strings.join(' ') + '\n\n';
-            }
-            return text;
-        }
+                const items = content.items;
 
-        function parseTimetablesFromText(text) {
-            const teacherSections = text.split(/JADUAL WAKTU SESI PAGI/);
-            const teachersData = [];
+                let fullText = items.map(item => item.str).join(' ');
+                const teacherNameMatch = fullText.match(/(?:NAMA GURU|Teacher)[:\s]+(.+?)(?=\s*SMK|Bermula|aSc|\s{4,})/i);
+                if (!teacherNameMatch) continue;
 
-            teacherSections.forEach(section => {
-                if (!section.trim()) return;
+                const teacher = {
+                    name: teacherNameMatch[1].trim().replace(/\s*BIL\. \d+ \d{4}/, ''),
+                    times: [],
+                    schedule: {}
+                };
 
-                const teacherNameMatch = section.match(/(?:NAMA GURU|Teacher)[:\s]+(.+?)(?=\s*SMK|Bermula|aSc)/i);
-                if (!teacherNameMatch) return;
-
-                const teacherName = teacherNameMatch[1].trim().replace(/\s*BIL\. \d+ \d{4}/, '');
+                // Group items by line (y-coordinate)
+                const lines = new Map();
+                for (const item of items) {
+                    const y = Math.round(item.transform[5]);
+                    if (!lines.has(y)) lines.set(y, []);
+                    lines.get(y).push(item);
+                }
                 
-                // This is a simplified extraction logic. The PDF structure is complex.
-                // A more robust solution might need to analyze item positions (x, y coordinates).
-                // For now, we use regex and string splitting based on observed patterns.
-                const schedule = {};
-                const lines = section.split('\n');
-                let currentTimeSlots = [];
-
-                // Simple time slot extraction (takes the first reasonable-looking set)
-                 const timeLine = lines.find(line => /\d{1,2}:\d{2}/.test(line) && line.split(/\s+/).length > 5);
-                 if (timeLine) {
-                    // This regex finds time pairs like "7:00 7:15"
-                    const timeMatches = [...timeLine.matchAll(/(\d{1,2}:\d{2})\s*(\d{1,2}:\d{2})/g)];
-                    currentTimeSlots = timeMatches.map(m => `${m[1]}-${m[2]}`);
-                 }
-                 if(currentTimeSlots.length < 5) { // Fallback for less structured time lines
-                    currentTimeSlots = ["07:15-08:15", "08:15-09:15", "09:15-10:15", "10:15-11:15", "11:15-12:15", "12:15-13:00"];
-                 }
-
-
-                Object.keys(DAY_ABBREVIATIONS).forEach(abbr => {
-                    const dayRegex = new RegExp(`^\\s*${abbr}\\b`, 'm');
-                    const dayLineIndex = lines.findIndex(line => dayRegex.test(line));
-
-                    if (dayLineIndex > -1) {
-                        // Assumption: The subjects are on the same line or subsequent lines.
-                        // This part is highly complex due to the PDF's formatting.
-                        // The text extraction merges columns, making it hard to align subjects to times.
-                        // This is a best-effort attempt.
-                        let dayActivitiesText = lines[dayLineIndex];
-                        // Also check next line as content often spills over
-                        if (lines[dayLineIndex + 1] && !/^(Mo|Tu|We|Th|Fr)/.test(lines[dayLineIndex + 1])) {
-                           dayActivitiesText += " " + lines[dayLineIndex + 1];
-                        }
-
-                        // Split activities by looking for multiple spaces, a common delimiter in the extracted text
-                        const activities = dayActivitiesText.replace(abbr, '').trim().split(/\s{2,}/);
-                        schedule[DAY_ABBREVIATIONS[abbr]] = activities.slice(0, currentTimeSlots.length);
-                    } else {
-                        schedule[DAY_ABBREVIATIONS[abbr]] = Array(currentTimeSlots.length).fill('');
+                // Find time slots and their x-coordinates
+                let timeHeaderLineY = 0;
+                let timeSlots = [];
+                for (const [y, lineItems] of lines.entries()) {
+                    const timeRegex = /^\d{1,2}:\d{2}$/;
+                    const potentialTimes = lineItems.filter(item => timeRegex.test(item.str));
+                    if (potentialTimes.length > 5) { // A reasonable number of time headers on one line
+                         const sortedTimes = potentialTimes.sort((a, b) => a.transform[4] - b.transform[4]);
+                         // Pair them up: 07:00-07:15, 07:15-07:45 etc.
+                         for(let j = 0; j < sortedTimes.length -1; j++) {
+                             timeSlots.push({
+                                 text: `${sortedTimes[j].str}-${sortedTimes[j+1].str}`,
+                                 x_start: sortedTimes[j].transform[4],
+                                 x_end: sortedTimes[j+1].transform[4]
+                             });
+                         }
+                         teacher.times = timeSlots.map(t => t.text);
+                         break;
                     }
-                });
+                }
+                 if(timeSlots.length === 0) continue; // Skip page if no valid time headers
 
-                teachersData.push({
-                    teacher: teacherName,
-                    times: currentTimeSlots,
-                    schedule: schedule
-                });
-            });
-
-            return teachersData;
+                // Find day rows and parse activities
+                for (const [y, lineItems] of lines.entries()) {
+                    const dayItem = lineItems.find(item => DAY_ABBREVIATIONS[item.str.trim()]);
+                    if (dayItem) {
+                        const dayName = DAY_ABBREVIATIONS[dayItem.str.trim()];
+                        const dayActivities = Array(timeSlots.length).fill('');
+                        
+                        // Find all items on the same row as the day label
+                        const activityItems = lineItems.filter(item => !DAY_ABBREVIATIONS[item.str.trim()]);
+                        
+                        for (const item of activityItems) {
+                             const x = item.transform[4];
+                             // Find which timeslot this item belongs to
+                             for(let k = 0; k < timeSlots.length; k++) {
+                                 if (x >= timeSlots[k].x_start -5 && x < timeSlots[k].x_end - 5) {
+                                     dayActivities[k] += item.str + ' ';
+                                     break;
+                                 }
+                             }
+                        }
+                        teacher.schedule[dayName] = dayActivities.map(act => act.trim());
+                    }
+                }
+                allTeachers.push(teacher);
+            }
+            return allTeachers;
         }
+
 
         function parseCellContent(content) {
             const result = { subject: '', venue: '' };
             if (!content || typeof content !== 'string') return result;
 
-            if (/\b(PN|EN|CIK|MISS|MR|UST|USTAZ|NAMA GURU)\b/i.test(content)) return result;
+            if (/\b(PN|EN|CIK|MISS|MR|UST|USTAZ|NAMA GURU|T[1-5])\b/i.test(content)) return result;
 
             let upperContent = content.toUpperCase();
             
@@ -219,13 +222,15 @@
                 let searchVenue = v.replace(/\./g, '\\.');
                 if (upperContent.includes(searchVenue)) {
                     result.venue = v;
-                    upperContent = upperContent.replace(searchVenue, ''); // Remove venue to avoid re-matching
+                    upperContent = upperContent.replace(searchVenue, '');
                 }
             });
 
             VALID_SUBJECTS.forEach(s => {
                 if (new RegExp(`\\b${s}\\b`).test(upperContent)) {
-                    result.subject = s;
+                    if (!result.subject || s.length > result.subject.length) {
+                        result.subject = s; // Prefer longer match if multiple e.g., "P" vs "PJ"
+                    }
                 }
             });
             
@@ -239,34 +244,35 @@
 
         function renderTimetables(teachersData) {
             container.innerHTML = '';
-            if (teachersData.length === 0) {
+            if (!teachersData || teachersData.length === 0) {
                 container.innerHTML = `<p class="text-center text-red-500">Could not find any valid timetables in the PDF. The document structure might be different than expected.</p>`;
                 return;
             }
 
             teachersData.forEach(teacher => {
-                if (!teacher.teacher) return;
+                if (!teacher.name || Object.keys(teacher.schedule).length === 0) return;
+                
                 const teacherCard = document.createElement('div');
-                teacherCard.className = 'bg-white rounded-xl shadow-md overflow-hidden';
+                teacherCard.className = 'bg-white rounded-xl shadow-lg overflow-hidden';
 
                 let tableHTML = `
-                    <div class="p-4 sm:p-6 border-b border-gray-200">
-                        <h2 class="text-xl sm:text-2xl font-bold text-indigo-700">${teacher.teacher}</h2>
+                    <div class="p-4 sm:p-6 border-b border-gray-200 bg-gray-50">
+                        <h2 class="text-xl sm:text-2xl font-bold text-indigo-700">${teacher.name}</h2>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-sm text-left">
                             <thead class="bg-gray-100 sticky-header">
                                 <tr>
-                                    <th class="sticky-col font-semibold p-3 text-gray-700 w-28">Day</th>
+                                    <th class="sticky-col day-header font-semibold p-3 text-gray-700 w-28">Day</th>
                                     ${teacher.times.map(time => `<th class="font-semibold p-3 text-gray-700 text-center min-w-[120px]">${time}</th>`).join('')}
                                 </tr>
                             </thead>
                             <tbody class="bg-white">`;
 
-                DAYS_OF_WEEK.forEach(day => {
+                Object.values(DAY_ABBREVIATIONS).forEach(day => {
                     const activities = teacher.schedule[day] || Array(teacher.times.length).fill('');
                     tableHTML += `<tr class="border-t border-gray-200">`;
-                    tableHTML += `<td class="sticky-col font-semibold p-3 text-gray-800 bg-gray-50">${day}</td>`;
+                    tableHTML += `<td class="sticky-col day-cell font-semibold p-3 text-gray-800">${day}</td>`;
                     
                     for(let i = 0; i < teacher.times.length; i++) {
                         const activity = activities[i] || '';
