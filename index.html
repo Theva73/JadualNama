@@ -1,350 +1,170 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Timetable Extractor</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- PDF.js Library -->
-    <script src="https://mozilla.github.io/pdf.js/build/pdf.mjs" type="module"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Teacher Timetables</title>
 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .sticky-col {
-            position: -webkit-sticky;
-            position: sticky;
-            left: 0;
-            z-index: 10;
-        }
-        .sticky-col.day-header { background-color: #f3f4f6; }
-        .sticky-col.day-cell { background-color: #f9fafb; }
+  <!-- Tailwind (just for layout/utility classes) -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-        .sticky-header th {
-            position: -webkit-sticky;
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            background-color: #f3f4f6;
-        }
-        #loader {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3b82f6;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+  <!-- ─── Custom CSS ──────────────────────────────────────────────────── -->
+  <style>
+    /* sticky first column & header row */
+    .sticky-col {
+      position: -webkit-sticky;
+      position: sticky;
+      left: 0;
+      background: #ffffff;
+      z-index: 10;
+    }
+    .sticky-header th {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    /* feel free to tweak these highlight colours */
+    .cell-subject   { background:#eef2ff; color:#4338ca; } /* indigo-50 / indigo-800 */
+    .cell-break     { background:#ecfdf5; color:#047857; } /* green-50 / green-700  */
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gray-50 text-gray-800 flex flex-col h-full">
 
-    <div class="container mx-auto p-4 md:p-8">
-        <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">PDF Timetable Extractor</h1>
-            <p class="text-lg text-gray-600 mt-2">Upload your 'Jadual Nama' PDF to automatically extract and display timetables.</p>
-        </header>
+  <!-- ─── Header / Upload bar ─────────────────────────────────────────── -->
+  <header class="p-4 md:p-6 text-center bg-indigo-600 text-white">
+    <h1 class="text-2xl font-bold">SMK Seri Pulai Perdana – Timetable Viewer</h1>
+    <p class="text-sm mt-1">Upload <em>Jadual_nama.pdf</em>, wait a moment, then scroll.</p>
 
-        <!-- File Upload Section -->
-        <div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-md mb-12">
-            <h2 class="text-xl font-semibold mb-4 text-center">Upload Timetable PDF</h2>
-            <div class="flex items-center justify-center w-full">
-                <label for="pdf-upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                        <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/></svg>
-                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                        <p class="text-xs text-gray-500">PDF file only</p>
-                    </div>
-                    <input id="pdf-upload" type="file" class="hidden" accept="application/pdf" />
-                </label>
-            </div>
-             <p id="file-name" class="text-center text-sm text-gray-500 mt-2"></p>
+    <form id="uploadForm" class="mt-4 flex flex-col items-center gap-2">
+      <input type="file"
+             name="file"
+             accept="application/pdf"
+             class="block w-64 text-sm text-gray-900 file:mr-4 file:p-2
+                    file:border-0 file:text-sm file:bg-white file:text-indigo-600
+                    file:font-semibold">
+      <button class="px-4 py-2 bg-white text-indigo-600 font-semibold rounded shadow">
+        Upload &amp; View
+      </button>
+    </form>
+    <div id="status" class="mt-2 text-sm"></div>
+  </header>
+
+  <!-- ─── Dynamic timetable cards appear here ─────────────────────────── -->
+  <main id="timetables-container"
+        class="p-4 md:p-8 space-y-12 overflow-y-auto flex-1"></main>
+
+  <!-- ─── JavaScript bundle (all in-line) ─────────────────────────────── -->
+  <script>
+  /* ---------------- Configuration lists ------------------------------ */
+  const VALID_SUBJECTS = [
+    "PH","KOKO","P","IV","MM","PNG","PI","LET","PM","BC","FIZ","KKQ","RB","GE",
+    "NILAM","ASK","IB","PLC","SN","DBM","KIM","PD","RBT","TAW","PPS","BI","MMT",
+    "D","NA INSAN","BA","SJ","PJ","REHAT"
+  ];
+  const VALID_VENUES = [
+    "M.KOM 1","M.KOM 2","M3","MAK.BIO","MAK.KIM","M2","BENGKEL E",
+    "B. LUKISAN","B. DIGITAL","BENGKEL. P","B.NILAM","PAK 21 A","BENGKEL R"
+  ];
+
+  /* ---------------- Helper: parse raw cell text ---------------------- */
+  function parseCellContent(content){
+    const r = { subject:'', venue:'' };
+    if(!content || typeof content!=='string') return r;
+
+    const u = content.toUpperCase();
+    if(/\b(PN|EN|CIK|MISS|MR|UST|USTAZ|NAMA GURU)\b/.test(u)) return r;
+
+    VALID_SUBJECTS.forEach(s => {
+      if(new RegExp(`\\b${s}\\b`).test(u)) r.subject = s;
+    });
+    VALID_VENUES.forEach(v => {
+      if(u.includes(v.replace(/\./g,'\\.'))) r.venue = v;
+    });
+
+    if(u === 'REHAT'){ r.subject = 'REHAT'; r.venue = ''; }
+    return r;
+  }
+
+  /* ---------------- Render timetable JSON into cards ----------------- */
+  function render(data){
+    const host = document.getElementById('timetables-container');
+    host.innerHTML = '';
+
+    data.forEach(t => {
+      const card = document.createElement('div');
+      card.className = 'bg-white rounded-xl shadow-md overflow-hidden';
+
+      /* card header */
+      let html = `
+        <div class="p-4 sm:p-6 border-b">
+          <h2 class="text-xl font-bold text-indigo-700">${t.teacher}</h2>
         </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-100 sticky-header">
+              <tr>
+                <th class="sticky-col p-3 font-semibold w-28">Day</th>
+                ${t.times.map(x => `
+                  <th class="p-3 font-semibold text-center min-w-[95px]">
+                    ${x.replace('-', ' - ')}
+                  </th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>`;
 
-        <!-- Status/Loader -->
-        <div id="status" class="text-center my-8 hidden">
-             <div id="loader" class="mx-auto"></div>
-             <p id="status-text" class="mt-4 text-gray-600">Processing PDF...</p>
-        </div>
-       
-        <!-- Results Container -->
-        <div id="timetables-container" class="space-y-12">
-             <!-- Timetables will be dynamically inserted here -->
-        </div>
+      /* rows per weekday */
+      Object.entries(t.schedule).forEach(([day,row])=>{
+        html += `
+          <tr class="border-t">
+            <td class="sticky-col bg-gray-50 font-semibold p-3">${day}</td>`;
+        row.forEach(cell => {
+          const {subject,venue} = parseCellContent(cell);
+          let cls = '';
+          if(subject && subject !== 'REHAT') cls = 'cell-subject';
+          else if(subject === 'REHAT')      cls = 'cell-break';
 
-        <footer class="text-center mt-12 text-sm text-gray-500">
-            <p>Developed to automate timetable extraction.</p>
-        </footer>
-    </div>
+          html += `
+            <td class="p-3 border-l text-center h-16 ${cls}">
+              ${subject ? `
+                <div class="font-semibold">
+                  ${subject}
+                  ${venue ? `<div class="text-xs">${venue}</div>` : ''}
+                </div>` : ''}
+            </td>`;
+        });
+        html += '</tr>';
+      });
 
-    <script type="module">
-        import * as pdfjsLib from "https://mozilla.github.io/pdf.js/build/pdf.mjs";
+      html += '</tbody></table></div>';
+      card.innerHTML = html;
+      host.appendChild(card);
+    });
+  }
 
-        // --- Configuration ---
-        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://mozilla.github.io/pdf.js/build/pdf.worker.mjs";
-        
-        const VALID_SUBJECTS = ["PH", "KOKO", "P", "IV", "MM", "PNG", "PI", "LET", "PM", "BC", "FIZ", "KKQ", "RB", "GE", "NILAM", "ASK", "IB", "PLC", "SN", "DBM", "KIM", "PD", "RBT", "TAW", "PPS", "BI", "MMT", "D", "INSAN", "BA", "SJ", "PJ", "PS", "IS", "BT", "PA", "SS"];
-        const VALID_VENUES = ["M.KOM 1", "M.KOM 2", "M1", "M2", "M3", "MAK.BIO", "MAK.KIM", "MAK. FIZ", "BENGKEL E", "BENGKEL R", "BENGKEL P", "B. LUKISAN", "B. DIGITAL", "B.NILAM", "PAK 21 A", "M. KOM 1", "M. KOM 2"];
-        const DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  /* ---------------- File-upload handler ------------------------------ */
+  document.getElementById('uploadForm').addEventListener('submit', async e=>{
+    e.preventDefault();
+    const file = e.target.file.files[0];
+    if(!file) return;
 
-        const fileInput = document.getElementById('pdf-upload');
-        const fileNameDisplay = document.getElementById('file-name');
-        const statusDisplay = document.getElementById('status');
-        const statusText = document.getElementById('status-text');
-        const container = document.getElementById('timetables-container');
+    const status = document.getElementById('status');
+    status.textContent = 'Processing PDF …';
 
-        fileInput.addEventListener('change', handleFileSelect);
+    const form = new FormData();
+    form.append('file', file);
 
-        async function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file || file.type !== 'application/pdf') {
-                alert("Please select a PDF file.");
-                return;
-            }
+    try{
+      const res  = await fetch('/api/upload', { method:'POST', body: form });
+      const json = await res.json();
+      if(!res.ok) throw new Error(json.error || 'Unknown error');
 
-            fileNameDisplay.textContent = `File: ${file.name}`;
-            statusDisplay.classList.remove('hidden');
-            container.innerHTML = '';
-
-            try {
-                const pdfData = await readFile(file);
-                const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-                const teachersData = await parsePdfWithGrid(pdf, statusText);
-                statusText.textContent = `Rendering ${teachersData.length} timetables...`;
-                renderTimetables(teachersData);
-            } catch (error) {
-                console.error("Error processing PDF:", error);
-                container.innerHTML = `<p class="text-center text-red-500 font-semibold p-4 bg-red-100 rounded-lg">An error occurred while processing the PDF. The document may be in an unsupported format. Check console for details.</p>`;
-            } finally {
-                statusDisplay.classList.add('hidden');
-            }
-        }
-
-        function readFile(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = e => resolve(new Uint8Array(e.target.result));
-                reader.onerror = e => reject(new Error("File could not be read: " + e.target.error.code));
-                reader.readAsArrayBuffer(file);
-            });
-        }
-        
-       async function parsePdfWithGrid(pdf, statusUpdater) {
-            const allTeachers = [];
-            const timeRegex = /^\d{1,2}:\d{2}$/;
-            const dayAbbr = {"Mo":"Monday", "Tu":"Tuesday", "We":"Wednesday", "Th":"Thursday", "Fr":"Friday"};
-
-            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                statusUpdater.textContent = `Processing page ${pageNum} of ${pdf.numPages}...`;
-                const page = await pdf.getPage(pageNum);
-                const content = await page.getTextContent();
-                const items = content.items;
-
-                let fullText = items.map(item => item.str).join(' ');
-                const teacherNameMatch = fullText.match(/(?:NAMA GURU|Teacher|Guru)[:\s]+(.+?)(?=\s*SMK|Bermula|aSc Timetables|BIL\.)/i);
-                if (!teacherNameMatch) continue;
-
-                // --- Grid Detection ---
-                const timeItems = items.filter(item => timeRegex.test(item.str.trim()));
-                const timeRowsMap = new Map();
-                timeItems.forEach(item => {
-                    const y = Math.round(item.transform[5]);
-                    if (!timeRowsMap.has(y)) timeRowsMap.set(y, []);
-                    timeRowsMap.get(y).push(item);
-                });
-                
-                if (timeRowsMap.size < 2) continue;
-
-                const sortedTimeRows = Array.from(timeRowsMap.values()).filter(row => row.length > 4).sort((a,b) => b.length - a.length);
-                if (sortedTimeRows.length < 2) continue;
-                
-                const startTimes = sortedTimeRows[0].sort((a,b) => a.transform[4] - b.transform[4]);
-                const endTimes = sortedTimeRows[1].sort((a,b) => a.transform[4] - b.transform[4]);
-                
-                const timeSlots = [];
-                for (let i = 0; i < startTimes.length; i++) {
-                    const st = startTimes[i];
-                    const et = endTimes.find(e => Math.abs(e.transform[4] - st.transform[4]) < 10);
-                    if (et) {
-                        timeSlots.push({
-                            text: `${st.str}-${et.str}`,
-                            x_start: st.transform[4],
-                            x_end: (startTimes[i + 1] ? startTimes[i + 1].transform[4] : 9999)
-                        });
-                    }
-                }
-                if (timeSlots.length === 0) continue;
-
-                const dayRows = [];
-                const allDayItems = items.filter(item => Object.keys(dayAbbr).includes(item.str.trim()));
-                allDayItems.forEach(dayItem => {
-                    // Check if a day with a similar y-coordinate already exists
-                    if (!dayRows.some(d => Math.abs(d.y - dayItem.transform[5]) < 5)) {
-                        dayRows.push({ name: dayAbbr[dayItem.str.trim()], y: dayItem.transform[5], x: dayItem.transform[4] });
-                    }
-                });
-                // Sort days top-to-bottom (PDF Y-coords are from bottom, so higher Y is higher on page)
-                dayRows.sort((a, b) => b.y - a.y);
-                if (dayRows.length === 0) continue;
-
-                const teacher = {
-                    name: teacherNameMatch[1].trim().replace(/aSc Timetables/i, ''),
-                    times: timeSlots.map(t => t.text),
-                    schedule: {}
-                };
-
-                const otherItems = items.filter(item => {
-                    const str = item.str.trim();
-                    return !timeRegex.test(str) && !Object.keys(dayAbbr).includes(str) && !/NAMA GURU|Teacher|Guru/.test(item.str) && str.length > 0;
-                });
-
-                for (let i = 0; i < dayRows.length; i++) {
-                    const day = dayRows[i];
-                    const dayName = day.name;
-                    const nextDayY = (dayRows[i + 1] ? dayRows[i + 1].y : 0); // Bottom of page for the last day
-                    
-                    const activities = Array(timeSlots.length).fill('');
-                    
-                    const rowItems = otherItems
-                        .filter(item => {
-                            const y = item.transform[5];
-                            const x = item.transform[4];
-                            // Item is vertically within the current day's row and horizontally to the right of the day label
-                            return y <= day.y + 5 && y > nextDayY && x > day.x;
-                        })
-                        .sort((a,b) => a.transform[4] - b.transform[4]); // Sort left to right
-
-                    for (const item of rowItems) {
-                         const x = item.transform[4];
-                         for (let k = 0; k < timeSlots.length; k++) {
-                            if (x >= timeSlots[k].x_start - 5 && x < timeSlots[k].x_end - 5) {
-                                activities[k] += item.str + ' ';
-                                break;
-                            }
-                        }
-                    }
-                    teacher.schedule[dayName] = activities;
-                }
-                
-                if (Object.keys(teacher.schedule).length > 0) {
-                    allTeachers.push(teacher);
-                }
-            }
-            return allTeachers;
-        }
-
-
-        function parseCellContent(content) {
-            const result = { subject: '', venue: '' };
-            if (!content || typeof content !== 'string') return result;
-
-            let upperContent = content.trim().toUpperCase();
-
-            // Filter out names and titles if they are the only thing in the cell
-            if (/(?:PN|EN|CIK|MISS|MR|UST|USTAZAH|USTAZ|GURU)\b/i.test(content) && content.split(/\s+/).length < 5) {
-                 const hasSubject = [...VALID_SUBJECTS, ...VALID_VENUES].some(s => upperContent.includes(s));
-                 if (!hasSubject) return result;
-            }
-
-            let foundVenue = '';
-            VALID_VENUES.forEach(v => {
-                if (upperContent.includes(v)) {
-                    foundVenue = v;
-                }
-            });
-            if (foundVenue) {
-                result.venue = foundVenue;
-                upperContent = upperContent.replace(new RegExp(foundVenue, 'g'), '');
-            }
-            
-            // Handle multi-word subjects first
-            if (upperContent.includes("NA INSAN")) {
-                result.subject = 'na Insan';
-            } else {
-                 let foundSubject = '';
-                 VALID_SUBJECTS.forEach(s => {
-                    if (new RegExp(`\\b${s}\\b`).test(upperContent)) {
-                        if (s.length > foundSubject.length) {
-                            foundSubject = s;
-                        }
-                    }
-                });
-                result.subject = foundSubject;
-            }
-            
-            if (upperContent.includes('REHAT')) {
-                result.subject = 'REHAT';
-                result.venue = '';
-            }
-
-            return result;
-        }
-
-        function renderTimetables(teachersData) {
-            container.innerHTML = '';
-            if (!teachersData || teachersData.length === 0) {
-                container.innerHTML = `<p class="text-center text-red-500 font-semibold p-4 bg-red-100 rounded-lg">Could not find any valid timetables in the PDF. Please ensure it's the correct 'Jadual Nama' file and try again.</p>`;
-                return;
-            }
-
-            teachersData.forEach(teacher => {
-                if (!teacher.name || Object.keys(teacher.schedule).length === 0) return;
-                
-                const teacherCard = document.createElement('div');
-                teacherCard.className = 'bg-white rounded-xl shadow-lg overflow-hidden';
-
-                let tableHTML = `
-                    <div class="p-4 sm:p-6 border-b border-gray-200 bg-gray-50">
-                        <h2 class="text-xl sm:text-2xl font-bold text-indigo-700">${teacher.name}</h2>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full text-sm text-left">
-                            <thead class="bg-gray-100 sticky-header">
-                                <tr>
-                                    <th class="sticky-col day-header font-semibold p-3 text-gray-700 w-28">Day</th>
-                                    ${teacher.times.map(time => `<th class="font-semibold p-3 text-gray-700 text-center min-w-[120px]">${time}</th>`).join('')}
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white">`;
-
-                DAYS_OF_WEEK.forEach(day => {
-                    const activities = teacher.schedule[day] || Array(teacher.times.length).fill('');
-                    tableHTML += `<tr class="border-t border-gray-200">`;
-                    tableHTML += `<td class="sticky-col day-cell font-semibold p-3 text-gray-800">${day}</td>`;
-                    
-                    for(let i = 0; i < teacher.times.length; i++) {
-                        const activity = activities[i] || '';
-                        const { subject, venue } = parseCellContent(activity);
-                        let cellContent = '';
-                        let cellClass = 'h-20'; // Increased height for better readability
-
-                        if (subject) {
-                            cellContent = `<div class="font-semibold">${subject}</div>`;
-                            if (venue) {
-                                cellContent += `<div class="text-xs text-slate-600 mt-1">(${venue})</div>`;
-                            }
-                        }
-
-                        if(subject && subject !== 'REHAT') cellClass += ' bg-indigo-50 text-indigo-800';
-                        else if (subject === 'REHAT') cellClass += ' bg-green-50 text-green-700';
-                        
-                        tableHTML += `<td class="p-3 border-l border-gray-200 text-center ${cellClass}">${cellContent}</td>`;
-                    }
-                    tableHTML += `</tr>`;
-                });
-
-                tableHTML += `</tbody></table></div>`;
-                teacherCard.innerHTML = tableHTML;
-                container.appendChild(teacherCard);
-            });
-        }
-    </script>
-
+      render(json);
+      status.textContent = `Loaded ${json.length} timetables.`;
+    }catch(err){
+      status.textContent = '❌ ' + err.message;
+    }
+  });
+  </script>
 </body>
 </html>
