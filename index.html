@@ -101,8 +101,15 @@
 const FULL  = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
 const ABBR  = ["Mo","Tu","We","Th","Fr"];
 
-// BLOCKS constant is now dynamic, removed hardcoded list.
-let globalTimeBlocks = []; // This will be populated from the fetched JSON
+// Hardcoded BLOCKS with desired display time ranges for headers
+const BLOCKS_DISPLAY = [
+  "07:15-07:45","07:45-08:15","08:15-08:45","08:45-09:15",
+  "09:15-09:45","09:45-10:00", // Break/Transition
+  "09:45-10:15","10:00-10:30","10:15-10:30", // Break/Transition
+  "10:30-11:00","11:00-11:30","11:30-12:00","12:00-12:30",
+  "12:30-13:00","13:00-13:30","13:30-14:00","14:00-14:30",
+  "14:30-15:00","15:00-15:30"
+];
 
 /* ─────────────────── fetch + main render entry point ───────────────── */
 // Fetch the JSON data from the specified file
@@ -114,9 +121,9 @@ fetch('teacher_schedules.json') // Fetch the combined JSON
     return r.json();
   })
   .then(data => {
-    // Store the global time blocks
-    globalTimeBlocks = data.time_blocks || [];
-    // Render all teachers using the 'teachers' data
+    // We don't directly use data.time_blocks for header display anymore,
+    // but it's useful to understand the actual keys present in the JSON.
+    // data.time_blocks contains the exact keys like "07:00", "07:15", etc.
     renderAll(data.teachers);
   })
   .catch(err => {
@@ -168,22 +175,20 @@ function buildTable(t){
 }
 
 /* ---------- helpers for the recognised schemas ---------------- */
-function headerRow(tbl, blocksToDisplay){ // Renamed 'blocks' to 'blocksToDisplay' for clarity
+function headerRow(tbl, blocksToDisplay){
   const h = tbl.insertRow();
   // First header cell for 'Day'
   h.insertCell().outerHTML = '<th>Day</th>';
-  // Create header cells for each time block to display
+  // Create header cells for each time block to display with the desired range format
   blocksToDisplay.forEach(b => {
-    // 'b' is now a time string like "07:00" or "13:00".
-    // Display the exact time key as the header.
-    h.insertCell().outerHTML = `<th>${b}</th>`; 
+    h.insertCell().outerHTML = `<th>${b.replace('-', ' - ')}</th>`; 
   });
 }
 
 function fromAbbr(teacher){
   const tbl = document.createElement('table');
-  // Pass the globally obtained time blocks to headerRow
-  headerRow(tbl, globalTimeBlocks);
+  // Pass the hardcoded BLOCKS_DISPLAY (time ranges) to headerRow for header presentation
+  headerRow(tbl, BLOCKS_DISPLAY);
 
   FULL.forEach((dayName, dIdx) => {
       const tr = tbl.insertRow();
@@ -193,10 +198,14 @@ function fromAbbr(teacher){
       // Get the data for the current day (e.g., teacher['Mo'])
       const dayData = teacher[ABBR[dIdx]] || {};
       
-      // Iterate through each global time block (which are the actual keys from JSON)
-      globalTimeBlocks.forEach(timeKey => {
-          // Retrieve the cell content using the exact timeKey from globalTimeBlocks
-          const cellText = dayData[timeKey];
+      // Iterate through each display block (time range)
+      BLOCKS_DISPLAY.forEach(blockRange => {
+          // Extract the start time from the block range, e.g., "07:15" from "07:15-07:45"
+          // This extracted start time is the key used in the JSON.
+          let startTimeKey = blockRange.split('-')[0];
+          
+          // Retrieve the cell content using the exact startTimeKey
+          const cellText = dayData[startTimeKey];
           
           const td  = tr.insertCell();
           // If content exists for this slot, display it. Otherwise, leave cell empty.
