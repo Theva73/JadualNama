@@ -19,7 +19,6 @@
             left: 0;
             z-index: 10;
         }
-        /* Ensure sticky column has the right background */
         .sticky-col.day-header { background-color: #f3f4f6; }
         .sticky-col.day-cell { background-color: #f9fafb; }
 
@@ -71,7 +70,7 @@
         <!-- Status/Loader -->
         <div id="status" class="text-center my-8 hidden">
              <div id="loader" class="mx-auto"></div>
-             <p class="mt-4 text-gray-600">Processing PDF... This may take a moment.</p>
+             <p id="status-text" class="mt-4 text-gray-600">Processing PDF...</p>
         </div>
        
         <!-- Results Container -->
@@ -90,13 +89,14 @@
         // --- Configuration ---
         pdfjsLib.GlobalWorkerOptions.workerSrc = "https://mozilla.github.io/pdf.js/build/pdf.worker.mjs";
         
-        const VALID_SUBJECTS = ["PH", "KOKO", "P", "IV", "MM", "PNG", "PI", "LET", "PM", "BC", "FIZ", "KKQ", "RB", "GE", "NILAM", "ASK", "IB", "PLC", "SN", "DBM", "KIM", "PD", "RBT", "TAW", "PPS", "BI", "MMT", "D", "na Insan", "BA", "SJ", "PJ", "REHAT"];
-        const VALID_VENUES = ["M.KOM 1", "M.KOM 2", "M3", "MAK.BIO", "MAK.KIM", "M2", "BENGKEL E", "B. LUKISAN", "B. DIGITAL", "BENGKEL. P", "B.NILAM", "PAK 21 A", "BENGKEL R"];
-        const DAY_ABBREVIATIONS = { "Mo": "Monday", "Tu": "Tuesday", "We": "Wednesday", "Th": "Thursday", "Fr": "Friday" };
+        const VALID_SUBJECTS = ["PH", "KOKO", "P", "IV", "MM", "PNG", "PI", "LET", "PM", "BC", "FIZ", "KKQ", "RB", "GE", "NILAM", "ASK", "IB", "PLC", "SN", "DBM", "KIM", "PD", "RBT", "TAW", "PPS", "BI", "MMT", "D", "INSAN", "BA", "SJ", "PJ", "PS", "IS", "BT", "PA", "SS"];
+        const VALID_VENUES = ["M.KOM 1", "M.KOM 2", "M1", "M2", "M3", "MAK.BIO", "MAK.KIM", "MAK. FIZ", "BENGKEL E", "BENGKEL R", "BENGKEL P", "B. LUKISAN", "B. DIGITAL", "B.NILAM", "PAK 21 A", "M. KOM 1", "M. KOM 2"];
+        const DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
         const fileInput = document.getElementById('pdf-upload');
         const fileNameDisplay = document.getElementById('file-name');
         const statusDisplay = document.getElementById('status');
+        const statusText = document.getElementById('status-text');
         const container = document.getElementById('timetables-container');
 
         fileInput.addEventListener('change', handleFileSelect);
@@ -115,11 +115,12 @@
             try {
                 const pdfData = await readFile(file);
                 const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-                const teachersData = await parsePdfWithCoordinates(pdf);
+                const teachersData = await parsePdfWithGrid(pdf, statusText);
+                statusText.textContent = `Rendering ${teachersData.length} timetables...`;
                 renderTimetables(teachersData);
             } catch (error) {
                 console.error("Error processing PDF:", error);
-                container.innerHTML = `<p class="text-center text-red-500 font-semibold">An error occurred while processing the PDF. It might be corrupted or in an unsupported format. Check the console for details.</p>`;
+                container.innerHTML = `<p class="text-center text-red-500 font-semibold p-4 bg-red-100 rounded-lg">An error occurred while processing the PDF. The document may be in an unsupported format. Check console for details.</p>`;
             } finally {
                 statusDisplay.classList.add('hidden');
             }
@@ -134,77 +135,106 @@
             });
         }
         
-        async function parsePdfWithCoordinates(pdf) {
+       async function parsePdfWithGrid(pdf, statusUpdater) {
             const allTeachers = [];
-            for (let i = 1; i <= pdf.numPages; i++) {
-                const page = await pdf.getPage(i);
+            const timeRegex = /^\d{1,2}:\d{2}$/;
+            const dayAbbr = {"Mo":"Monday", "Tu":"Tuesday", "We":"Wednesday", "Th":"Thursday", "Fr":"Friday"};
+
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                statusUpdater.textContent = `Processing page ${pageNum} of ${pdf.numPages}...`;
+                const page = await pdf.getPage(pageNum);
                 const content = await page.getTextContent();
                 const items = content.items;
 
                 let fullText = items.map(item => item.str).join(' ');
-                const teacherNameMatch = fullText.match(/(?:NAMA GURU|Teacher)[:\s]+(.+?)(?=\s*SMK|Bermula|aSc|\s{4,})/i);
+                const teacherNameMatch = fullText.match(/(?:NAMA GURU|Teacher|Guru)[:\s]+(.+?)(?=\s*SMK|Bermula|aSc Timetables|BIL\.)/i);
                 if (!teacherNameMatch) continue;
 
+                // --- Grid Detection ---
+                const timeItems = items.filter(item => timeRegex.test(item.str.trim()));
+                const timeRowsMap = new Map();
+                timeItems.forEach(item => {
+                    const y = Math.round(item.transform[5]);
+                    if (!timeRowsMap.has(y)) timeRowsMap.set(y, []);
+                    timeRowsMap.get(y).push(item);
+                });
+                
+                if (timeRowsMap.size < 2) continue;
+
+                const sortedTimeRows = Array.from(timeRowsMap.values()).filter(row => row.length > 4).sort((a,b) => b.length - a.length);
+                if (sortedTimeRows.length < 2) continue;
+                
+                const startTimes = sortedTimeRows[0].sort((a,b) => a.transform[4] - b.transform[4]);
+                const endTimes = sortedTimeRows[1].sort((a,b) => a.transform[4] - b.transform[4]);
+                
+                const timeSlots = [];
+                for (let i = 0; i < startTimes.length; i++) {
+                    const st = startTimes[i];
+                    const et = endTimes.find(e => Math.abs(e.transform[4] - st.transform[4]) < 10);
+                    if (et) {
+                        timeSlots.push({
+                            text: `${st.str}-${et.str}`,
+                            x_start: st.transform[4],
+                            x_end: (startTimes[i + 1] ? startTimes[i + 1].transform[4] : 9999)
+                        });
+                    }
+                }
+                if (timeSlots.length === 0) continue;
+
+                const dayRows = [];
+                const allDayItems = items.filter(item => Object.keys(dayAbbr).includes(item.str.trim()));
+                allDayItems.forEach(dayItem => {
+                    // Check if a day with a similar y-coordinate already exists
+                    if (!dayRows.some(d => Math.abs(d.y - dayItem.transform[5]) < 5)) {
+                        dayRows.push({ name: dayAbbr[dayItem.str.trim()], y: dayItem.transform[5], x: dayItem.transform[4] });
+                    }
+                });
+                // Sort days top-to-bottom (PDF Y-coords are from bottom, so higher Y is higher on page)
+                dayRows.sort((a, b) => b.y - a.y);
+                if (dayRows.length === 0) continue;
+
                 const teacher = {
-                    name: teacherNameMatch[1].trim().replace(/\s*BIL\. \d+ \d{4}/, ''),
-                    times: [],
+                    name: teacherNameMatch[1].trim().replace(/aSc Timetables/i, ''),
+                    times: timeSlots.map(t => t.text),
                     schedule: {}
                 };
 
-                // Group items by line (y-coordinate)
-                const lines = new Map();
-                for (const item of items) {
-                    const y = Math.round(item.transform[5]);
-                    if (!lines.has(y)) lines.set(y, []);
-                    lines.get(y).push(item);
+                const otherItems = items.filter(item => {
+                    const str = item.str.trim();
+                    return !timeRegex.test(str) && !Object.keys(dayAbbr).includes(str) && !/NAMA GURU|Teacher|Guru/.test(item.str) && str.length > 0;
+                });
+
+                for (let i = 0; i < dayRows.length; i++) {
+                    const day = dayRows[i];
+                    const dayName = day.name;
+                    const nextDayY = (dayRows[i + 1] ? dayRows[i + 1].y : 0); // Bottom of page for the last day
+                    
+                    const activities = Array(timeSlots.length).fill('');
+                    
+                    const rowItems = otherItems
+                        .filter(item => {
+                            const y = item.transform[5];
+                            const x = item.transform[4];
+                            // Item is vertically within the current day's row and horizontally to the right of the day label
+                            return y <= day.y + 5 && y > nextDayY && x > day.x;
+                        })
+                        .sort((a,b) => a.transform[4] - b.transform[4]); // Sort left to right
+
+                    for (const item of rowItems) {
+                         const x = item.transform[4];
+                         for (let k = 0; k < timeSlots.length; k++) {
+                            if (x >= timeSlots[k].x_start - 5 && x < timeSlots[k].x_end - 5) {
+                                activities[k] += item.str + ' ';
+                                break;
+                            }
+                        }
+                    }
+                    teacher.schedule[dayName] = activities;
                 }
                 
-                // Find time slots and their x-coordinates
-                let timeHeaderLineY = 0;
-                let timeSlots = [];
-                for (const [y, lineItems] of lines.entries()) {
-                    const timeRegex = /^\d{1,2}:\d{2}$/;
-                    const potentialTimes = lineItems.filter(item => timeRegex.test(item.str));
-                    if (potentialTimes.length > 5) { // A reasonable number of time headers on one line
-                         const sortedTimes = potentialTimes.sort((a, b) => a.transform[4] - b.transform[4]);
-                         // Pair them up: 07:00-07:15, 07:15-07:45 etc.
-                         for(let j = 0; j < sortedTimes.length -1; j++) {
-                             timeSlots.push({
-                                 text: `${sortedTimes[j].str}-${sortedTimes[j+1].str}`,
-                                 x_start: sortedTimes[j].transform[4],
-                                 x_end: sortedTimes[j+1].transform[4]
-                             });
-                         }
-                         teacher.times = timeSlots.map(t => t.text);
-                         break;
-                    }
+                if (Object.keys(teacher.schedule).length > 0) {
+                    allTeachers.push(teacher);
                 }
-                 if(timeSlots.length === 0) continue; // Skip page if no valid time headers
-
-                // Find day rows and parse activities
-                for (const [y, lineItems] of lines.entries()) {
-                    const dayItem = lineItems.find(item => DAY_ABBREVIATIONS[item.str.trim()]);
-                    if (dayItem) {
-                        const dayName = DAY_ABBREVIATIONS[dayItem.str.trim()];
-                        const dayActivities = Array(timeSlots.length).fill('');
-                        
-                        // Find all items on the same row as the day label
-                        const activityItems = lineItems.filter(item => !DAY_ABBREVIATIONS[item.str.trim()]);
-                        
-                        for (const item of activityItems) {
-                             const x = item.transform[4];
-                             // Find which timeslot this item belongs to
-                             for(let k = 0; k < timeSlots.length; k++) {
-                                 if (x >= timeSlots[k].x_start -5 && x < timeSlots[k].x_end - 5) {
-                                     dayActivities[k] += item.str + ' ';
-                                     break;
-                                 }
-                             }
-                        }
-                        teacher.schedule[dayName] = dayActivities.map(act => act.trim());
-                    }
-                }
-                allTeachers.push(teacher);
             }
             return allTeachers;
         }
@@ -214,25 +244,39 @@
             const result = { subject: '', venue: '' };
             if (!content || typeof content !== 'string') return result;
 
-            if (/\b(PN|EN|CIK|MISS|MR|UST|USTAZ|NAMA GURU|T[1-5])\b/i.test(content)) return result;
+            let upperContent = content.trim().toUpperCase();
 
-            let upperContent = content.toUpperCase();
-            
+            // Filter out names and titles if they are the only thing in the cell
+            if (/(?:PN|EN|CIK|MISS|MR|UST|USTAZAH|USTAZ|GURU)\b/i.test(content) && content.split(/\s+/).length < 5) {
+                 const hasSubject = [...VALID_SUBJECTS, ...VALID_VENUES].some(s => upperContent.includes(s));
+                 if (!hasSubject) return result;
+            }
+
+            let foundVenue = '';
             VALID_VENUES.forEach(v => {
-                let searchVenue = v.replace(/\./g, '\\.');
-                if (upperContent.includes(searchVenue)) {
-                    result.venue = v;
-                    upperContent = upperContent.replace(searchVenue, '');
+                if (upperContent.includes(v)) {
+                    foundVenue = v;
                 }
             });
-
-            VALID_SUBJECTS.forEach(s => {
-                if (new RegExp(`\\b${s}\\b`).test(upperContent)) {
-                    if (!result.subject || s.length > result.subject.length) {
-                        result.subject = s; // Prefer longer match if multiple e.g., "P" vs "PJ"
+            if (foundVenue) {
+                result.venue = foundVenue;
+                upperContent = upperContent.replace(new RegExp(foundVenue, 'g'), '');
+            }
+            
+            // Handle multi-word subjects first
+            if (upperContent.includes("NA INSAN")) {
+                result.subject = 'na Insan';
+            } else {
+                 let foundSubject = '';
+                 VALID_SUBJECTS.forEach(s => {
+                    if (new RegExp(`\\b${s}\\b`).test(upperContent)) {
+                        if (s.length > foundSubject.length) {
+                            foundSubject = s;
+                        }
                     }
-                }
-            });
+                });
+                result.subject = foundSubject;
+            }
             
             if (upperContent.includes('REHAT')) {
                 result.subject = 'REHAT';
@@ -245,7 +289,7 @@
         function renderTimetables(teachersData) {
             container.innerHTML = '';
             if (!teachersData || teachersData.length === 0) {
-                container.innerHTML = `<p class="text-center text-red-500">Could not find any valid timetables in the PDF. The document structure might be different than expected.</p>`;
+                container.innerHTML = `<p class="text-center text-red-500 font-semibold p-4 bg-red-100 rounded-lg">Could not find any valid timetables in the PDF. Please ensure it's the correct 'Jadual Nama' file and try again.</p>`;
                 return;
             }
 
@@ -269,7 +313,7 @@
                             </thead>
                             <tbody class="bg-white">`;
 
-                Object.values(DAY_ABBREVIATIONS).forEach(day => {
+                DAYS_OF_WEEK.forEach(day => {
                     const activities = teacher.schedule[day] || Array(teacher.times.length).fill('');
                     tableHTML += `<tr class="border-t border-gray-200">`;
                     tableHTML += `<td class="sticky-col day-cell font-semibold p-3 text-gray-800">${day}</td>`;
@@ -278,7 +322,7 @@
                         const activity = activities[i] || '';
                         const { subject, venue } = parseCellContent(activity);
                         let cellContent = '';
-                        let cellClass = 'h-16';
+                        let cellClass = 'h-20'; // Increased height for better readability
 
                         if (subject) {
                             cellContent = `<div class="font-semibold">${subject}</div>`;
