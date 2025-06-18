@@ -1,257 +1,300 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Teacher Timetables</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Timetable Extractor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- PDF.js Library -->
+    <script src="https://mozilla.github.io/pdf.js/build/pdf.mjs" type="module"></script>
 
-<style>
-  /* ---- basic look --------------------------------------------------- */
-  body      { font-family: Arial, Helvetica, sans-serif; margin: 0; background-color: #f4f7f6; }
-  section   {
-    padding: 20px;
-    page-break-after: always;
-    background-color: #ffffff;
-    margin: 20px auto;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    max-width: 90%; /* Responsive width */
-    overflow-x: auto; /* Enable horizontal scrolling for tables on small screens */
-  }
-  h2        {
-    margin: 0 0 20px; /* Increased margin for better spacing */
-    font-size: 1.5rem; /* Larger font size for headers */
-    color: #333;
-    text-align: center;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 10px;
-  }
-
-  table     {
-    border-collapse: collapse;
-    width: 100%;
-    min-width: 700px; /* Ensure table is wide enough for content */
-  }
-  th, td    {
-    border: 1px solid #c9d6df; /* Softer border color */
-    padding: 8px 12px; /* Increased padding */
-    font-size: 0.85rem; /* Slightly larger font size for readability */
-    text-align: center;
-    word-wrap: break-word; /* Ensure long words break */
-    white-space: normal; /* Allow text to wrap */
-  }
-  th        {
-    background: #dbe9f6; /* Lighter blue header */
-    color: #3f51b5; /* Darker blue text */
-    font-weight: 700;
-    position: sticky;
-    top: 0;
-    z-index: 10; /* Keep headers visible on scroll */
-  }
-  td        {
-    background: #eef5f9; /* Light yellow background */
-    color: #4a4a4a;
-  }
-  td.day    {
-    background: #b0d9f4; /* More prominent day column */
-    font-weight: 600;
-    width: 120px; /* Fixed width for day column */
-    text-align: left;
-    color: #1a237e; /* Dark blue for day names */
-    position: sticky;
-    left: 0;
-    z-index: 5; /* Keep day column visible on horizontal scroll */
-  }
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    section {
-      padding: 15px;
-      margin: 15px auto;
-      max-width: 95%;
-    }
-    h2 {
-      font-size: 1.3rem;
-      margin-bottom: 15px;
-    }
-    th, td {
-      padding: 6px 8px;
-      font-size: 0.8rem;
-    }
-    td.day {
-      min-width: 90px; /* Adjust day column width for mobile */
-    }
-  }
-
-  @media print {
-    body { margin: 0; }
-    section {
-      box-shadow: none;
-      border: 1px solid #ccc;
-      page-break-after: always; /* Ensure each teacher on a new page */
-    }
-  }
-</style>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .sticky-col {
+            position: -webkit-sticky;
+            position: sticky;
+            left: 0;
+            background-color: white;
+            z-index: 10;
+        }
+        .sticky-header th {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+        #loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gray-100 text-gray-800">
 
-<div id="root" style="padding:20px; text-align: center;">Loading timetable …</div>
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">PDF Timetable Extractor</h1>
+            <p class="text-lg text-gray-600 mt-2">Upload your 'Jadual Nama' PDF to automatically extract and display timetables.</p>
+        </header>
 
-<script>
-/* ─────────────────────────── constants ─────────────────────────────── */
-const FULL  = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
-const ABBR  = ["Mo","Tu","We","Th","Fr"];
+        <!-- File Upload Section -->
+        <div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-md mb-12">
+            <h2 class="text-xl font-semibold mb-4 text-center">Upload Timetable PDF</h2>
+            <div class="flex items-center justify-center w-full">
+                <label for="pdf-upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/></svg>
+                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                        <p class="text-xs text-gray-500">PDF file only</p>
+                    </div>
+                    <input id="pdf-upload" type="file" class="hidden" accept="application/pdf" />
+                </label>
+            </div>
+             <p id="file-name" class="text-center text-sm text-gray-500 mt-2"></p>
+        </div>
 
-// Hardcoded BLOCKS with desired display time ranges for headers
-const BLOCKS_DISPLAY = [
-  "07:15-07:45","07:45-08:15","08:15-08:45","08:45-09:15",
-  "09:15-09:45","09:45-10:00", // Break/Transition
-  "09:45-10:15","10:00-10:30","10:15-10:30", // Break/Transition
-  "10:30-11:00","11:00-11:30","11:30-12:00","12:00-12:30",
-  "12:30-13:00","13:00-13:30","13:30-14:00","14:00-14:30",
-  "14:30-15:00","15:00-15:30"
-];
+        <!-- Status/Loader -->
+        <div id="status" class="text-center my-8 hidden">
+             <div id="loader" class="mx-auto"></div>
+             <p class="mt-4 text-gray-600">Processing PDF... This may take a moment.</p>
+        </div>
+       
+        <!-- Results Container -->
+        <div id="timetables-container" class="space-y-12">
+             <!-- Timetables will be dynamically inserted here -->
+        </div>
 
-/* ─────────────────── fetch + main render entry point ───────────────── */
-// Fetch the JSON data from the specified file
-fetch('teacher_schedules.json') // Fetch the combined JSON
-  .then(r => {
-    if (!r.ok) {
-      throw new Error(`HTTP error! status: ${r.status}`);
-    }
-    return r.json();
-  })
-  .then(data => {
-    // We don't directly use data.time_blocks for header display anymore,
-    // but it's useful to understand the actual keys present in the JSON.
-    // data.time_blocks contains the exact keys like "07:00", "07:15", etc.
-    renderAll(data.teachers);
-  })
-  .catch(err => {
-    // Display error message if fetching or parsing fails
-    const root = document.getElementById('root');
-    root.innerHTML = `<div style="color: red; font-weight: bold; padding: 20px;">
-                        ⚠ Error loading timetable: ${err.message}.<br>
-                        Please ensure 'teacher_schedules.json' exists and is a valid JSON.
-                      </div>`;
-    console.error("Error loading timetable:", err);
-  });
+        <footer class="text-center mt-12 text-sm text-gray-500">
+            <p>Developed to automate timetable extraction.</p>
+        </footer>
+    </div>
 
-function renderAll(teachersDb){ // Renamed db to teachersDb for clarity
-  const root = document.getElementById('root');
-  root.innerHTML = ''; // Clear the loading message
+    <script type="module">
+        import * as pdfjsLib from "https://mozilla.github.io/pdf.js/build/pdf.mjs";
 
-  // Iterate over each teacher entry in the JSON database
-  Object.entries(teachersDb).forEach(([name, teacherObj])=>{
-      const sec = document.createElement('section');
-      // Create a header for the teacher's name
-      sec.innerHTML = `<h2>NAMA GURU: ${name}</h2>`;
-      // Build and append the timetable table for the current teacher
-      sec.appendChild(buildTable(teacherObj));
-      root.appendChild(sec);
-  });
-}
+        // --- Configuration ---
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://mozilla.github.io/pdf.js/build/pdf.worker.mjs";
+        
+        const VALID_SUBJECTS = ["PH", "KOKO", "P", "IV", "MM", "PNG", "PI", "LET", "PM", "BC", "FIZ", "KKQ", "RB", "GE", "NILAM", "ASK", "IB", "PLC", "SN", "DBM", "KIM", "PD", "RBT", "TAW", "PPS", "BI", "MMT", "D", "na Insan", "BA", "SJ", "PJ", "REHAT"];
+        const VALID_VENUES = ["M.KOM 1", "M.KOM 2", "M3", "MAK.BIO", "MAK.KIM", "M2", "BENGKEL E", "B. LUKISAN", "B. DIGITAL", "BENGKEL. P", "B.NILAM", "PAK 21 A", "BENGKEL R"];
+        const DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+        const DAY_ABBREVIATIONS = { "Mo": "Monday", "Tu": "Tuesday", "We": "Wednesday", "Th": "Thursday", "Fr": "Friday" };
 
-/* ───────────────── schema-agnostic table builder ───────────────────── */
-function buildTable(t){
-  /*
-  Recognise which layout this teacher uses based on the structure of their data.
-  The current JSON uses the 'abbr' (abbreviated day names like Mo, Tu) schema.
-  */
-  const hasAbbr = ABBR.some(k => k in t); // Check if any abbreviated day is a top-level key
+        const fileInput = document.getElementById('pdf-upload');
+        const fileNameDisplay = document.getElementById('file-name');
+        const statusDisplay = document.getElementById('status');
+        const container = document.getElementById('timetables-container');
 
-  let tbl;
-  if (hasAbbr) {
-    tbl = fromAbbr(t); // Use the function designed for abbreviated day names
-  } else {
-    // Fallback for unknown schema, providing an error message
-    tbl = document.createElement('div');
-    tbl.textContent = '⚠ Unrecognised data format for this teacher.';
-    tbl.style.color = 'orange';
-    tbl.style.fontWeight = 'bold';
-    tbl.style.textAlign = 'center';
-    tbl.style.padding = '20px';
-  }
-  return tbl;
-}
+        fileInput.addEventListener('change', handleFileSelect);
 
-/* ---------- helpers for the recognised schemas ---------------- */
-function headerRow(tbl, blocksToDisplay){
-  const h = tbl.insertRow();
-  // First header cell for 'Day'
-  h.insertCell().outerHTML = '<th>Day</th>';
-  // Create header cells for each time block to display with the desired range format
-  blocksToDisplay.forEach(b => {
-    h.insertCell().outerHTML = `<th>${b.replace('-', ' - ')}</th>`; 
-  });
-}
+        async function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file || file.type !== 'application/pdf') {
+                alert("Please select a PDF file.");
+                return;
+            }
 
-function fromAbbr(teacher){
-  const tbl = document.createElement('table');
-  // Pass the hardcoded BLOCKS_DISPLAY (time ranges) to headerRow for header presentation
-  headerRow(tbl, BLOCKS_DISPLAY);
+            fileNameDisplay.textContent = `File: ${file.name}`;
+            statusDisplay.classList.remove('hidden');
+            container.innerHTML = '';
 
-  FULL.forEach((dayName, dIdx) => {
-      const tr = tbl.insertRow();
-      // Add the day name cell
-      tr.insertCell().outerHTML = `<td class="day">${dayName}</td>`;
-      
-      // Get the data for the current day (e.g., teacher['Mo'])
-      const dayData = teacher[ABBR[dIdx]] || {};
-      
-      // Iterate through each display block (time range)
-      BLOCKS_DISPLAY.forEach(blockRange => {
-          // Extract the start time from the block range, e.g., "07:15" from "07:15-07:45"
-          // This extracted start time is the key used in the JSON.
-          let startTimeKey = blockRange.split('-')[0];
-          
-          // Retrieve the cell content using the exact startTimeKey
-          const cellText = dayData[startTimeKey];
-          
-          const td  = tr.insertCell();
-          // If content exists for this slot, display it. Otherwise, leave cell empty.
-          if (cellText) {
-              td.textContent = cellText;
-          }
-      });
-  });
-  return tbl;
-}
+            try {
+                const pdfData = await readFile(file);
+                const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+                const fullText = await extractTextFromPdf(pdf);
+                const teachersData = parseTimetablesFromText(fullText);
+                renderTimetables(teachersData);
+            } catch (error) {
+                console.error("Error processing PDF:", error);
+                alert("Could not process the PDF. It might be corrupted or in an unsupported format.");
+            } finally {
+                statusDisplay.classList.add('hidden');
+            }
+        }
 
-// fromDays and fromRows functions are kept for schema compatibility,
-// although the current JSON only uses the 'fromAbbr' schema.
-function fromDays(blocks, days){
-  const tbl = document.createElement('table');
-  headerRow(tbl, blocks);
+        function readFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(new Uint8Array(e.target.result));
+                reader.onerror = e => reject(new Error("File could not be read: " + e.target.error.code));
+                reader.readAsArrayBuffer(file);
+            });
+        }
 
-  FULL.forEach(dayName => {
-      const tr = tbl.insertRow();
-      tr.insertCell().outerHTML = `<td class="day">${dayName}</td>`;
-      (days[dayName] || []).forEach(cell=>{
-          const td = tr.insertCell();
-          if (cell) td.textContent = cell;
-      });
-  });
-  return tbl;
-}
+        async function extractTextFromPdf(pdf) {
+            let text = "";
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                const strings = content.items.map(item => item.str);
+                text += strings.join(' ') + '\n\n';
+            }
+            return text;
+        }
 
-function fromRows(blocks, rows, titles){
-  const tbl = document.createElement('table');
-  headerRow(tbl, blocks);
+        function parseTimetablesFromText(text) {
+            const teacherSections = text.split(/JADUAL WAKTU SESI PAGI/);
+            const teachersData = [];
 
-  // If there are exactly 5 physical rows, assume Mon-Fri order.
-  const label = rows.length === 5 ? FULL : titles;
+            teacherSections.forEach(section => {
+                if (!section.trim()) return;
 
-  rows.forEach((row, idx) => {
-      const tr = tbl.insertRow();
-      tr.insertCell().outerHTML =
-          `<td class="day">${label[idx] || 'Row '+(idx+1)}</td>`;
-      row.forEach(c=>{
-          const td = tr.insertCell();
-          if (c) td.textContent = c;
-      });
-  });
-  return tbl;
-}
-</script>
+                const teacherNameMatch = section.match(/(?:NAMA GURU|Teacher)[:\s]+(.+?)(?=\s*SMK|Bermula|aSc)/i);
+                if (!teacherNameMatch) return;
+
+                const teacherName = teacherNameMatch[1].trim().replace(/\s*BIL\. \d+ \d{4}/, '');
+                
+                // This is a simplified extraction logic. The PDF structure is complex.
+                // A more robust solution might need to analyze item positions (x, y coordinates).
+                // For now, we use regex and string splitting based on observed patterns.
+                const schedule = {};
+                const lines = section.split('\n');
+                let currentTimeSlots = [];
+
+                // Simple time slot extraction (takes the first reasonable-looking set)
+                 const timeLine = lines.find(line => /\d{1,2}:\d{2}/.test(line) && line.split(/\s+/).length > 5);
+                 if (timeLine) {
+                    // This regex finds time pairs like "7:00 7:15"
+                    const timeMatches = [...timeLine.matchAll(/(\d{1,2}:\d{2})\s*(\d{1,2}:\d{2})/g)];
+                    currentTimeSlots = timeMatches.map(m => `${m[1]}-${m[2]}`);
+                 }
+                 if(currentTimeSlots.length < 5) { // Fallback for less structured time lines
+                    currentTimeSlots = ["07:15-08:15", "08:15-09:15", "09:15-10:15", "10:15-11:15", "11:15-12:15", "12:15-13:00"];
+                 }
+
+
+                Object.keys(DAY_ABBREVIATIONS).forEach(abbr => {
+                    const dayRegex = new RegExp(`^\\s*${abbr}\\b`, 'm');
+                    const dayLineIndex = lines.findIndex(line => dayRegex.test(line));
+
+                    if (dayLineIndex > -1) {
+                        // Assumption: The subjects are on the same line or subsequent lines.
+                        // This part is highly complex due to the PDF's formatting.
+                        // The text extraction merges columns, making it hard to align subjects to times.
+                        // This is a best-effort attempt.
+                        let dayActivitiesText = lines[dayLineIndex];
+                        // Also check next line as content often spills over
+                        if (lines[dayLineIndex + 1] && !/^(Mo|Tu|We|Th|Fr)/.test(lines[dayLineIndex + 1])) {
+                           dayActivitiesText += " " + lines[dayLineIndex + 1];
+                        }
+
+                        // Split activities by looking for multiple spaces, a common delimiter in the extracted text
+                        const activities = dayActivitiesText.replace(abbr, '').trim().split(/\s{2,}/);
+                        schedule[DAY_ABBREVIATIONS[abbr]] = activities.slice(0, currentTimeSlots.length);
+                    } else {
+                        schedule[DAY_ABBREVIATIONS[abbr]] = Array(currentTimeSlots.length).fill('');
+                    }
+                });
+
+                teachersData.push({
+                    teacher: teacherName,
+                    times: currentTimeSlots,
+                    schedule: schedule
+                });
+            });
+
+            return teachersData;
+        }
+
+        function parseCellContent(content) {
+            const result = { subject: '', venue: '' };
+            if (!content || typeof content !== 'string') return result;
+
+            if (/\b(PN|EN|CIK|MISS|MR|UST|USTAZ|NAMA GURU)\b/i.test(content)) return result;
+
+            let upperContent = content.toUpperCase();
+            
+            VALID_VENUES.forEach(v => {
+                let searchVenue = v.replace(/\./g, '\\.');
+                if (upperContent.includes(searchVenue)) {
+                    result.venue = v;
+                    upperContent = upperContent.replace(searchVenue, ''); // Remove venue to avoid re-matching
+                }
+            });
+
+            VALID_SUBJECTS.forEach(s => {
+                if (new RegExp(`\\b${s}\\b`).test(upperContent)) {
+                    result.subject = s;
+                }
+            });
+            
+            if (upperContent.includes('REHAT')) {
+                result.subject = 'REHAT';
+                result.venue = '';
+            }
+
+            return result;
+        }
+
+        function renderTimetables(teachersData) {
+            container.innerHTML = '';
+            if (teachersData.length === 0) {
+                container.innerHTML = `<p class="text-center text-red-500">Could not find any valid timetables in the PDF. The document structure might be different than expected.</p>`;
+                return;
+            }
+
+            teachersData.forEach(teacher => {
+                if (!teacher.teacher) return;
+                const teacherCard = document.createElement('div');
+                teacherCard.className = 'bg-white rounded-xl shadow-md overflow-hidden';
+
+                let tableHTML = `
+                    <div class="p-4 sm:p-6 border-b border-gray-200">
+                        <h2 class="text-xl sm:text-2xl font-bold text-indigo-700">${teacher.teacher}</h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-left">
+                            <thead class="bg-gray-100 sticky-header">
+                                <tr>
+                                    <th class="sticky-col font-semibold p-3 text-gray-700 w-28">Day</th>
+                                    ${teacher.times.map(time => `<th class="font-semibold p-3 text-gray-700 text-center min-w-[120px]">${time}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white">`;
+
+                DAYS_OF_WEEK.forEach(day => {
+                    const activities = teacher.schedule[day] || Array(teacher.times.length).fill('');
+                    tableHTML += `<tr class="border-t border-gray-200">`;
+                    tableHTML += `<td class="sticky-col font-semibold p-3 text-gray-800 bg-gray-50">${day}</td>`;
+                    
+                    for(let i = 0; i < teacher.times.length; i++) {
+                        const activity = activities[i] || '';
+                        const { subject, venue } = parseCellContent(activity);
+                        let cellContent = '';
+                        let cellClass = 'h-16';
+
+                        if (subject) {
+                            cellContent = `<div class="font-semibold">${subject}</div>`;
+                            if (venue) {
+                                cellContent += `<div class="text-xs text-slate-600 mt-1">(${venue})</div>`;
+                            }
+                        }
+
+                        if(subject && subject !== 'REHAT') cellClass += ' bg-indigo-50 text-indigo-800';
+                        else if (subject === 'REHAT') cellClass += ' bg-green-50 text-green-700';
+                        
+                        tableHTML += `<td class="p-3 border-l border-gray-200 text-center ${cellClass}">${cellContent}</td>`;
+                    }
+                    tableHTML += `</tr>`;
+                });
+
+                tableHTML += `</tbody></table></div>`;
+                teacherCard.innerHTML = tableHTML;
+                container.appendChild(teacherCard);
+            });
+        }
+    </script>
+
 </body>
 </html>
