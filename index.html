@@ -2,165 +2,101 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Teacher Timetables</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teacher Timetables</title>
+
 <style>
-body{font-family:Arial, sans-serif;margin:0;display:flex;flex-direction:column;min-height:100vh}
-header{background:#f4f6ff;padding:12px 20px;border-bottom:1px solid #c3cae0}
-input[type=file]{display:none}
-label.btn{background:#2d6cdf;color:#fff;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:14px}
-#status{font-size:14px;margin-left:12px;color:#666}
-#root{flex:1}
-section{padding:20px;page-break-after:always}
-h2{margin:0 0 10px; font-size:16px}
-table{border-collapse:collapse;width:100%}
-th,td{border:1px solid #ccc;padding:4px 6px;text-align:center;font-size:12px}
-th{background:#d7dde8}
-td{background:#fffbe8}
-td.day{background:#d9f0ff;font-weight:600;width:120px;text-align:left}
-@media print{header{display:none}body{margin:0}}
+  body{font-family:Arial,Helvetica,sans-serif;margin:0}
+  section{padding:20px;page-break-after:always}
+  h2{margin:0 0 12px;font-size:16px}
+
+  table{border-collapse:collapse;width:100%}
+  th,td{border:1px solid #ccc;padding:4px 6px;text-align:center;font-size:12px}
+  th{background:#d7dde8}              /* header cells */
+  td{background:#fffbe8}              /* normal cells */
+  td.day{background:#d9f0ff;font-weight:600;width:120px;text-align:left}
+  @media print{body{margin:0}}
 </style>
 </head>
 <body>
 
-<header>
-  <label class="btn">
-     Choose PDF & Update
-     <input id="picker" type="file" accept="application/pdf">
-  </label>
-  <span id="status">No file loaded</span>
-</header>
-
-<div id="root"><p style="padding:20px">Load a timetable PDF to begin…</p></div>
-
-<!-- pdf.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
-<script>pdfjsLib.GlobalWorkerOptions.workerSrc =
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.worker.min.js'</script>
+<div id="root" style="padding:20px">Loading timetable…</div>
 
 <script>
-/* 20 half-hour blocks (must match the extractor) */
-const BLOCKS=[
- "07:15-07:45","07:45-08:15","08:15-08:45","08:45-09:15",
- "09:15-09:45","09:45-10:00",
- "09:45-10:15","10:00-10:30","10:15-10:30",
- "10:30-11:00","11:00-11:30","11:30-12:00","12:00-12:30",
- "12:30-13:00","13:00-13:30","13:30-14:00","14:00-14:30",
- "14:30-15:00","15:00-15:30"
-];
-const DAY_FULL=["Monday","Tuesday","Wednesday","Thursday","Friday"];
+/* ─── constants ───────────────────────────────────────────────────────── */
+const FULL   = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
+const ABBR   = ["Mo","Tu","We","Th","Fr"];
+const BLOCKS = [
+  "07:15-07:45","07:45-08:15","08:15-08:45","08:45-09:15",
+  "09:15-09:45","09:45-10:00",
+  "09:45-10:15","10:00-10:30","10:15-10:30",
+  "10:30-11:00","11:00-11:30","11:30-12:00","12:00-12:30",
+  "12:30-13:00","13:30-14:00","14:00-14:30",
+  "14:30-15:00","15:00-15:30"
+]; /* ↑ you can edit if your school day changes */
 
-const $=sel=>document.querySelector(sel);
-$('#picker').addEventListener('change', e=>{
-   const f=e.target.files[0];
-   if(!f) return;
-   $('#status').textContent='Parsing …';
-   loadPDF(f).then(renderAll)
-             .then(cnt=>$('#status').textContent=`Loaded “${f.name}” – ${cnt} teachers`)
-             .catch(err=>{$('#status').textContent='⚠ '+err.message});
-});
+/* ─── fetch + render ──────────────────────────────────────────────────── */
+fetch('teacher_schedules.json')
+  .then(r => r.json())
+  .then(renderAll)
+  .catch(e => document.getElementById('root')
+           .textContent = '⚠️  '+e.message);
 
-/* --- quick & safe: rely on the Python-made JSON if present ------------ */
-async function fetchPrebuilt(){
-  try{
-    const r = await fetch('teacher_schedules.json');
-    if(!r.ok) throw new Error();
-    return await r.json();
-  }catch{ return null }
-}
-fetchPrebuilt().then(db=>{
-  if(db){ renderAll(db); $('#status').textContent='Using pre-built JSON'; }
-});
-
-/* --- optional live PDF parsing (same logic as the Python v2 script) ---- */
-async function loadPDF(file){
-  const arr = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({data:arr}).promise;
-  const db = {};
-  for(let p=1; p<=pdf.numPages; p++){
-     const pg  = await pdf.getPage(p);
-     const txt = (await pg.getTextContent({normalizeWhitespace:true}))
-                  .items.map(i=>i.str).join('\n');
-     const m   = /NAMA GURU\s*:\s*(.+)/i.exec(txt);
-     if(!m) continue;
-     const name = m[1].trim();
-     // run the SAME heuristics as the Python version, but in JS:
-     // 1) build a mini-table with pdf.js text positions
-     const table = await buildTable(pg);
-     const days  = sliceByDay(table);
-     db[name] = {blocks:BLOCKS, days};
-  }
-  if(Object.keys(db).length===0) throw new Error('No timetable found');
-  return db;
-}
-
-/* crude grid builder: groups text by (rounded) y & x coordinates */
-async function buildTable(page){
-  const raw = await page.getTextContent({normalizeWhitespace:true});
-  const cells = raw.items.map(i=>({
-      txt:i.str.trim(), x:Math.round(i.transform[4]), y:Math.round(i.transform[5])
-  })).filter(c=>c.txt);
-  /* group by rows */
-  const rowsMap = {};
-  cells.forEach(c=>{
-     const y = c.y;
-     const xs = rowsMap[y] = rowsMap[y]||[];
-     xs.push(c);
-  });
-  const ys = Object.keys(rowsMap).map(Number).sort((a,b)=>b-a); // PDF y: top big → small
-  const table = ys.map(y=>{
-     const row = Array(15).fill("");             // 15 visible columns
-     rowsMap[y].forEach(c=>{
-        const col = Math.min(14, Math.round( (c.x-30)/50 )); // coarse 50-px grid
-        row[col] = (row[col] ? row[col]+" " : "") + c.txt;
-     });
-     return row;
-  });
-  return table;
-}
-
-/* pull Monday–Friday rows out of the physical grid */
-function sliceByDay(tbl){
-  const result={}, abbr=['Mo','Tu','We','Th','Fr'];
-  abbr.forEach((a,i)=>{
-     const idx = tbl.findIndex(r=> (r[0]||r[1]||'').trim()===a);
-     const next = tbl.slice(idx+1).findIndex(r=>abbr.includes((r[0]||r[1]||'').trim()));
-     const chunk = tbl.slice(idx+1, next<0?undefined:idx+1+next);
-     /* merge the chunk column-wise */
-     const merged = Array(20).fill("");
-     chunk.forEach(r=>{
-        for(let c=2;c<r.length;c++){
-           if(r[c] && !merged[c-2]) merged[c-2]=r[c].replace(/\s+/g,' ').trim();
-        }
-     });
-     result[DAY_FULL[i]]=merged;
-  });
-  return result;
-}
-
-/* ------ render -------------------------------------------------------- */
 function renderAll(db){
-  const root=$('#root'); root.innerHTML='';
-  Object.entries(db).forEach(([name,obj])=>{
-     const sec=document.createElement('section');
-     sec.appendChild(Object.assign(document.createElement('h2'),{textContent:'NAMA GURU: '+name}));
-     sec.appendChild(buildTable(obj));
-     root.appendChild(sec);
+  const root = document.getElementById('root');
+  root.innerHTML = '';                              // wipe “Loading…”
+
+  Object.entries(db).forEach(([name, obj])=>{
+      const section = document.createElement('section');
+      section.innerHTML = `<h2>NAMA GURU: ${name}</h2>`;
+      section.appendChild(buildTable(obj));
+      root.appendChild(section);
   });
-  return Object.keys(db).length;
 }
-function buildTable({blocks,days}){
-  const t=document.createElement('table');
-  const hr=t.insertRow(); hr.insertCell().outerHTML='<th>Day</th>';
-  blocks.forEach(b=>hr.insertCell().outerHTML='<th>'+b.replace('-',' - ')+'</th>');
-  DAY_FULL.forEach(d=>{
-     const tr=t.insertRow();
-     tr.insertCell().outerHTML='<td class="day">'+d+'</td>';
-     (days[d]||[]).forEach(val=>{
-        const td=tr.insertCell(); if(val) td.textContent=val;
-     });
+
+/* ─── universal table builder (handles both JSON schemas) ────────────── */
+function buildTable(teacher){
+
+  // decide which schema we have
+  const isNew = ABBR.some(k => Object.prototype.hasOwnProperty.call(teacher,k));
+
+  // build a helper that returns the subject(s) for [day,block]
+  let cellContent;
+  if(isNew){   // NEW: teacher.Mo["07:15-07:45"] -> ["4SN2"]
+      cellContent = (dayIdx, block) => {
+          const arr = (teacher[ABBR[dayIdx]] || {})[block] || [];
+          return arr.join(', ');
+      };
+  }else{       // OLD: teacher.days["Monday"][index]
+      cellContent = (dayIdx, blockIdx) => {
+          const arr = (teacher.days[FULL[dayIdx]] || []);
+          return arr[blockIdx] || '';
+      };
+  }
+
+  /* build DOM table */
+  const tbl = document.createElement('table');
+
+  // header row
+  const head = tbl.insertRow();
+  head.insertCell().outerHTML = '<th>Day</th>';
+  BLOCKS.forEach(b => head.insertCell().outerHTML =
+      `<th>${b.replace('-',' - ')}</th>`);
+
+  // body rows
+  FULL.forEach((dayName, dIdx)=>{
+      const tr = tbl.insertRow();
+      tr.insertCell().outerHTML = `<td class="day">${dayName}</td>`;
+
+      BLOCKS.forEach((block,bIdx)=>{
+          const td = tr.insertCell();
+          const text = isNew ? cellContent(dIdx, block)
+                             : cellContent(dIdx, bIdx);
+          if(text) td.textContent = text;
+      });
   });
-  return t;
+
+  return tbl;
 }
 </script>
 </body>
