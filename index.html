@@ -39,6 +39,7 @@
     text-align: center;
     word-wrap: break-word; /* Ensure long words break */
     white-space: normal; /* Allow text to wrap */
+    vertical-align: top; /* Align content to the top of the cell */
   }
   th        {
     background: #dbe9f6; /* Lighter blue header */
@@ -61,6 +62,11 @@
     position: sticky;
     left: 0;
     z-index: 5; /* Keep day column visible on horizontal scroll */
+  }
+  .rehat-cell { /* Added for styling REHAT cells */
+      background-color: #e6ffed !important; /* Light green, !important to override default td bg */
+      color: #28a745 !important;
+      font-weight: bold;
   }
   /* Responsive adjustments */
   @media (max-width: 768px) {
@@ -102,18 +108,18 @@ const FULL  = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
 const ABBR  = ["Mo","Tu","We","Th","Fr"];
 
 // Hardcoded BLOCKS with desired display time ranges for headers
+// These keys MUST match the keys used in your teacher_schedules.json
 const BLOCKS_DISPLAY = [
   "07:15-07:45","07:45-08:15","08:15-08:45","08:45-09:15",
-  "09:15-09:45","09:45-10:00", // Break/Transition
-  "09:45-10:15","10:00-10:30","10:15-10:30", // Break/Transition
+  "09:15-09:45","09:45-10:00",
+  "09:45-10:15","10:00-10:30","10:15-10:30",
   "10:30-11:00","11:00-11:30","11:30-12:00","12:00-12:30",
   "12:30-13:00","13:00-13:30","13:30-14:00","14:00-14:30",
   "14:30-15:00","15:00-15:30"
 ];
 
 /* ─────────────────── fetch + main render entry point ───────────────── */
-// Fetch the JSON data from the specified file
-fetch('teacher_schedules.json') // Fetch the combined JSON
+fetch('teacher_schedules.json')
   .then(r => {
     if (!r.ok) {
       throw new Error(`HTTP error! status: ${r.status}`);
@@ -121,13 +127,12 @@ fetch('teacher_schedules.json') // Fetch the combined JSON
     return r.json();
   })
   .then(data => {
-    // We don't directly use data.time_blocks for header display anymore,
-    // but it's useful to understand the actual keys present in the JSON.
-    // data.time_blocks contains the exact keys like "07:00", "07:15", etc.
-    renderAll(data.teachers);
+    // Assuming 'data' is the root object from JSON_01.txt, which contains teacher names as keys.
+    // If your teacher_schedules.json has a structure like { "teachers": { ... } },
+    // you'd use data.teachers here. Based on JSON_01.txt, 'data' itself is the teachersDb.
+    renderAll(data);
   })
   .catch(err => {
-    // Display error message if fetching or parsing fails
     const root = document.getElementById('root');
     root.innerHTML = `<div style="color: red; font-weight: bold; padding: 20px;">
                         ⚠ Error loading timetable: ${err.message}.<br>
@@ -136,34 +141,24 @@ fetch('teacher_schedules.json') // Fetch the combined JSON
     console.error("Error loading timetable:", err);
   });
 
-function renderAll(teachersDb){ // Renamed db to teachersDb for clarity
+function renderAll(teachersDb){
   const root = document.getElementById('root');
-  root.innerHTML = ''; // Clear the loading message
+  root.innerHTML = ''; 
 
-  // Iterate over each teacher entry in the JSON database
   Object.entries(teachersDb).forEach(([name, teacherObj])=>{
       const sec = document.createElement('section');
-      // Create a header for the teacher's name
-      sec.innerHTML = `<h2>NAMA GURU: ${name}</h2>`;
-      // Build and append the timetable table for the current teacher
+      sec.innerHTML = `<h2>NAMA GURU: ${name}</h2>`; // Teacher names are already formatted in JSON
       sec.appendChild(buildTable(teacherObj));
       root.appendChild(sec);
   });
 }
 
-/* ───────────────── schema-agnostic table builder ───────────────────── */
 function buildTable(t){
-  /*
-  Recognise which layout this teacher uses based on the structure of their data.
-  The current JSON uses the 'abbr' (abbreviated day names like Mo, Tu) schema.
-  */
-  const hasAbbr = ABBR.some(k => k in t); // Check if any abbreviated day is a top-level key
-
+  const hasAbbr = ABBR.some(k => k in t); 
   let tbl;
   if (hasAbbr) {
-    tbl = fromAbbr(t); // Use the function designed for abbreviated day names
+    tbl = fromAbbr(t);
   } else {
-    // Fallback for unknown schema, providing an error message
     tbl = document.createElement('div');
     tbl.textContent = '⚠ Unrecognised data format for this teacher.';
     tbl.style.color = 'orange';
@@ -174,55 +169,70 @@ function buildTable(t){
   return tbl;
 }
 
-/* ---------- helpers for the recognised schemas ---------------- */
 function headerRow(tbl, blocksToDisplay){
   const h = tbl.insertRow();
-  // First header cell for 'Day'
   h.insertCell().outerHTML = '<th>Day</th>';
-  // Create header cells for each time block to display with the desired range format
   blocksToDisplay.forEach(b => {
-    h.insertCell().outerHTML = `<th>${b.replace('-', ' - ')}</th>`; 
+    // Split the time range for display if needed, but use the full string as key
+    // Example: "07:15-07:45" is displayed as is or split.
+    // For display, make it more readable
+    const parts = b.split('-');
+    const displayTime = `${parts[0]}\n-\n${parts[1]}`; // Display on two lines for compactness
+    h.insertCell().outerHTML = `<th>${displayTime.replace('\n','<br>')}</th>`; 
   });
 }
 
+// REVISED fromAbbr function
 function fromAbbr(teacher){
   const tbl = document.createElement('table');
-  // Pass the hardcoded BLOCKS_DISPLAY (time ranges) to headerRow for header presentation
-  headerRow(tbl, BLOCKS_DISPLAY);
+  headerRow(tbl, BLOCKS_DISPLAY); // BLOCKS_DISPLAY defines the column headers AND the keys to use for data
 
   FULL.forEach((dayName, dIdx) => {
       const tr = tbl.insertRow();
-      // Add the day name cell
       tr.insertCell().outerHTML = `<td class="day">${dayName}</td>`;
       
-      // Get the data for the current day (e.g., teacher['Mo'])
-      const dayData = teacher[ABBR[dIdx]] || {};
+      const dayData = teacher[ABBR[dIdx]] || {}; // e.g., teacher.Mo or teacher.Tu
       
-      // Iterate through each display block (time range)
-      BLOCKS_DISPLAY.forEach(blockRange => {
-          // Extract the start time from the block range, e.g., "07:15" from "07:15-07:45"
-          // This extracted start time is the key used in the JSON.
-          let startTimeKey = blockRange.split('-')[0];
+      BLOCKS_DISPLAY.forEach(blockRangeKey => { // blockRangeKey is "07:15-07:45", "07:45-08:15", etc.
           
-          // Retrieve the cell content using the exact startTimeKey
-          const cellText = dayData[startTimeKey];
+          const cellEntries = dayData[blockRangeKey]; // Directly use the blockRangeKey
           
           const td  = tr.insertCell();
-          // If content exists for this slot, display it. Otherwise, leave cell empty.
-          if (cellText) {
-              td.textContent = cellText;
+          if (cellEntries && Array.isArray(cellEntries) && cellEntries.length > 0) {
+              if (cellEntries.length > 1) {
+                const ul = document.createElement('ul');
+                ul.style.listStyle = 'none';
+                ul.style.padding = '0';
+                ul.style.margin = '0';
+                ul.style.textAlign = 'center'; // Center list items if desired
+                cellEntries.forEach(entry => {
+                    const li = document.createElement('li');
+                    li.textContent = entry;
+                    ul.appendChild(li);
+                });
+                td.appendChild(ul);
+              } else {
+                td.textContent = cellEntries[0]; 
+              }
+              if (cellEntries.some(entry => typeof entry === 'string' && entry.toUpperCase().includes("REHAT"))) {
+                td.classList.add('rehat-cell'); 
+              }
+          } else if (cellEntries && !Array.isArray(cellEntries)) { // Fallback if not an array
+              td.textContent = cellEntries;
+              if (typeof cellEntries === 'string' && cellEntries.toUpperCase().includes("REHAT")) {
+                td.classList.add('rehat-cell');
+              }
           }
+          // else: cell remains empty
       });
   });
   return tbl;
 }
 
-// fromDays and fromRows functions are kept for schema compatibility,
-// although the current JSON only uses the 'fromAbbr' schema.
+// fromDays and fromRows functions are kept for schema compatibility (not used with current JSON)
 function fromDays(blocks, days){
   const tbl = document.createElement('table');
   headerRow(tbl, blocks);
-
   FULL.forEach(dayName => {
       const tr = tbl.insertRow();
       tr.insertCell().outerHTML = `<td class="day">${dayName}</td>`;
@@ -233,14 +243,10 @@ function fromDays(blocks, days){
   });
   return tbl;
 }
-
 function fromRows(blocks, rows, titles){
   const tbl = document.createElement('table');
   headerRow(tbl, blocks);
-
-  // If there are exactly 5 physical rows, assume Mon-Fri order.
   const label = rows.length === 5 ? FULL : titles;
-
   rows.forEach((row, idx) => {
       const tr = tbl.insertRow();
       tr.insertCell().outerHTML =
