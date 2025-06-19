@@ -2,130 +2,61 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Teacher Timetables</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-  /* ---- basic look --------------------------------------------------- */
-  body      { font-family: Arial, Helvetica, sans-serif; margin: 0; }
-  section   { padding: 20px; page-break-after: always; }
-  h2        { margin: 0 0 12px; font-size: 16px; }
-
-  table     { border-collapse: collapse; width: 100%; }
-  th, td    { border: 1px solid #ccc; padding: 4px 6px; font-size: 12px;
-              text-align: center; }
-  th        { background: #d7dde8; }
-  td        { background: #fffbe8; }
-  td.day    { background: #d9f0ff; font-weight: 600; width: 120px;
-              text-align: left; }
-  @media print { body{margin:0} }
+  /* ====== STYLES ====== */
+  body      { font-family: Arial, sans-serif; margin:0; }
+  section   { padding:20px; page-break-after:always; }
+  h2        { margin:0 0 12px; }
+  table     { border-collapse:collapse; width:100%; }
+  th,td     { border:1px solid #ccc; padding:4px 6px; text-align:center; font-size:12px; }
+  th        { background:#d7dde8; }
+  td        { background:#fffbe8; }
+  td:first-child { font-weight:600; width:120px; background:#d9f0ff; }
+  @media print { body{margin:0} section{page-break-after:always} }
 </style>
 </head>
 <body>
+<div id="root"></div>
 
-<div id="root" style="padding:20px">Loading timetable …</div>
+<!-- ====== EMBEDDED DATA ====== -->
+<script id="data" type="application/json">
+  <<<PASTE JSON HERE>>>
+</script>
 
 <script>
-/* ─────────────────────────── constants ─────────────────────────────── */
-const FULL  = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
-const ABBR  = ["Mo","Tu","We","Th","Fr"];
-const BLOCKS = [
-  "07:15-07:45","07:45-08:15","08:15-08:45","08:45-09:15",
-  "09:15-09:45","09:45-10:00",
-  "09:45-10:15","10:00-10:30","10:15-10:30",
-  "10:30-11:00","11:00-11:30","11:30-12:00","12:00-12:30",
-  "12:30-13:00","13:00-13:30","13:30-14:00","14:00-14:30",
-  "14:30-15:00","15:00-15:30"
-];
+/* ====== RENDER LOGIC ====== */
+const db = JSON.parse(document.getElementById('data').textContent);
+const root = document.getElementById('root');
 
-/* ─────────────────── fetch + main render entry point ───────────────── */
-fetch('teacher_schedules.json')
-  .then(r => r.json())
-  .then(renderAll)
-  .catch(err => document.getElementById('root')
-          .textContent = '⚠ ' + err.message);
+Object.entries(db).forEach(([name, t])=>{
+  const sec = document.createElement('section');
+  sec.appendChild(heading(name));
+  sec.appendChild(build(t));
+  root.appendChild(sec);
+});
 
-function renderAll(db){
-  const root = document.getElementById('root');
-  root.innerHTML = '';
-
-  Object.entries(db).forEach(([name, teacherObj])=>{
-      const sec = document.createElement('section');
-      sec.innerHTML = `<h2>NAMA GURU: ${name}</h2>`;
-      sec.appendChild(buildTable(teacherObj));
-      root.appendChild(sec);
-  });
+function heading(name){
+  const h = document.createElement('h2');
+  h.textContent = 'NAMA GURU: ' + name;
+  return h;
 }
 
-/* ───────────────── schema-agnostic table builder ───────────────────── */
-function buildTable(t){
-  /* recognise which layout this teacher uses */
-  const hasAbbr = ABBR.some(k => k in t);
-  const hasDays = ('days' in t);
-  const hasRows = ('rows' in t);
-
-  let tbl;
-  if (hasAbbr)          tbl = fromAbbr(t);
-  else if (hasDays)     tbl = fromDays(t.blocks, t.days);
-  else if (hasRows)     tbl = fromRows(t.blocks, t.rows, t.rowTitles||[]);
-  else {                // unknown schema
-      tbl = document.createElement('div');
-      tbl.textContent = '⚠ Unrecognised data';
-  }
-  return tbl;
-}
-
-/* ---------- helpers for the three recognised schemas ---------------- */
-function headerRow(tbl, blocks){
-  const h = tbl.insertRow();
-  h.insertCell().outerHTML = '<th>Day</th>';
-  blocks.forEach(b => h.insertCell().outerHTML =
-      `<th>${b.replace('-', ' - ')}</th>`);
-}
-
-function fromAbbr(teacher){
+function build({blocks, rows, rowTitles}){
   const tbl = document.createElement('table');
-  headerRow(tbl, BLOCKS);
-
-  FULL.forEach((dayName, dIdx) => {
-      const tr = tbl.insertRow();
-      tr.insertCell().outerHTML = `<td class="day">${dayName}</td>`;
-      BLOCKS.forEach(block => {
-          const txt = ((teacher[ABBR[dIdx]] || {})[block] || []).join(', ');
-          const td  = tr.insertCell();
-          if (txt) td.textContent = txt;
-      });
-  });
-  return tbl;
-}
-
-function fromDays(blocks, days){
-  const tbl = document.createElement('table');
-  headerRow(tbl, blocks);
-
-  FULL.forEach(dayName => {
-      const tr = tbl.insertRow();
-      tr.insertCell().outerHTML = `<td class="day">${dayName}</td>`;
-      (days[dayName] || []).forEach(cell=>{
-          const td = tr.insertCell();
-          if (cell) td.textContent = cell;
-      });
-  });
-  return tbl;
-}
-
-function fromRows(blocks, rows, titles){
-  const tbl = document.createElement('table');
-  headerRow(tbl, blocks);
-
-  rows.forEach((row, idx) => {
-      const tr = tbl.insertRow();
-      tr.insertCell().outerHTML =
-          `<td class="day">${titles[idx] || 'Row '+(idx+1)}</td>`;
-      row.forEach(cell=>{
-          const td = tr.insertCell();
-          if(cell) td.textContent = cell;
-      });
+  // header
+  const hr = tbl.insertRow();
+  hr.insertCell().outerHTML = '<th>Nama&nbsp;/&nbsp;Masa</th>';
+  blocks.forEach(b=>hr.insertCell().outerHTML='<th>'+b.replace('-', ' - ')+'</th>');
+  // body
+  rows.forEach((row,i)=>{
+    const tr = tbl.insertRow();
+    tr.insertCell().textContent = rowTitles[i] || '';
+    row.forEach(cell=>{
+      const td = tr.insertCell();
+      if(cell) td.textContent = cell;
+    });
   });
   return tbl;
 }
