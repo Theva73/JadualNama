@@ -127,16 +127,27 @@ fetch('teacher_schedules.json')
     return r.json();
   })
   .then(data => {
-    // Assuming 'data' is the root object from JSON_01.txt, which contains teacher names as keys.
-    // If your teacher_schedules.json has a structure like { "teachers": { ... } },
-    // you'd use data.teachers here. Based on JSON_01.txt, 'data' itself is the teachersDb.
-    renderAll(data);
+    // *** IMPORTANT CHANGE HERE ***
+    // Check if the 'data' object has a 'teachers' property.
+    // If it does, use data.teachers. Otherwise, assume 'data' itself is the teachers object.
+    if (data && typeof data === 'object' && data.hasOwnProperty('teachers')) {
+      console.log("Found 'teachers' key in JSON, rendering data.teachers.");
+      renderAll(data.teachers);
+    } else if (data && typeof data === 'object' && Object.keys(data).length > 0 && !data.hasOwnProperty('time_blocks') && !data.hasOwnProperty('teachers')) {
+      // This condition handles the case where the root object is directly the teachers' schedules
+      // (like JSON_01.txt structure) AND it doesn't have 'time_blocks' or 'teachers' as top-level keys.
+      console.log("JSON root seems to be the teachers object directly (like JSON_01.txt).");
+      renderAll(data);
+    } else {
+      console.error("JSON structure not as expected. Top level keys:", Object.keys(data));
+      throw new Error("The JSON file structure is not as expected. Expected a 'teachers' object or a root object of teacher schedules.");
+    }
   })
   .catch(err => {
     const root = document.getElementById('root');
     root.innerHTML = `<div style="color: red; font-weight: bold; padding: 20px;">
-                        ⚠ Error loading timetable: ${err.message}.<br>
-                        Please ensure 'teacher_schedules.json' exists and is a valid JSON.
+                        ⚠ Error loading or processing timetable: ${err.message}.<br>
+                        Please ensure 'teacher_schedules.json' exists and is a valid JSON with the correct structure.
                       </div>`;
     console.error("Error loading timetable:", err);
   });
@@ -145,17 +156,30 @@ function renderAll(teachersDb){
   const root = document.getElementById('root');
   root.innerHTML = ''; 
 
+  if (!teachersDb || typeof teachersDb !== 'object' || Object.keys(teachersDb).length === 0) {
+    root.innerHTML = `<div style="color: orange; font-weight: bold; padding: 20px;">
+                        ⚠ No teacher data found to render. The 'teachers' object might be empty or missing.
+                      </div>`;
+    console.warn("renderAll called with no valid teachersDb:", teachersDb);
+    return;
+  }
+
   Object.entries(teachersDb).forEach(([name, teacherObj])=>{
       const sec = document.createElement('section');
-      sec.innerHTML = `<h2>NAMA GURU: ${name}</h2>`; // Teacher names are already formatted in JSON
+      // Teacher names are already formatted in the JSON like "EN ABD AZIZ BIN MOHAMED"
+      // No need to convert to title case here if the JSON already has it correctly.
+      sec.innerHTML = `<h2>NAMA GURU: ${name}</h2>`; 
       sec.appendChild(buildTable(teacherObj));
       root.appendChild(sec);
   });
 }
 
 function buildTable(t){
-  const hasAbbr = ABBR.some(k => k in t); 
+  // Check if the teacherObj 't' itself contains day abbreviations.
+  // This is the expected format for each individual teacher's schedule data.
+  const hasAbbr = ABBR.some(k => t && typeof t === 'object' && k in t); 
   let tbl;
+
   if (hasAbbr) {
     tbl = fromAbbr(t);
   } else {
@@ -165,6 +189,7 @@ function buildTable(t){
     tbl.style.fontWeight = 'bold';
     tbl.style.textAlign = 'center';
     tbl.style.padding = '20px';
+    console.warn("Unrecognised data format for teacher object:", t);
   }
   return tbl;
 }
@@ -173,30 +198,24 @@ function headerRow(tbl, blocksToDisplay){
   const h = tbl.insertRow();
   h.insertCell().outerHTML = '<th>Day</th>';
   blocksToDisplay.forEach(b => {
-    // Split the time range for display if needed, but use the full string as key
-    // Example: "07:15-07:45" is displayed as is or split.
-    // For display, make it more readable
     const parts = b.split('-');
-    const displayTime = `${parts[0]}\n-\n${parts[1]}`; // Display on two lines for compactness
+    const displayTime = `${parts[0]}\n-\n${parts[1]}`;
     h.insertCell().outerHTML = `<th>${displayTime.replace('\n','<br>')}</th>`; 
   });
 }
 
-// REVISED fromAbbr function
 function fromAbbr(teacher){
   const tbl = document.createElement('table');
-  headerRow(tbl, BLOCKS_DISPLAY); // BLOCKS_DISPLAY defines the column headers AND the keys to use for data
+  headerRow(tbl, BLOCKS_DISPLAY);
 
   FULL.forEach((dayName, dIdx) => {
       const tr = tbl.insertRow();
       tr.insertCell().outerHTML = `<td class="day">${dayName}</td>`;
       
-      const dayData = teacher[ABBR[dIdx]] || {}; // e.g., teacher.Mo or teacher.Tu
+      const dayData = teacher[ABBR[dIdx]] || {}; 
       
-      BLOCKS_DISPLAY.forEach(blockRangeKey => { // blockRangeKey is "07:15-07:45", "07:45-08:15", etc.
-          
-          const cellEntries = dayData[blockRangeKey]; // Directly use the blockRangeKey
-          
+      BLOCKS_DISPLAY.forEach(blockRangeKey => { 
+          const cellEntries = dayData[blockRangeKey]; 
           const td  = tr.insertCell();
           if (cellEntries && Array.isArray(cellEntries) && cellEntries.length > 0) {
               if (cellEntries.length > 1) {
@@ -204,7 +223,7 @@ function fromAbbr(teacher){
                 ul.style.listStyle = 'none';
                 ul.style.padding = '0';
                 ul.style.margin = '0';
-                ul.style.textAlign = 'center'; // Center list items if desired
+                ul.style.textAlign = 'center';
                 cellEntries.forEach(entry => {
                     const li = document.createElement('li');
                     li.textContent = entry;
@@ -217,19 +236,17 @@ function fromAbbr(teacher){
               if (cellEntries.some(entry => typeof entry === 'string' && entry.toUpperCase().includes("REHAT"))) {
                 td.classList.add('rehat-cell'); 
               }
-          } else if (cellEntries && !Array.isArray(cellEntries)) { // Fallback if not an array
+          } else if (cellEntries && !Array.isArray(cellEntries)) { 
               td.textContent = cellEntries;
               if (typeof cellEntries === 'string' && cellEntries.toUpperCase().includes("REHAT")) {
                 td.classList.add('rehat-cell');
               }
           }
-          // else: cell remains empty
       });
   });
   return tbl;
 }
 
-// fromDays and fromRows functions are kept for schema compatibility (not used with current JSON)
 function fromDays(blocks, days){
   const tbl = document.createElement('table');
   headerRow(tbl, blocks);
