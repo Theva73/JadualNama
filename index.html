@@ -15,12 +15,12 @@
     margin: 20px auto;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    max-width: 90%; /* Responsive width */
-    overflow-x: auto; /* Enable horizontal scrolling for tables on small screens */
+    max-width: 90%; 
+    overflow-x: auto; 
   }
   h2        {
-    margin: 0 0 20px; /* Increased margin for better spacing */
-    font-size: 1.5rem; /* Larger font size for headers */
+    margin: 0 0 20px; 
+    font-size: 1.5rem; 
     color: #333;
     text-align: center;
     border-bottom: 2px solid #e0e0e0;
@@ -30,71 +30,61 @@
   table     {
     border-collapse: collapse;
     width: 100%;
-    min-width: 700px; /* Ensure table is wide enough for content */
+    min-width: 700px; 
   }
   th, td    {
-    border: 1px solid #c9d6df; /* Softer border color */
-    padding: 8px 12px; /* Increased padding */
-    font-size: 0.85rem; /* Slightly larger font size for readability */
+    border: 1px solid #c9d6df; 
+    padding: 8px 12px; 
+    font-size: 0.85rem; 
     text-align: center;
-    word-wrap: break-word; /* Ensure long words break */
-    white-space: normal; /* Allow text to wrap */
-    vertical-align: top; /* Align content to the top of the cell */
+    word-wrap: break-word; 
+    white-space: normal; 
+    vertical-align: top; 
   }
   th        {
-    background: #dbe9f6; /* Lighter blue header */
-    color: #3f51b5; /* Darker blue text */
+    background: #dbe9f6; 
+    color: #3f51b5; 
     font-weight: 700;
     position: sticky;
     top: 0;
-    z-index: 10; /* Keep headers visible on scroll */
+    z-index: 10; 
   }
   td        {
-    background: #eef5f9; /* Light yellow background */
+    background: #eef5f9; 
     color: #4a4a4a;
   }
   td.day    {
-    background: #b0d9f4; /* More prominent day column */
+    background: #b0d9f4; 
     font-weight: 600;
-    width: 120px; /* Fixed width for day column */
+    width: 120px; 
     text-align: left;
-    color: #1a237e; /* Dark blue for day names */
+    color: #1a237e; 
     position: sticky;
     left: 0;
-    z-index: 5; /* Keep day column visible on horizontal scroll */
+    z-index: 5; 
   }
-  .rehat-cell { /* Added for styling REHAT cells */
-      background-color: #e6ffed !important; /* Light green, !important to override default td bg */
+  .rehat-cell { 
+      background-color: #e6ffed !important; 
       color: #28a745 !important;
       font-weight: bold;
   }
+  .venue-text { /* New CSS for venue */
+    font-size: 0.8em; /* Smaller font for venue */
+    color: #555; /* Slightly dimmer color */
+    margin-left: 4px;
+  }
+
   /* Responsive adjustments */
   @media (max-width: 768px) {
-    section {
-      padding: 15px;
-      margin: 15px auto;
-      max-width: 95%;
-    }
-    h2 {
-      font-size: 1.3rem;
-      margin-bottom: 15px;
-    }
-    th, td {
-      padding: 6px 8px;
-      font-size: 0.8rem;
-    }
-    td.day {
-      min-width: 90px; /* Adjust day column width for mobile */
-    }
+    section { padding: 15px; margin: 15px auto; max-width: 95%; }
+    h2 { font-size: 1.3rem; margin-bottom: 15px; }
+    th, td { padding: 6px 8px; font-size: 0.8rem; }
+    td.day { min-width: 90px; }
   }
 
   @media print {
     body { margin: 0; }
-    section {
-      box-shadow: none;
-      border: 1px solid #ccc;
-      page-break-after: always; /* Ensure each teacher on a new page */
-    }
+    section { box-shadow: none; border: 1px solid #ccc; page-break-after: always; }
   }
 </style>
 </head>
@@ -107,46 +97,58 @@
 const FULL  = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
 const ABBR  = ["Mo","Tu","We","Th","Fr"];
 
-// These are the *columns* you want to display in your table.
-// The data will be fetched using the *start time* of these ranges.
-const DISPLAY_COLUMNS = [ // This defines the columns and their header display
-  "07:15-07:45", "07:45-08:15", "08:15-08:45", "08:45-09:15",
-  "09:15-09:45", "09:45-10:00", // Represents column for data starting at 09:45
-  "10:00-10:30", // Column for data starting at 10:00
-  "10:15-10:30", // Column for data starting at 10:15
-  "10:30-11:00", "11:00-11:30", "11:30-12:00", "12:00-12:30",
-  "12:30-13:00", "13:00-13:30", "13:30-14:00", "14:00-14:30",
-  "14:30-15:00", "15:00-15:30"
+const BLOCKS_DISPLAY = [ // These are the column headers and data keys
+  "07:15-07:45","07:45-08:15","08:15-08:45","08:45-09:15",
+  "09:15-09:45","09:45-10:00",
+  "09:45-10:15","10:00-10:30","10:15-10:30",
+  "10:30-11:00","11:00-11:30","11:30-12:00","12:00-12:30",
+  "12:30-13:00","13:00-13:30","13:30-14:00","14:00-14:30",
+  "14:30-15:00","15:00-15:30"
 ];
-// Note: The original BLOCKS_DISPLAY had overlapping keys like "09:45-10:00" and "09:45-10:15".
-// For the new JSON structure, we only need one column for each distinct start time
-// where data might exist. The header will display the range.
+
+// Define allowed subjects and venues for filtering
+const ALLOWED_SUBJECTS = [
+    "PH", "KOKO", "P", "IV", "MM", "PNG", "PI", "LET", "PM", "BC", "FIZ", "KKQ",
+    "RB", "GE", "NILAM", "ASK", "IB", "PLC", "SN", "DBM", "KIM", "PD", "RBT",
+    "TAW", "PPS", "BI", "MMT", "D", "BA", "SJ", "REHAT" // Added REHAT here as it's a valid cell content
+    // "na Insan" is tricky because of the space. If it's always "na Insan", add it.
+    // If it could be just "Insan", add "INSAN".
+    // For now, let's assume specific phrases. Add "NA INSAN" if that's the exact text.
+].map(s => s.toUpperCase()); // Store in uppercase for case-insensitive matching
+
+const ALLOWED_VENUES = [
+    "M.KOM 1", "M3", "MAK.BIO", "MAK.KIM", "M2", "BANGKEL E", "B. LUKISAN",
+    "B. DIGITAL", "BANGKEL. P", "B.NILAM", "PAK 21 A", "BANGKEL R"
+].map(v => v.toUpperCase());
 
 /* ─────────────────── fetch + main render entry point ───────────────── */
-fetch('teacher_schedules.json')
+fetch('teacher_schedules.json') // Ensure this is the JSON from Python (like JSON_test03.txt structure)
   .then(r => {
-    if (!r.ok) {
-      throw new Error(`HTTP error! status: ${r.status}`);
-    }
+    if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
     return r.json();
   })
   .then(data => {
-    if (data && typeof data === 'object' && data.hasOwnProperty('teachers')) {
-      console.log("Found 'teachers' key in JSON, rendering data.teachers.");
-      // Pass the actual time keys from the JSON if available for more dynamic data lookup,
-      // or continue using DISPLAY_COLUMNS for fixed column structure.
-      // For simplicity with the new JSON, we'll use DISPLAY_COLUMNS to define what we show.
-      renderAll(data.teachers);
+    if (data && typeof data === 'object' && Object.keys(data).length > 0 ) {
+        // Check if it's the structure with "teachers" key or direct teacher objects
+        if (data.hasOwnProperty('teachers') && typeof data.teachers === 'object') {
+            console.log("Found 'teachers' key in JSON, rendering data.teachers.");
+            renderAll(data.teachers);
+        } else if (!data.hasOwnProperty('time_blocks')) { // Heuristic: if no time_blocks, assume root is teachers
+            console.log("JSON root seems to be the teachers object directly.");
+            renderAll(data);
+        } else {
+             console.error("JSON structure unexpected. Top keys:", Object.keys(data));
+             throw new Error("JSON file structure issue: Expected 'teachers' object or direct teacher schedules.");
+        }
     } else {
-      console.error("JSON structure not as expected. Expected 'teachers' key. Top level keys:", Object.keys(data));
-      throw new Error("The JSON file structure is not as expected. Expected a 'teachers' object at the root.");
+      throw new Error("Fetched data is not a valid object or is empty.");
     }
   })
   .catch(err => {
     const root = document.getElementById('root');
     root.innerHTML = `<div style="color: red; font-weight: bold; padding: 20px;">
                         ⚠ Error loading or processing timetable: ${err.message}.<br>
-                        Please ensure 'teacher_schedules.json' exists and is a valid JSON with the correct structure.
+                        Please ensure 'teacher_schedules.json' exists and is valid.
                       </div>`;
     console.error("Error loading timetable:", err);
   });
@@ -154,15 +156,11 @@ fetch('teacher_schedules.json')
 function renderAll(teachersDb){
   const root = document.getElementById('root');
   root.innerHTML = ''; 
-
   if (!teachersDb || typeof teachersDb !== 'object' || Object.keys(teachersDb).length === 0) {
-    root.innerHTML = `<div style="color: orange; font-weight: bold; padding: 20px;">
-                        ⚠ No teacher data found to render. The 'teachers' object might be empty or missing.
-                      </div>`;
-    console.warn("renderAll called with no valid teachersDb:", teachersDb);
+    root.innerHTML = `<p>⚠ No teacher data found to render.</p>`;
+    console.warn("renderAll called with invalid teachersDb:", teachersDb);
     return;
   }
-
   Object.entries(teachersDb).forEach(([name, teacherObj])=>{
       const sec = document.createElement('section');
       sec.innerHTML = `<h2>NAMA GURU: ${name}</h2>`; 
@@ -174,22 +172,18 @@ function renderAll(teachersDb){
 function buildTable(t){
   const hasAbbr = ABBR.some(k => t && typeof t === 'object' && k in t); 
   let tbl;
-
   if (hasAbbr) {
     tbl = fromAbbr(t);
   } else {
     tbl = document.createElement('div');
     tbl.textContent = '⚠ Unrecognised data format for this teacher.';
-    tbl.style.color = 'orange';
-    tbl.style.fontWeight = 'bold';
-    tbl.style.textAlign = 'center';
-    tbl.style.padding = '20px';
+    // ... (styling for error div)
     console.warn("Unrecognised data format for teacher object:", t);
   }
   return tbl;
 }
 
-function headerRow(tbl, columnsToDisplay){ // Changed parameter name for clarity
+function headerRow(tbl, columnsToDisplay){
   const h = tbl.insertRow();
   h.insertCell().outerHTML = '<th>Day</th>';
   columnsToDisplay.forEach(columnRange => {
@@ -199,37 +193,122 @@ function headerRow(tbl, columnsToDisplay){ // Changed parameter name for clarity
   });
 }
 
-// REVISED fromAbbr function for the new JSON structure
+function parseCellEntry(entryText) {
+    const upperEntry = entryText.toUpperCase();
+    let subject = null;
+    let venue = null;
+    let remainingText = entryText; // Keep original case for display
+
+    // Try to find a venue first (as they can be multi-word)
+    for (const v of ALLOWED_VENUES) {
+        const vIndex = upperEntry.indexOf(v);
+        if (vIndex !== -1) {
+            // Check if it's a whole word match or part of a larger word
+            const beforeChar = vIndex > 0 ? upperEntry[vIndex - 1] : ' ';
+            const afterChar = vIndex + v.length < upperEntry.length ? upperEntry[vIndex + v.length] : ' ';
+            if (!beforeChar.match(/[A-Z0-9]/i) && !afterChar.match(/[A-Z0-9]/i)) {
+                venue = entryText.substring(vIndex, vIndex + v.length); // Get venue with original casing
+                // Remove venue from remaining text (be careful with case)
+                const regexV = new RegExp(v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), "i");
+                remainingText = remainingText.replace(regexV, "").trim();
+                break; 
+            }
+        }
+    }
+
+    // Now try to find a subject in the remaining text or original text
+    const textToSearchSubject = remainingText.toUpperCase() || upperEntry; // Use remaining if venue was found
+    let foundSubject = null;
+    let subjectOriginalCase = null;
+
+    for (const s of ALLOWED_SUBJECTS) {
+        // More robust subject matching: ensure it's a whole word or delimited
+        const regexS = new RegExp(`\\b${s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, "i"); // Match whole word, case insensitive
+        const match = entryText.match(regexS); // Match on original case entryText to get original casing
+        if (match) {
+            // Prioritize longer matches if subjects can be substrings of others (e.g., "P" vs "PM")
+            if (!foundSubject || s.length > foundSubject.length) {
+                foundSubject = s; // Store the uppercase matched subject
+                subjectOriginalCase = match[0]; // Store the original cased subject
+            }
+        }
+    }
+    subject = subjectOriginalCase; // Use the original cased subject
+
+    // If no subject found yet, but we had remainingText (after venue removal), try again on that
+    if (!subject && remainingText && remainingText !== entryText) {
+         for (const s of ALLOWED_SUBJECTS) {
+            const regexS = new RegExp(`\\b${s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, "i");
+            const match = remainingText.match(regexS);
+            if (match) {
+                if (!subject || s.length > (subject.length || 0) ) { // Check subject.length only if subject is not null
+                    subject = match[0];
+                }
+            }
+        }
+    }
+    
+    // If only a venue was found, and no subject, we might not want to display just the venue.
+    // Or, if the "subject" found is actually part of the venue text that wasn't fully removed.
+    // This logic can be refined. For now, if a subject is in ALLOWED_SUBJECTS, we take it.
+
+    return { subject, venue };
+}
+
+
 function fromAbbr(teacher){
   const tbl = document.createElement('table');
-  headerRow(tbl, DISPLAY_COLUMNS); // Use DISPLAY_COLUMNS for headers
+  headerRow(tbl, BLOCKS_DISPLAY);
 
   FULL.forEach((dayName, dIdx) => {
       const tr = tbl.insertRow();
       tr.insertCell().outerHTML = `<td class="day">${dayName}</td>`;
       
       const dayAbbr = ABBR[dIdx];
-      const dayData = teacher[dayAbbr] || {}; // e.g., teacher.Mo or teacher.Tu
+      const dayData = teacher[dayAbbr] || {}; 
       
-      // console.log(`Processing Day: ${dayAbbr}, Data:`, JSON.parse(JSON.stringify(dayData)));
-
-      DISPLAY_COLUMNS.forEach(columnDisplayRange => { 
-          // The key to fetch data from your NEW JSON is the START TIME of the column.
-          const startTimeKeyForData = columnDisplayRange.split('-')[0]; // e.g., "07:15"
-          
-          const cellText = dayData[startTimeKeyForData]; // Fetch using "07:15", "07:45" etc.
-          
-          // console.log(`  Column: ${columnDisplayRange}, Data Key: ${startTimeKeyForData}, Found Text:`, cellText);
-
+      BLOCKS_DISPLAY.forEach(blockRangeKey => { 
+          const cellEntriesArray = dayData[blockRangeKey]; // This is an array from JSON
           const td  = tr.insertCell();
-          // In your new JSON, cellText is directly a string, not an array.
-          if (cellText && typeof cellText === 'string') {
-              td.textContent = cellText; 
-              if (cellText.toUpperCase().includes("REHAT")) {
-                td.classList.add('rehat-cell'); 
+
+          if (cellEntriesArray && Array.isArray(cellEntriesArray) && cellEntriesArray.length > 0) {
+              const contentFragment = document.createDocumentFragment();
+              let hasContentForCell = false;
+
+              cellEntriesArray.forEach(entryText => {
+                  if (typeof entryText !== 'string') return; // Skip non-string entries
+
+                  const { subject, venue } = parseCellEntry(entryText);
+                  
+                  if (subject) { // Only proceed if a valid subject is found
+                    hasContentForCell = true;
+                    const lineDiv = document.createElement('div');
+                    lineDiv.textContent = subject;
+
+                    if (venue) {
+                        const venueSpan = document.createElement('span');
+                        venueSpan.classList.add('venue-text');
+                        venueSpan.textContent = ` (${venue})`;
+                        lineDiv.appendChild(venueSpan);
+                    }
+                    contentFragment.appendChild(lineDiv);
+                  }
+                  // If entryText is "REHAT" or contains it, style the cell
+                  if (entryText.toUpperCase().includes("REHAT") && ALLOWED_SUBJECTS.includes("REHAT")) {
+                      td.classList.add('rehat-cell');
+                      if (!subject) { // If REHAT is the only thing and wasn't parsed as subject
+                        hasContentForCell = true;
+                        const lineDiv = document.createElement('div');
+                        lineDiv.textContent = "REHAT"; // Display "REHAT" explicitly
+                        contentFragment.appendChild(lineDiv);
+                      }
+                  }
+              });
+
+              if (hasContentForCell) {
+                  td.appendChild(contentFragment);
               }
           }
-          // else: cell remains empty if no data for that startTimeKey
       });
   });
   return tbl;
