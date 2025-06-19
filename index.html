@@ -126,7 +126,7 @@
     </div>
 
     <script>
-        const DEFAULT_JSON_PATH = 'teacher_schedules.json'; // The JSON file in your GitHub repo
+        const DEFAULT_JSON_PATH = 'teacher_schedules.json';
         const DAYS_ORDER = ["Mo", "Tu", "We", "Th", "Fr"];
         const EXPECTED_TIME_SLOTS_KEYS = [
             "07:15-07:45", "07:45-08:15", "08:15-08:45", "08:45-09:15", "09:15-09:45",
@@ -292,26 +292,26 @@
                                 y: viewport.height - tx[5],
                                 width: item.width * viewport.scale,
                                 height: item.height * viewport.scale,
-                                fontName: item.fontName
+                                fontName: item.fontName // Keep fontName if needed for advanced logic
                             };
-                        }).sort((a,b) => a.y - b.y || a.x - b.x);
+                        }).sort((a,b) => a.y - b.y || a.x - b.x); // Sort all items once
 
-                        const teacherName = extractTeacherNameJS(items, viewport.height); // Pass viewport.height
+                        const teacherName = extractTeacherNameJS(items, viewport.height); 
                         
-                        if (teacherName && !allTeachersData[teacherName]) {
-                            // console.log(`Page ${i}: Found Teacher - ${teacherName}`);
+                        if (teacherName && !allTeachersData[teacherName]) { // Process if name found and not already added
+                            // console.log(`Page ${i}: Found Teacher - ${teacherName}`); // For debugging
                             const dayLabels = getDayLabelsJS(items, viewport.height);
                             const timeSlotDefinitions = getTimeSlotDefinitionsJS(items, viewport.height);
 
                             if (dayLabels.length > 0 && timeSlotDefinitions.length > 0) {
                                 allTeachersData[teacherName] = extractScheduleJS(items, dayLabels, timeSlotDefinitions, teacherName, viewport.height);
                             } else {
-                                console.warn(`Page ${i} for ${teacherName}: Missing day or time labels. DayL: ${dayLabels.length}, TimeL: ${timeSlotDefinitions.length}`);
+                                console.warn(`Page ${i} for ${teacherName}: Missing day or time labels. DayLabels: ${dayLabels.length}, TimeSlots: ${timeSlotDefinitions.length}`);
                             }
-                        } else if (teacherName) {
+                        } else if (teacherName) { // Name found, but already in allTeachersData
                              console.warn(`Page ${i}: Teacher ${teacherName} might be a duplicate or already processed.`);
-                        } else {
-                            console.warn(`No teacher name found on page ${i}`); // This is what the user is seeing
+                        } else { // No name found on this page
+                            console.warn(`No teacher name found on page ${i}`);
                         }
                     }
 
@@ -332,138 +332,146 @@
             };
             reader.readAsArrayBuffer(file);
         }
-
-        // --- JS Re-implementations of Python extraction logic (REVISED) ---
+        
+        // --- START OF REVISED extractTeacherNameJS ---
         function extractTeacherNameJS(items, pageViewportHeight) {
             let nameParts = [];
             let collectingName = false;
-            let lastItemYForName = 0;
-            const MAX_Y_FOR_NAME_HEADER = pageViewportHeight * 0.18; // Top 18% of page for "NAMA GURU:"
-            const MAX_Y_FOR_NAME_COLLECTION = pageViewportHeight * 0.25; // Stop collecting name below this
+            let startCollectingFromIndex = -1;
+            let referenceYForName = 0;
 
-            // For debugging:
-            // items.filter(it => it.y < MAX_Y_FOR_NAME_COLLECTION * 1.2).forEach(it => console.log(`Item: "${it.text}" (y: ${it.y.toFixed(0)}, x: ${it.x.toFixed(0)})`));
+            const MAX_Y_FOR_KEYWORD = pageViewportHeight * 0.20; // Keywords should be in the top 20%
 
-            let keywordLineY = -1; // Y-coordinate of the line where "NAMA GURU" was found
+            // Uncomment for detailed debugging of items in the header region
+            // console.log("--- extractTeacherNameJS: Items in header region ---");
+            // items.filter(it => it.y < MAX_Y_FOR_KEYWORD * 1.5).forEach(it => console.log(`  Item: "${it.text}" (y: ${it.y.toFixed(0)}, x: ${it.x.toFixed(0)})`));
 
-            // First pass: find "NAMA GURU"
+            // Phase 1: Find the "NAMA GURU:" sequence
             for (let i = 0; i < items.length; i++) {
-                const item = items[i];
-                if (item.y > MAX_Y_FOR_NAME_HEADER) continue; // Only look in header area
+                if (items[i].y > MAX_Y_FOR_KEYWORD) break; 
 
-                const upperText = item.text.toUpperCase();
-                if (upperText.includes("NAMA")) {
-                    let combinedText = upperText;
-                    let lastX = item.x + item.width;
-                    keywordLineY = item.y; // Y of "NAMA"
+                const item1 = items[i];
+                const text1Upper = item1.text.toUpperCase();
 
-                    // Look ahead for "GURU" on roughly the same line
-                    for (let j = i + 1; j < Math.min(i + 8, items.length); j++) {
-                        const nextItem = items[j];
-                        if (Math.abs(nextItem.y - keywordLineY) < item.height * 0.8 && nextItem.x > lastX - 10 && nextItem.x < lastX + 70) { // Tolerate some overlap or small gap
-                            combinedText += " " + nextItem.text.toUpperCase();
-                            lastX = nextItem.x + nextItem.width;
-                            if (combinedText.includes("NAMA GURU")) {
+                if (text1Upper.includes("NAMA")) {
+                    // console.log(`Found "NAMA" in "${item1.text}" at index ${i}, y: ${item1.y.toFixed(1)}`);
+                    let fullKeywordSequence = text1Upper;
+                    let lastKeywordItemIndex = i;
+
+                    // Look for "GURU" or "GURU:" in the next few items on a similar line
+                    for (let j = i + 1; j < Math.min(i + 5, items.length); j++) { 
+                        const item2 = items[j];
+                        if (Math.abs(item2.y - item1.y) < item1.height * 0.8 && item2.x > items[lastKeywordItemIndex].x) { // Similar line and generally progressing right
+                            fullKeywordSequence += " " + item2.text.toUpperCase();
+                            lastKeywordItemIndex = j;
+                            if (fullKeywordSequence.includes("NAMA GURU")) {
+                                // console.log(`  "NAMA GURU" sequence confirmed: "${fullKeywordSequence}" ending at index ${j}`);
                                 collectingName = true;
-                                // Extract part after "NAMA GURU:" from combinedText or subsequent items
-                                let nameCandidate = combinedText.substring(combinedText.indexOf("NAMA GURU") + "NAMA GURU".length);
-                                nameCandidate = nameCandidate.replace(/^[:\s]+/, ""); // Remove leading colon/space
-                                if (nameCandidate) {
-                                    nameCandidate.split(/\s+/).forEach(p => {
-                                        if (p && p.length > 0) nameParts.push(p);
-                                    });
+                                referenceYForName = item1.y; // Y of the line where NAMA GURU started
+                                
+                                // Try to extract initial name part if it's on the same line immediately after "NAMA GURU:"
+                                let combinedTextForKeywordAndInitialName = "";
+                                for (let k=i; k <= lastKeywordItemIndex; k++) {
+                                    combinedTextForKeywordAndInitialName += items[k].text + " ";
                                 }
-                                lastItemYForName = keywordLineY; // Set Y reference for collecting more parts
-                                i = j; // Advance main loop index
-                                break; // Found "NAMA GURU"
+                                combinedTextForKeywordAndInitialName = combinedTextForKeywordAndInitialName.trim();
+
+                                let nameStartsAfter = combinedTextForKeywordAndInitialName.toUpperCase().indexOf("NAMA GURU");
+                                if (nameStartsAfter !== -1) {
+                                    let potentialNameStart = combinedTextForKeywordAndInitialName.substring(nameStartsAfter + "NAMA GURU".length);
+                                    potentialNameStart = potentialNameStart.replace(/^[:\s]+/, "").trim(); // Remove leading colon/space
+                                    if (potentialNameStart) {
+                                        nameParts.push(...potentialNameStart.split(/\s+/).filter(p => p));
+                                        // console.log(`  Pushed initial parts from keyword line: ${nameParts.join(' ')}`);
+                                    }
+                                }
+                                startCollectingFromIndex = lastKeywordItemIndex + 1;
+                                break; 
                             }
-                        } else if (nextItem.y > keywordLineY + item.height) { // Moved to next line
+                        } else if (item2.y > item1.y + item1.height * 1.5) { 
                             break;
                         }
                     }
                 }
-                 if (collectingName) break; // Found keyword, proceed to collect actual name parts
+                if (collectingName) break; 
             }
-            
-            // Second pass (or continuation): Collect actual name parts if keyword was found
-            if (collectingName) {
-                // Start collecting from items after where "NAMA GURU" was identified,
-                // or from the beginning if "TEACHER" was used (simplified for now).
-                // The loop `i` is already advanced.
-                let startCollectingIndex = 0; // Find where to start collecting name parts
-                for(let k=0; k < items.length; k++){
-                    if(items[k].y >= keywordLineY - items[k].height*0.5 && items[k].y <= keywordLineY + items[k].height*0.5){
-                         // If "NAMA GURU" was part of this item, split and take remainder
-                         const upperItemText = items[k].text.toUpperCase();
-                         if(upperItemText.includes("NAMA GURU")){
-                             let potentialName = items[k].text.substring(upperItemText.indexOf("NAMA GURU") + "NAMA GURU".length).replace(/^[:\s]+/, "");
-                             if(potentialName.trim()){ nameParts = potentialName.trim().split(/\s+/); }
-                             startCollectingIndex = k + 1;
-                             lastItemYForName = items[k].y;
-                             break;
-                         }
-                    }
-                    if(items[k].y > keywordLineY + items[k].height*1.5) break; // Don't search too far down
-                }
 
+            // Phase 2: Collect the name parts if "NAMA GURU:" was found
+            if (collectingName && startCollectingFromIndex !== -1) {
+                // console.log(`Starting name collection from index ${startCollectingFromIndex}, referenceY: ${referenceYForName.toFixed(1)}`);
+                let lastCollectedY = referenceYForName;
 
-                for (let k = startCollectingIndex; k < items.length; k++) {
-                    const item = items[k];
+                for (let i = startCollectingFromIndex; i < items.length; i++) {
+                    const item = items[i];
                     const upperText = item.text.toUpperCase().trim();
 
-                    if (item.y > MAX_Y_FOR_NAME_COLLECTION && nameParts.length > 0) break;
-                    if (nameParts.length > 0 && item.y > lastItemYForName + item.height * 1.5) break; // New line too far
-
-                    if (upperText.includes("REHAT") || upperText.includes("ASSEMBLY") ||
-                        item.text.match(/\d{1,2}:\d{2}/) || upperText.startsWith("SMK") || upperText.includes("SESI PAGI")) {
+                    if (item.y > referenceYForName + item.height * 2.5 && nameParts.length > 0) {
+                        // console.log(`  Stopping: y jump. Current item y: ${item.y.toFixed(1)}, text: "${item.text}"`);
+                        break;
+                    }
+                    if (upperText.startsWith("SMK") || upperText.includes("SESI PAGI") ||
+                        upperText.includes("REHAT") || upperText.includes("ASSEMBLY") ||
+                        item.text.match(/\d{1,2}:\d{2}/)) { 
+                        // console.log(`  Stopping: Found stop keyword "${upperText}"`);
+                        break;
+                    }
+                    if (nameParts.length >= 7) {
+                        // console.log("  Stopping: Max name parts reached.");
                         break;
                     }
 
-                    if (item.text && item.text.length > 0 && !item.text.match(/^\W+$/) && nameParts.length < 8) {
-                        if (Math.abs(item.y - lastItemYForName) < item.height * 1.2 || nameParts.length === 0) { // Same line or first part
-                            if (item.text.length > 1 || (item.text.length === 1 && /[A-ZÀ-ÖØ-öø-ſ]/.test(item.text))) {
-                               // Check if part of "NAMA GURU:" itself
-                                if(!(upperText.includes("NAMA") || upperText.includes("GURU"))){
+                    if (item.text && item.text.length > 0 && !item.text.match(/^\W+$/)) { 
+                        if (Math.abs(item.y - lastCollectedY) < item.height * 1.2 || (nameParts.length === 0 && Math.abs(item.y - referenceYForName) < item.height * 1.2) ) {
+                            if (item.text.length > 1 || (item.text.length === 1 && /[A-ZÀ-ÖØ-öø-ſ]/i.test(item.text))) { 
+                                if (!upperText.startsWith("NAMA") && !upperText.startsWith("GURU") && upperText !== ":" && !upperText.includes("JADUAL WAKTU")) { // Added JADUAL WAKTU
                                     nameParts.push(item.text);
+                                    lastCollectedY = item.y; 
+                                    // console.log(`    Collected: "${item.text}", Parts now: ${nameParts.join(' ')}`);
                                 }
                             }
-                            lastItemYForName = item.y;
+                        } else if (nameParts.length > 0 && item.y > lastCollectedY + item.height * 1.5) {
+                            // console.log(`  Stopping: New line too far. Item y: ${item.y.toFixed(1)}, lastCollectedY: ${lastCollectedY.toFixed(1)}`);
+                            break; 
                         }
                     }
-                    if (nameParts.length >= 7) break;
                 }
             }
 
-
-            if (nameParts.length === 0) return null;
+            if (nameParts.length === 0) {
+                // console.log("No name parts collected.");
+                return null;
+            }
 
             let fullName = nameParts.join(" ").replace(/[:,-]/g, "").trim().toUpperCase();
-            
+            // console.log("Raw full name before cleaning:", fullName);
+
             const noiseParts = [
-                "NAMA GURU", "GURU", // Ensure these are removed if they sneak in
-                "SMK SERI PULAI PERDANA", "JOHOR BAHRU", "SMK", "SERI PULAI PERDANA",
-                "SESI PAGI BIL. 1 2025", "SESI PAGI BIL 1 2025", "SESI PAGI BIL.", "BIL. 1 2025", "BIL 1 2025", "1 2025",
-                "JADUAL WAKTU", "MORNING ASSEMBLY", "REHAT"
+                "NAMA GURU", "GURU", "TEACHER", "JADUAL WAKTU SESI PAGI BIL 1 2025",
+                "SMK SERI PULAI PERDANA", "JOHOR BAHRU", "SERI PULAI PERDANA", "PULAI PERDANA",
+                "SESI PAGI BIL 1 2025", "SESI PAGI BIL.", "BIL 1 2025", "1 2025", "2025",
+                "MORNING ASSEMBLY", "REHAT"
             ];
+            
             noiseParts.forEach(part => {
                 const regex = new RegExp(part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s*'), "gi");
                 fullName = fullName.replace(regex, "").trim();
             });
-            fullName = fullName.replace(/^[:\s]+|[:\s]+$/g, "");
+            fullName = fullName.replace(/^[:\s]+|[:\s]+$/g, ""); 
 
-            return fullName && fullName.length > 3 ? fullName : null;
+            // console.log("Final cleaned name:", fullName);
+            return fullName && fullName.length > 3 ? fullName : null; 
         }
+        // --- END OF REVISED extractTeacherNameJS ---
 
 
         function getDayLabelsJS(items, pageHeight) {
             const dayLabels = [];
             const pdfDays = ["Mo", "Tu", "We", "Th", "Fr"];
-            // Adjust y-range: days appear below the main headers but above the footer.
-            const MIN_Y_FOR_DAY = pageHeight * 0.20; // Approx start of schedule rows
-            const MAX_Y_FOR_DAY = pageHeight * 0.90; // Approx end of schedule rows
+            const MIN_Y_FOR_DAY = pageHeight * 0.20; 
+            const MAX_Y_FOR_DAY = pageHeight * 0.90; 
 
             for (const item of items) {
-                if (pdfDays.includes(item.text) && item.x < pageHeight * 0.1) { // Days are on the far left (e.g., < 10% of page height for x)
+                if (pdfDays.includes(item.text) && item.x < pageHeight * 0.1) { 
                     if(item.y > MIN_Y_FOR_DAY && item.y < MAX_Y_FOR_DAY) { 
                         let existing = dayLabels.find(d => d.day === item.text);
                         if (!existing) {
@@ -481,9 +489,8 @@
 
         function getTimeSlotDefinitionsJS(items, pageHeight) {
             const timeSlotDefs = [];
-             // Y-range for time headers, typically above the day rows
             const MIN_Y_FOR_TIME_HEADER = pageHeight * 0.15;
-            const MAX_Y_FOR_TIME_HEADER = pageHeight * 0.25; // More constrained y-range
+            const MAX_Y_FOR_TIME_HEADER = pageHeight * 0.25; 
             
             const headerItems = items.filter(it => 
                 it.y > MIN_Y_FOR_TIME_HEADER && it.y < MAX_Y_FOR_TIME_HEADER && 
@@ -493,7 +500,6 @@
             const timeXPositions = {}; 
             headerItems.forEach(item => {
                 let timeStr = item.text.split(':').map(p => p.padStart(2, '0')).join(':'); 
-                // Handle cases like "7:15" becoming "07:15"
                 if (timeStr.match(/^\d:\d{2}$/)) timeStr = "0" + timeStr;
 
                 if (!timeXPositions[timeStr]) timeXPositions[timeStr] = [];
@@ -510,34 +516,32 @@
                 const startPositions = timeXPositions[startStrFull];
                 
                 if (startPositions && startPositions.length > 0) {
-                    let chosenStartPosition = startPositions[0]; // Default to the first one found for this time string
+                    let chosenStartPosition = startPositions[0]; 
 
-                    // Heuristic for "09:45" which can appear multiple times for different slots
                     if (startStrFull === "09:45" && startPositions.length > 1) {
-                        if (slotKey === "09:45-10:00") { // This slot is usually the *second* "09:45" if "09:45-10:15" (REHAT) also exists
-                           // Find the "09:45" instance that is immediately before "10:00"
+                        if (slotKey === "09:45-10:00") { 
                            const tenOClockPos = timeXPositions["10:00"];
                            if (tenOClockPos && tenOClockPos.length > 0) {
                                let bestNine45 = startPositions[0];
                                let minDist = Infinity;
                                startPositions.forEach(sp => {
-                                   if (sp.x < tenOClockPos[0].x) { // Must be before 10:00
+                                   if (sp.x < tenOClockPos[0].x) { 
                                        let dist = tenOClockPos[0].x - (sp.x + sp.width);
-                                       if (dist >= 0 && dist < minDist) {
+                                       if (dist >= 0 && dist < minDist && dist < 30) { // Ensure it's reasonably close before 10:00
                                            minDist = dist;
                                            bestNine45 = sp;
                                        }
                                    }
                                });
                                chosenStartPosition = bestNine45;
-                           } else { // Fallback if 10:00 isn't clearly found
-                               chosenStartPosition = startPositions[startPositions.length -1]; // Guess the rightmost 09:45
+                           } else { 
+                               chosenStartPosition = startPositions[startPositions.length -1]; 
                            }
-                        } // else for "09:45-10:15", the default first one is usually correct
+                        } // else for "09:45-10:15", the default first one (leftmost) is usually correct
                     }
 
 
-                    let slotX0 = chosenStartPosition.x - 2; // Adjusted padding
+                    let slotX0 = chosenStartPosition.x - 2; 
                     let slotX1;
 
                     if (slotKey === "09:45-10:15" && timeXPositions["10:15"] && timeXPositions["10:15"].length > 0) { 
@@ -546,7 +550,7 @@
                         slotX0 = timeXPositions["10:30"][0].x - 2; 
                         slotX1 = timeXPositions["11:00"][0].x + timeXPositions["11:00"][0].width + 2;
                     } else if (timeXPositions[endStrFull] && timeXPositions[endStrFull].length > 0) {
-                        const suitableEndPos = timeXPositions[endStrFull].find(ep => ep.x > chosenStartPosition.x);
+                        const suitableEndPos = timeXPositions[endStrFull].find(ep => ep.x > chosenStartPosition.x + chosenStartPosition.width - 5); // end must be after start's text
                         if (suitableEndPos) {
                            const startH = parseInt(startStrFull.split(':')[0]);
                            const startM = parseInt(startStrFull.split(':')[1]);
@@ -555,17 +559,17 @@
                            const durationMinutes = (endH - startH) * 60 + (endM - startM);
 
                            if (durationMinutes === 15) {
-                               slotX1 = suitableEndPos.x + 2; // End at start of the end-time text for 15-min
+                               slotX1 = suitableEndPos.x + 2; 
                            } else { 
                                slotX1 = suitableEndPos.x + suitableEndPos.width + 2;
                            }
                         } else {
-                             slotX1 = chosenStartPosition.x + chosenStartPosition.width + 30; // Fallback: approx 30px width for a slot segment
+                             slotX1 = chosenStartPosition.x + chosenStartPosition.width + 30; 
                         }
-                    } else { // Fallback if end time string not found in header for x-pos
+                    } else { 
                         slotX1 = chosenStartPosition.x + chosenStartPosition.width + 30; 
                     }
-                    if (slotX1 > slotX0) { // Ensure x1 is actually after x0
+                    if (slotX1 > slotX0) { 
                         timeSlotDefs.push({ time_slot_key: slotKey, x0: slotX0, x1: slotX1 });
                     }
                 }
@@ -573,7 +577,6 @@
             
             const finalDefs = [];
             const addedKeys = new Set();
-            // Sort by the predefined order of keys to ensure consistency
             EXPECTED_TIME_SLOTS_KEYS.forEach(expectedKey => {
                 const foundDef = timeSlotDefs.find(def => def.time_slot_key === expectedKey);
                 if (foundDef && !addedKeys.has(expectedKey)) {
@@ -581,11 +584,9 @@
                     addedKeys.add(expectedKey);
                 }
             });
-            // Add any remaining defs that might have been found but not in expected (shouldn't happen with current logic)
-            timeSlotDefs.forEach(def => {
+            timeSlotDefs.forEach(def => { // Add any others not in expected (should not happen if logic is tight to EXPECTED_TIME_SLOTS_KEYS)
                 if(!addedKeys.has(def.time_slot_key)){
-                    finalDefs.push(def);
-                    addedKeys.add(def.time_slot_key);
+                    finalDefs.push(def); // This case should ideally not be hit
                 }
             });
 
@@ -600,54 +601,43 @@
             });
 
             const teacherNameTokensArray = teacherNameFull.toUpperCase().split(/\s+/)
-                .map(p => p.replace(/[^A-Z0-9À-ÖØ-öø-ſ]/gi, '')) // Allow more characters for names
+                .map(p => p.replace(/[^A-Z0-9À-ÖØ-öø-ſ]/gi, '')) 
                 .filter(p => p.length > 1 && !["BIN", "BINTI", "A/L", "A/P", "BT", "BTE"].includes(p));
             const teacherNameTokens = new Set(teacherNameTokensArray);
             
             const commonSubjectCodes = ["PH", "KOKO", "P", "SJ", "MM", "BI", "SN", "BM", "RBT", "ASK", "PM", "PI", "PS", "PA", "PJ", "GE", "FIZ", "KIM", "BIO", "MMT", "MT", "SEJ", "REHAT", "TAW", "IV", "BC"];
 
-
             const itemsByCell = {}; 
-            const MIN_Y_FOR_CONTENT = pageHeight * 0.22; // Below time headers
-            const MAX_Y_FOR_CONTENT = pageHeight * 0.90; // Above footer
+            const MIN_Y_FOR_CONTENT = pageHeight * 0.22; 
+            const MAX_Y_FOR_CONTENT = pageHeight * 0.90; 
 
             for (const item of items) {
                 if (item.y < MIN_Y_FOR_CONTENT || item.y > MAX_Y_FOR_CONTENT) continue;
                 
                 const itemTextUpper = item.text.toUpperCase();
                 let isPartOfTeacherNameDisplay = false;
-
-                // Check if the current item text strongly suggests it's part of the teacher's name in a cell
-                // (e.g., "PN.", "EN." followed by a known name token, or a name token itself)
-                // This is hard to do perfectly without context of surrounding items in the cell.
-                // A simpler check: if the item text, when cleaned, is one of the teacher's name tokens
-                // and it's NOT a common subject code.
                 const cleanedItemForNameCheck = itemTextUpper.replace(/[^A-Z0-9À-ÖØ-öø-ſ]/gi, '');
+
                 if (teacherNameTokens.has(cleanedItemForNameCheck) && !commonSubjectCodes.includes(itemTextUpper)) {
-                    isPartOfTeacherNameDisplay = true;
+                    // Further check: if the item is short and a common prefix like "EN." it's more likely part of name
+                    if (itemTextUpper.length <= 3 && itemTextUpper.endsWith(".")) {
+                        isPartOfTeacherNameDisplay = true;
+                    } else if (itemTextUpper.length > 1) { // Avoid single letter common codes being filtered as name
+                         isPartOfTeacherNameDisplay = true;
+                    }
                 }
-                // Also filter out titles if they are likely part of the name
-                const commonTitlesNoDot = ["EN", "PN", "CIK", "UST", "DR", "MR"];
-                 if (commonTitlesNoDot.includes(itemTextUpper.replace('.',''))) {
-                    // Check if a name token follows, this requires looking at items already grouped in cell.
-                    // For now, if it's a title, assume it MIGHT be part of name display and be cautious.
-                    // This is too aggressive if titles are also subject codes.
-                 }
-
-
+                
                 if (isPartOfTeacherNameDisplay) continue;
 
-
                 for (const dayLabel of dayLabels) {
-                    // Check if item's y-center is within day's vertical band
                     const itemYCenter = item.y + item.height / 2;
-                    if (itemYCenter >= dayLabel.y0 && itemYCenter <= dayLabel.y1 + 5) { // +5 for tolerance
+                    if (itemYCenter >= dayLabel.y0 && itemYCenter <= dayLabel.y1 + 5) { 
                         for (const slotDef of timeSlotDefinitions) {
                             const itemXCenter = item.x + item.width / 2;
                             if (itemXCenter >= slotDef.x0 && itemXCenter <= slotDef.x1) {
                                 const cellKey = `${dayLabel.day}_${slotDef.time_slot_key}`;
                                 if (!itemsByCell[cellKey]) itemsByCell[cellKey] = [];
-                                if (item.text.trim() && !item.text.match(/^\d{1,2}:\d{2}$/)) { // Not empty & not a time string
+                                if (item.text.trim() && !item.text.match(/^\d{1,2}:\d{2}$/)) { 
                                    itemsByCell[cellKey].push({text: item.text.trim(), x: item.x, y: item.y, height: item.height});
                                 }
                                 break; 
@@ -662,15 +652,13 @@
                 const cellItems = itemsByCell[cellKey];
                 if (cellItems.length === 0) continue;
 
-                // Group by approximate line (y-coordinate)
                 const lines = {};
-                cellItems.sort((a,b) => a.y - b.y || a.x - b.x); // Pre-sort for easier line grouping
+                cellItems.sort((a,b) => a.y - b.y || a.x - b.x); 
 
                 cellItems.forEach(itm => {
                     let foundLineKey = null;
                     for (const lineYStr in lines) {
                         const lineAvgY = parseFloat(lineYStr);
-                        // Check if item's y is close to the average y of an existing line
                         if (Math.abs(itm.y - lineAvgY) < itm.height * 0.7) { 
                             foundLineKey = lineYStr;
                             break;
@@ -678,9 +666,8 @@
                     }
                     if (foundLineKey) {
                         lines[foundLineKey].push(itm);
-                        // Optional: re-calculate lineAvgY if needed, but simple grouping by first item's y is often enough
                     } else {
-                        lines[itm.y.toFixed(1)] = [itm]; // Use toFixed to group close y values
+                        lines[itm.y.toFixed(1)] = [itm]; 
                     }
                 });
 
