@@ -1,136 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Teacher Timetables</title>
+<title>SMK Seri Pulai Perdana – Timetable Viewer</title>
+<script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-  /* ---- basic look --------------------------------------------------- */
-  body      { font-family: Arial, Helvetica, sans-serif; margin: 0; }
-  section   { padding: 20px; page-break-after: always; }
-  h2        { margin: 0 0 12px; font-size: 16px; }
+/* —— blue ASC-Timetables palette —— */
+:root{
+  --asc-blue: #dce9ff;      /* cell fill   */
+  --asc-blue-dark:#007aff;  /* headings    */
+  --asc-blue-header:#eaf3ff;
+}
+table.asc   { border-collapse:collapse; width:100% }
+table.asc th, table.asc td{ border:1px solid #a6c8ff; padding:4px 6px; font-size:13px}
+table.asc thead th{ background:var(--asc-blue-header); color:#000; font-weight:600 }
+table.asc tbody th{ background:var(--asc-blue-dark); color:#fff; width:90px }
+table.asc tbody td{ background:var(--asc-blue) }
 
-  table     { border-collapse: collapse; width: 100%; }
-  th, td    { border: 1px solid #ccc; padding: 4px 6px; font-size: 12px;
-              text-align: center; }
-  th        { background: #d7dde8; }
-  td        { background: #fffbe8; }
-  td.day    { background: #d9f0ff; font-weight: 600; width: 120px;
-              text-align: left; }
-  @media print { body{margin:0} }
+.sticky-col{ position:sticky; left:0; z-index:1 }
+.sticky-head th{ position:sticky; top:0; z-index:2 }
 </style>
 </head>
-<body>
+<body class="bg-gray-100 flex flex-col h-full text-gray-800">
 
-<div id="root" style="padding:20px">Loading timetable …</div>
+<header class="p-6 bg-indigo-600 text-white text-center shadow">
+  <h1 class="text-2xl font-semibold">SMK Seri Pulai Perdana – Timetable Viewer</h1>
+  <p class="text-sm mt-1">Upload <em>Jadual_nama.pdf</em>, wait a moment, then scroll.</p>
+
+  <form id="uploadForm" class="mt-4 flex items-center justify-center gap-3 flex-wrap">
+    <input type="file" name="file" accept="application/pdf"
+           class="text-sm file:mr-3 file:p-2 file:border-0 file:font-semibold file:bg-white file:text-indigo-700">
+    <button class="px-4 py-2 bg-white text-indigo-700 font-semibold rounded shadow">
+      Upload & View
+    </button>
+  </form>
+  <div id="status" class="mt-2 text-sm"></div>
+</header>
+
+<main id="timetables" class="p-6 space-y-10 overflow-y-auto flex-1"></main>
 
 <script>
-/* ─────────────────────────── constants ─────────────────────────────── */
-const FULL  = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
-const ABBR  = ["Mo","Tu","We","Th","Fr"];
-const BLOCKS = [
-  "07:15-07:45","07:45-08:15","08:15-08:45","08:45-09:15",
-  "09:15-09:45","09:45-10:00",
-  "09:45-10:15","10:00-10:30","10:15-10:30",
-  "10:30-11:00","11:00-11:30","11:30-12:00","12:00-12:30",
-  "12:30-13:00","13:00-13:30","13:30-14:00","14:00-14:30",
-  "14:30-15:00","15:00-15:30"
-];
-
-/* ─────────────────── fetch + main render entry point ───────────────── */
-fetch('teacher_schedules.json')
-  .then(r => r.json())
-  .then(renderAll)
-  .catch(err => document.getElementById('root')
-          .textContent = '⚠ ' + err.message);
-
-function renderAll(db){
-  const root = document.getElementById('root');
-  root.innerHTML = '';
-
-  Object.entries(db).forEach(([name, teacherObj])=>{
-      const sec = document.createElement('section');
-      sec.innerHTML = `<h2>NAMA GURU: ${name}</h2>`;
-      sec.appendChild(buildTable(teacherObj));
-      root.appendChild(sec);
-  });
+/* —— simple cell cleanup —— */
+function tidy(text){
+  return (text||'').replace(/\s+/g,' ').trim();
 }
 
-/* ───────────────── schema-agnostic table builder ───────────────────── */
-function buildTable(t){
-  /* recognise which layout this teacher uses */
-  const hasAbbr = ABBR.some(k => k in t);
-  const hasDays = ('days' in t);
-  const hasRows = ('rows' in t);
-
-  let tbl;
-  if (hasAbbr)          tbl = fromAbbr(t);
-  else if (hasDays)     tbl = fromDays(t.blocks, t.days);
-  else if (hasRows)     tbl = fromRows(t.blocks, t.rows, t.rowTitles||[]);
-  else {                // unknown schema
-      tbl = document.createElement('div');
-      tbl.textContent = '⚠ Unrecognised data';
-  }
-  return tbl;
-}
-
-/* ---------- helpers for the three recognised schemas ---------------- */
-function headerRow(tbl, blocks){
-  const h = tbl.insertRow();
-  h.insertCell().outerHTML = '<th>Day</th>';
-  blocks.forEach(b => h.insertCell().outerHTML =
-      `<th>${b.replace('-', ' - ')}</th>`);
-}
-
-function fromAbbr(teacher){
-  const tbl = document.createElement('table');
-  headerRow(tbl, BLOCKS);
-
-  FULL.forEach((dayName, dIdx) => {
-      const tr = tbl.insertRow();
-      tr.insertCell().outerHTML = `<td class="day">${dayName}</td>`;
-      BLOCKS.forEach(block => {
-          const txt = ((teacher[ABBR[dIdx]] || {})[block] || []).join(', ');
-          const td  = tr.insertCell();
-          if (txt) td.textContent = txt;
+function render(data){
+  const root=document.getElementById('timetables');
+  root.innerHTML='';
+  data.forEach(t=>{
+    const card=document.createElement('section');
+    card.className='bg-white rounded-xl shadow overflow-hidden';
+    const hdr=`<div class="bg-gray-50 px-6 py-4 border-b">
+                 <h2 class="text-lg font-bold text-indigo-700">${t.teacher}</h2>
+               </div>`;
+    let tbl=`<div class="overflow-x-auto"><table class="asc"><thead class="sticky-head"><tr>
+               <th class="sticky-col">Day</th>`;
+    t.times.forEach(ts=>{ tbl+=`<th>${ts.replace('-',' - ')}</th>`; });
+    tbl+='</tr></thead><tbody>';
+    for(const [day,row] of Object.entries(t.schedule)){
+      tbl+=`<tr><th class="sticky-col">${day}</th>`;
+      row.forEach(cell=>{
+        const txt=tidy(cell);
+        tbl+=`<td>${txt.replace(/,?\s*([A-Z]{1,4})\s*/g,'<div>$1</div>')}</td>`;
       });
+      tbl+='</tr>';
+    }
+    tbl+='</tbody></table></div>';
+    card.innerHTML=hdr+tbl;
+    root.appendChild(card);
   });
-  return tbl;
 }
 
-function fromDays(blocks, days){
-  const tbl = document.createElement('table');
-  headerRow(tbl, blocks);
-
-  FULL.forEach(dayName => {
-      const tr = tbl.insertRow();
-      tr.insertCell().outerHTML = `<td class="day">${dayName}</td>`;
-      (days[dayName] || []).forEach(cell=>{
-          const td = tr.insertCell();
-          if (cell) td.textContent = cell;
-      });
-  });
-  return tbl;
-}
-function fromRows(blocks, rows, titles){
-  const tbl = document.createElement('table');
-  headerRow(tbl, blocks);
-
-  // If there are exactly 5 physical rows, assume Mon-Fri order.
-  const label = rows.length === 5 ? FULL : titles;
-
-  rows.forEach((row, idx) => {
-      const tr = tbl.insertRow();
-      tr.insertCell().outerHTML =
-          `<td class="day">${label[idx] || 'Row '+(idx+1)}</td>`;
-      row.forEach(c=>{
-          const td = tr.insertCell();
-          if (c) td.textContent = c;
-      });
-  });
-  return tbl;
-}
+/* —— upload handler —— */
+document.getElementById('uploadForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const f=e.target.file.files[0]; if(!f)return;
+  const msg=document.getElementById('status'); msg.textContent='Processing…';
+  const res=await fetch('/api/upload',{method:'POST',body:new FormData(e.target)});
+  const data=await res.json();
+  if(!res.ok){ msg.textContent='❌ '+(data.error||'unknown error'); return; }
+  render(data); msg.textContent=`Loaded ${data.length} timetables.`;
+});
 </script>
 </body>
 </html>
