@@ -1,89 +1,629 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SMK Seri Pulai Perdana – Timetable Viewer</title>
-<script src="https://cdn.tailwindcss.com"></script>
-
-<style>
-/* —— blue ASC-Timetables palette —— */
-:root{
-  --asc-blue: #dce9ff;      /* cell fill   */
-  --asc-blue-dark:#007aff;  /* headings    */
-  --asc-blue-header:#eaf3ff;
-}
-table.asc   { border-collapse:collapse; width:100% }
-table.asc th, table.asc td{ border:1px solid #a6c8ff; padding:4px 6px; font-size:13px}
-table.asc thead th{ background:var(--asc-blue-header); color:#000; font-weight:600 }
-table.asc tbody th{ background:var(--asc-blue-dark); color:#fff; width:90px }
-table.asc tbody td{ background:var(--asc-blue) }
-
-.sticky-col{ position:sticky; left:0; z-index:1 }
-.sticky-head th{ position:sticky; top:0; z-index:2 }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Schedule Viewer</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        h2 {
+            margin-top: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+        td.day-header {
+            font-weight: bold;
+            background-color: #f8f9fa;
+            width: 80px; /* Fixed width for Day column */
+        }
+        .rehat-cell {
+            background-color: #e6ffed; /* Light green for REHAT */
+            color: #28a745;
+            font-weight: bold;
+            text-align: center;
+        }
+        .controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .controls label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .controls input[type="file"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .controls button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .controls button:hover {
+            background-color: #0056b3;
+        }
+        #statusArea {
+            margin-top: 15px;
+            font-style: italic;
+            color: #555;
+            text-align: center;
+        }
+        .schedule-entry {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .schedule-entry li {
+            padding: 2px 0;
+        }
+    </style>
+    <!-- PDF.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>
+        // Set workerSrc for pdf.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+    </script>
 </head>
-<body class="bg-gray-100 flex flex-col h-full text-gray-800">
+<body>
+    <div class="container">
+        <h1>Teacher Schedule Viewer</h1>
 
-<header class="p-6 bg-indigo-600 text-white text-center shadow">
-  <h1 class="text-2xl font-semibold">SMK Seri Pulai Perdana – Timetable Viewer</h1>
-  <p class="text-sm mt-1">Upload <em>Jadual_nama.pdf</em>, wait a moment, then scroll.</p>
+        <div class="controls">
+            <label for="jsonFileManual">Load Another JSON File:</label>
+            <input type="file" id="jsonFileManual" accept=".json">
+            <button onclick="loadJsonFromManualFile()">Load JSON</button>
+            <br><br>
+            <label for="pdfFile">Import PDF File (for new extraction):</label>
+            <input type="file" id="pdfFile" accept=".pdf">
+            <button onclick="processPdf()">Process PDF</button>
+        </div>
 
-  <form id="uploadForm" class="mt-4 flex items-center justify-center gap-3 flex-wrap">
-    <input type="file" name="file" accept="application/pdf"
-           class="text-sm file:mr-3 file:p-2 file:border-0 file:font-semibold file:bg-white file:text-indigo-700">
-    <button class="px-4 py-2 bg-white text-indigo-700 font-semibold rounded shadow">
-      Upload & View
-    </button>
-  </form>
-  <div id="status" class="mt-2 text-sm"></div>
-</header>
+        <div id="statusArea">Attempting to load default schedule...</div>
+        <div id="scheduleOutput">
+            <!-- Tables will be rendered here -->
+        </div>
+    </div>
 
-<main id="timetables" class="p-6 space-y-10 overflow-y-auto flex-1"></main>
+    <script>
+        const DEFAULT_JSON_PATH = 'teacher_schedules.json'; // The JSON file in your GitHub repo
+        const DAYS_ORDER = ["Mo", "Tu", "We", "Th", "Fr"];
+        const EXPECTED_TIME_SLOTS_KEYS = [
+            "07:15-07:45", "07:45-08:15", "08:15-08:45", "08:45-09:15", "09:15-09:45",
+            "09:45-10:00", "09:45-10:15", "10:00-10:30", "10:15-10:30", "10:30-11:00",
+            "11:00-11:30", "11:30-12:00", "12:00-12:30", "12:30-13:00", "13:00-13:30",
+            "13:30-14:00", "14:00-14:30", "14:30-15:00", "15:00-15:30"
+        ];
 
-<script>
-/* —— simple cell cleanup —— */
-function tidy(text){
-  return (text||'').replace(/\s+/g,' ').trim();
-}
+        function setStatus(message, isError = false) {
+            const statusArea = document.getElementById('statusArea');
+            statusArea.textContent = message;
+            statusArea.style.color = isError ? 'red' : '#555';
+        }
 
-function render(data){
-  const root=document.getElementById('timetables');
-  root.innerHTML='';
-  data.forEach(t=>{
-    const card=document.createElement('section');
-    card.className='bg-white rounded-xl shadow overflow-hidden';
-    const hdr=`<div class="bg-gray-50 px-6 py-4 border-b">
-                 <h2 class="text-lg font-bold text-indigo-700">${t.teacher}</h2>
-               </div>`;
-    let tbl=`<div class="overflow-x-auto"><table class="asc"><thead class="sticky-head"><tr>
-               <th class="sticky-col">Day</th>`;
-    t.times.forEach(ts=>{ tbl+=`<th>${ts.replace('-',' - ')}</th>`; });
-    tbl+='</tr></thead><tbody>';
-    for(const [day,row] of Object.entries(t.schedule)){
-      tbl+=`<tr><th class="sticky-col">${day}</th>`;
-      row.forEach(cell=>{
-        const txt=tidy(cell);
-        tbl+=`<td>${txt.replace(/,?\s*([A-Z]{1,4})\s*/g,'<div>$1</div>')}</td>`;
-      });
-      tbl+='</tr>';
-    }
-    tbl+='</tbody></table></div>';
-    card.innerHTML=hdr+tbl;
-    root.appendChild(card);
-  });
-}
+        async function loadAndDisplayJson(filePath, sourceDescription) {
+            setStatus(`Loading ${sourceDescription}...`);
+            try {
+                const response = await fetch(filePath);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status} while fetching ${filePath}`);
+                }
+                const jsonData = await response.json();
+                displaySchedules(jsonData);
+                setStatus(`${sourceDescription} loaded and displayed.`);
+            } catch (e) {
+                setStatus(`Error loading or parsing ${sourceDescription}: ${e.message}`, true);
+                console.error(`Error with ${sourceDescription}:`, e);
+                // Optionally display a message in scheduleOutput if default load fails
+                if (sourceDescription.includes("default")) {
+                     document.getElementById('scheduleOutput').innerHTML = `<p>Could not load default schedule from ${DEFAULT_JSON_PATH}. You can try loading another JSON file manually or processing a PDF.</p>`;
+                }
+            }
+        }
 
-/* —— upload handler —— */
-document.getElementById('uploadForm').addEventListener('submit',async e=>{
-  e.preventDefault();
-  const f=e.target.file.files[0]; if(!f)return;
-  const msg=document.getElementById('status'); msg.textContent='Processing…';
-  const res=await fetch('/api/upload',{method:'POST',body:new FormData(e.target)});
-  const data=await res.json();
-  if(!res.ok){ msg.textContent='❌ '+(data.error||'unknown error'); return; }
-  render(data); msg.textContent=`Loaded ${data.length} timetables.`;
-});
-</script>
+        // Renamed function for clarity
+        function loadJsonFromManualFile() {
+            const fileInput = document.getElementById('jsonFileManual');
+            if (fileInput.files.length === 0) {
+                setStatus("Please select a JSON file first.", true);
+                return;
+            }
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const jsonData = JSON.parse(event.target.result);
+                    displaySchedules(jsonData);
+                    setStatus(`JSON file "${file.name}" loaded and displayed.`);
+                } catch (e) {
+                    setStatus(`Error parsing JSON file "${file.name}": ${e.message}`, true);
+                    console.error("Error parsing JSON:", e);
+                }
+            };
+            reader.onerror = function() {
+                setStatus(`Error reading file "${file.name}": ${reader.error}`, true);
+            };
+            reader.readAsText(file);
+        }
+
+        function displaySchedules(allTeachersData) {
+            const outputDiv = document.getElementById('scheduleOutput');
+            outputDiv.innerHTML = ''; // Clear previous output
+
+            if (!allTeachersData || Object.keys(allTeachersData).length === 0) {
+                outputDiv.innerHTML = '<p>No schedule data to display.</p>';
+                return;
+            }
+
+            const timeHeaders = [...EXPECTED_TIME_SLOTS_KEYS];
+
+            for (const teacherName in allTeachersData) {
+                const teacherSchedule = allTeachersData[teacherName];
+
+                const teacherHeader = document.createElement('h2');
+                teacherHeader.textContent = teacherName;
+                outputDiv.appendChild(teacherHeader);
+
+                const table = document.createElement('table');
+                const thead = document.createElement('thead');
+                const tbody = document.createElement('tbody');
+
+                const headerRow = document.createElement('tr');
+                const dayTh = document.createElement('th');
+                dayTh.textContent = 'Day';
+                headerRow.appendChild(dayTh);
+
+                timeHeaders.forEach(timeSlot => {
+                    const th = document.createElement('th');
+                    th.textContent = timeSlot.replace('-', ' - ');
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                DAYS_ORDER.forEach(dayKey => {
+                    if (teacherSchedule[dayKey]) {
+                        const dayData = teacherSchedule[dayKey];
+                        const row = document.createElement('tr');
+
+                        const dayCell = document.createElement('td');
+                        dayCell.textContent = getFullDayName(dayKey);
+                        dayCell.classList.add('day-header');
+                        row.appendChild(dayCell);
+
+                        timeHeaders.forEach(timeSlotKey => {
+                            const cell = document.createElement('td');
+                            const entries = dayData[timeSlotKey] || [];
+                            if (entries.length > 0) {
+                                const ul = document.createElement('ul');
+                                ul.classList.add('schedule-entry');
+                                entries.forEach(entryText => {
+                                    const li = document.createElement('li');
+                                    li.textContent = entryText;
+                                    ul.appendChild(li);
+                                    if (typeof entryText === 'string' && entryText.toUpperCase().includes("REHAT")) {
+                                        cell.classList.add('rehat-cell');
+                                    }
+                                });
+                                cell.appendChild(ul);
+                            }
+                            row.appendChild(cell);
+                        });
+                        tbody.appendChild(row);
+                    }
+                });
+
+                table.appendChild(tbody);
+                outputDiv.appendChild(table);
+            }
+        }
+
+        function getFullDayName(dayKey) {
+            const names = { "Mo": "Monday", "Tu": "Tuesday", "We": "Wednesday", "Th": "Thursday", "Fr": "Friday" };
+            return names[dayKey] || dayKey;
+        }
+
+        // --- PDF Processing Logic (Client-Side Re-implementation - Simplified) ---
+        async function processPdf() {
+            const fileInput = document.getElementById('pdfFile');
+            if (fileInput.files.length === 0) {
+                setStatus("Please select a PDF file first.", true);
+                return;
+            }
+            const file = fileInput.files[0];
+            setStatus(`Processing PDF "${file.name}"... this may take a moment.`);
+
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                try {
+                    const typedarray = new Uint8Array(event.target.result);
+                    const pdfDoc = await pdfjsLib.getDocument({ data: typedarray }).promise;
+                    const numPages = pdfDoc.numPages;
+                    let allTeachersData = {};
+
+                    for (let i = 1; i <= numPages; i++) {
+                        setStatus(`Processing page ${i} of ${numPages}...`);
+                        const page = await pdfDoc.getPage(i);
+                        const viewport = page.getViewport({ scale: 1.5 });
+                        const textContent = await page.getTextContent({ normalizeWhitespace: true });
+                        
+                        const items = textContent.items.map(item => {
+                            const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
+                            return {
+                                text: item.str,
+                                x: tx[4],
+                                y: viewport.height - tx[5],
+                                width: item.width * viewport.scale,
+                                height: item.height * viewport.scale,
+                                fontName: item.fontName
+                            };
+                        }).sort((a,b) => a.y - b.y || a.x - b.x);
+
+                        const teacherName = extractTeacherNameJS(items);
+                        if (teacherName && !allTeachersData[teacherName]) {
+                            const dayLabels = getDayLabelsJS(items, viewport.height);
+                            const timeSlotDefinitions = getTimeSlotDefinitionsJS(items, viewport.height);
+
+                            if (dayLabels.length > 0 && timeSlotDefinitions.length > 0) {
+                                allTeachersData[teacherName] = extractScheduleJS(items, dayLabels, timeSlotDefinitions, teacherName, viewport.height);
+                            } else {
+                                console.warn(`Skipping page ${i} for ${teacherName}: Missing day or time labels.`);
+                            }
+                        } else if (teacherName) {
+                             console.warn(`Teacher ${teacherName} from page ${i} might be a duplicate or already processed.`)
+                        } else {
+                            console.warn(`No teacher name found on page ${i}`);
+                        }
+                    }
+
+                    if (Object.keys(allTeachersData).length > 0) {
+                        displaySchedules(allTeachersData);
+                        setStatus(`PDF "${file.name}" processed and displayed.`);
+                    } else {
+                        setStatus(`Could not extract any schedule data from PDF "${file.name}". Check console for details.`, true);
+                    }
+
+                } catch (e) {
+                    setStatus(`Error processing PDF: ${e.message}`, true);
+                    console.error("Error processing PDF:", e);
+                }
+            };
+            reader.onerror = function() {
+                setStatus(`Error reading PDF file: ${reader.error}`, true);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // --- JS Re-implementations of Python extraction logic (Simplified, as before) ---
+        function extractTeacherNameJS(items) {
+            let nameParts = [];
+            let collecting = false;
+            const nameKeywords = ["NAMA GURU:", "TEACHER", "NAMA GURU"]; // Added "NAMA GURU"
+
+            for (const item of items) {
+                if (item.y > 100 && nameParts.length === 0) continue; 
+                if (item.y > 120 && collecting) break; 
+
+                const upperText = item.text.toUpperCase();
+                let keywordFound = false;
+                let textAfterKeyword = item.text;
+
+                for (const kw of nameKeywords) {
+                    if (upperText.startsWith(kw)) { // Check if item starts with keyword
+                        collecting = true;
+                        keywordFound = true;
+                        textAfterKeyword = item.text.substring(kw.length).trim();
+                        break; 
+                    }
+                }
+                 if(keywordFound){
+                    if (textAfterKeyword && textAfterKeyword.length > 1 && !textAfterKeyword.match(/^\W+$/)) {
+                        nameParts.push(textAfterKeyword);
+                    }
+                    continue;
+                 }
+
+
+                if (collecting) {
+                    if (upperText.includes("REHAT") || upperText.includes("ASSEMBLY") || item.text.match(/\d{1,2}:\d{2}/)) {
+                        break;
+                    }
+                    if (item.text.length > 1 && !item.text.match(/^\W+$/) && nameParts.length < 7) { 
+                        if (!["SMK", "SERI", "PULAI", "PERDANA", "JOHOR", "BAHRU"].includes(upperText) && !item.text.startsWith("SMK ")) {
+                            nameParts.push(item.text);
+                        }
+                    }
+                }
+            }
+            let fullName = nameParts.join(" ").replace(/[:,-]/g, "").trim().toUpperCase();
+            const schoolNameParts = ["SMK SERI PULAI PERDANA", "JOHOR BAHRU", "SMK", "SERI PULAI PERDANA", "SESI PAGI BIL."]; // Added "SESI PAGI BIL."
+            schoolNameParts.forEach(part => {
+                fullName = fullName.replace(part, "").trim();
+            });
+            // Remove trailing numbers and special characters that might be part of "BIL.1 2025"
+            fullName = fullName.replace(/\s*BIL\.\d+\s*\d{4}$/, "").trim();
+            fullName = fullName.replace(/\s*\d{4}$/, "").trim(); // Remove year if it's at the end
+
+            return fullName ? fullName : null;
+        }
+
+        function getDayLabelsJS(items, pageHeight) {
+            const dayLabels = [];
+            const pdfDays = ["Mo", "Tu", "We", "Th", "Fr"];
+            const dayYThreshold = pageHeight * 0.85; 
+
+            for (const item of items) {
+                if (pdfDays.includes(item.text) && item.x < 100) { 
+                    if(item.y > 150 && item.y < dayYThreshold) { 
+                        let existing = dayLabels.find(d => d.day === item.text);
+                        if (!existing) {
+                             dayLabels.push({ day: item.text, y_center: item.y + item.height / 2, y0: item.y, y1: item.y + item.height });
+                        } else { 
+                            existing.y0 = Math.min(existing.y0, item.y);
+                            existing.y1 = Math.max(existing.y1, item.y + item.height);
+                            existing.y_center = (existing.y0 + existing.y1) / 2;
+                        }
+                    }
+                }
+            }
+            return dayLabels.sort((a,b) => a.y_center - b.y_center);
+        }
+
+        function getTimeSlotDefinitionsJS(items, pageHeight) {
+            const timeSlotDefs = [];
+            const headerItems = items.filter(it => it.y > 100 && it.y < 180 && it.text.match(/^\d{1,2}:\d{2}$/)); 
+
+            const timeXPositions = {}; 
+            headerItems.forEach(item => {
+                const timeStr = item.text.split(':').map(p => p.padStart(2, '0')).join(':'); 
+                if (!timeXPositions[timeStr]) timeXPositions[timeStr] = [];
+                timeXPositions[timeStr].push({ x: item.x, width: item.width, center: item.x + item.width / 2 });
+            });
+
+            for (const time in timeXPositions) {
+                timeXPositions[time].sort((a,b) => a.x - b.x);
+            }
+            
+            EXPECTED_TIME_SLOTS_KEYS.forEach(slotKey => {
+                const [startStrFull, endStrFull] = slotKey.split('-');
+                
+                const startPositions = timeXPositions[startStrFull];
+                // const endPositions = timeXPositions[endStrFull]; // Not always reliable for x1
+
+                if (startPositions && startPositions.length > 0) {
+                    // Try to find the correct instance of startPosition, especially for "09:45"
+                    let chosenStartPosition;
+                    if (slotKey.startsWith("09:45") && slotKey !== "09:45-10:00" && startPositions.length > 1) {
+                         // Heuristic: for "09:45-10:15", it's usually the first "09:45" (leftmost)
+                         // For "09:45-10:00", it might be a specific one. This is tricky.
+                         // Let's assume for 09:45-10:15 it's the one involved in the wide REHAT.
+                         // This part needs the most robust logic.
+                        chosenStartPosition = startPositions[0]; // Default to first for now
+                         if (slotKey === "09:45-10:00" && startPositions.length > 1) {
+                            // Find the 09:45 that is NOT the start of the REHAT T1,T2,T4 block.
+                            // The REHAT block's 09:45 is usually the very first one by x-coordinate.
+                            // The standalone 09:45-10:00 one is further to the right.
+                            // This depends on the PDF structure.
+                            // If there are two 09:45, the second one might be for 09:45-10:00
+                            if(timeXPositions["10:00"] && timeXPositions["10:00"][0].x > startPositions[0].x + 50){ // if 10:00 is far
+                                chosenStartPosition = startPositions.find(sp => timeXPositions["10:00"] && Math.abs(sp.x + sp.width - timeXPositions["10:00"][0].x) < 20 ) || startPositions[0];
+                            } else {
+                                chosenStartPosition = startPositions[0];
+                            }
+
+                         }
+
+
+                    } else {
+                        chosenStartPosition = startPositions[0];
+                    }
+
+
+                    let slotX0 = chosenStartPosition.x - 5; 
+                    let slotX1;
+
+                    // Determine x1 based on the slotKey
+                    if (slotKey === "09:45-10:15" && timeXPositions["10:15"]) { // REHAT T1, T2 & T4
+                        slotX1 = timeXPositions["10:15"][0].x + timeXPositions["10:15"][0].width + 5;
+                    } else if (slotKey === "10:30-11:00" && timeXPositions["10:30"] && timeXPositions["11:00"]) { // REHAT T3 & T5
+                        slotX0 = timeXPositions["10:30"][0].x - 5; // Ensure correct x0 for this one too
+                        slotX1 = timeXPositions["11:00"][0].x + timeXPositions["11:00"][0].width + 5;
+                    } else if (timeXPositions[endStrFull] && timeXPositions[endStrFull].length > 0) {
+                        // Find an endPosition that is to the right of the chosen startPosition
+                        const suitableEndPos = timeXPositions[endStrFull].find(ep => ep.x > chosenStartPosition.x);
+                        if (suitableEndPos) {
+                           // For 15-min slots, end at the start of the end-time text
+                           if ((parseInt(endStrFull.split(':')[1]) - parseInt(startStrFull.split(':')[1]) + 60) % 60 === 15 &&
+                               parseInt(endStrFull.split(':')[0]) === parseInt(startStrFull.split(':')[0])) {
+                               slotX1 = suitableEndPos.x + 5;
+                           } else { // For 30-min or longer slots, end at the end of the end-time text
+                               slotX1 = suitableEndPos.x + suitableEndPos.width + 5;
+                           }
+                        } else {
+                             slotX1 = chosenStartPosition.x + chosenStartPosition.width + 35; // Fallback width
+                        }
+                    } else {
+                        slotX1 = chosenStartPosition.x + chosenStartPosition.width + 35; // Fallback width
+                    }
+                    timeSlotDefs.push({ time_slot_key: slotKey, x0: slotX0, x1: slotX1 });
+                }
+            });
+            
+            const finalDefs = [];
+            const seenKeys = new Set();
+            // Sort by key order first, then by x0 if keys are the same (though keys should be unique here)
+            timeSlotDefs.sort((a,b) => {
+                const indexA = EXPECTED_TIME_SLOTS_KEYS.indexOf(a.time_slot_key);
+                const indexB = EXPECTED_TIME_SLOTS_KEYS.indexOf(b.time_slot_key);
+                if (indexA !== indexB) return indexA - indexB;
+                return a.x0 - b.x0;
+            }).forEach(def => {
+                if(!seenKeys.has(def.time_slot_key)){
+                    finalDefs.push(def);
+                    seenKeys.add(def.time_slot_key);
+                }
+            });
+            return finalDefs;
+        }
+
+        function extractScheduleJS(items, dayLabels, timeSlotDefinitions, teacherNameFull, pageHeight) {
+            const schedule = {};
+            DAYS_ORDER.forEach(dKey => {
+                schedule[dKey] = {};
+                EXPECTED_TIME_SLOTS_KEYS.forEach(tsKey => schedule[dKey][tsKey] = []);
+            });
+
+            const teacherNameTokensArray = teacherNameFull.toUpperCase().split(/\s+/)
+                .map(p => p.replace(/[^A-Z0-9]/g, ''))
+                .filter(p => p.length > 2 && !["BIN", "BINTI", "A/L", "A/P", "BT", "BTE"].includes(p));
+            const teacherNameTokens = new Set(teacherNameTokensArray);
+
+            const itemsByCell = {}; 
+
+            for (const item of items) {
+                if (item.y < 180 || item.y > pageHeight * 0.9) continue; // Content area
+                
+                const itemTextUpper = item.text.toUpperCase();
+                const itemTextCleanedForNameCheck = itemTextUpper.replace(/[^A-Z0-9]/g, '');
+                
+                let isLikelyNamePartInCell = false;
+                // Check if the item is a token from the teacher's name
+                if (teacherNameTokens.has(itemTextCleanedForNameCheck)) {
+                     isLikelyNamePartInCell = true;
+                }
+                // Check for common titles followed by a name token (crude check based on item text only)
+                const commonTitlesNoDot = ["EN", "PN", "CIK", "UST", "DR", "MR"];
+                if (commonTitlesNoDot.includes(itemTextUpper.replace('.',''))) {
+                    // This is hard to do without looking at next item easily here.
+                    // For simplicity, if a title is found, we assume it *could* be part of a name.
+                    // A better filter: if item is a title AND a known name token is also in the cell.
+                }
+
+
+                // Skip item if it's considered part of the teacher's name display in the cell
+                // UNLESS it's a common subject code.
+                const commonSubjectCodes = ["PH", "KOKO", "P", "SJ", "MM", "BI", "SN", "BM", "RBT", "ASK", "PM", "PI", "PS", "PA", "PJ", "GE", "FIZ", "KIM", "BIO", "MMT", "MT", "SEJ", "REHAT", "TAW", "IV"];
+                if (isLikelyNamePartInCell && !commonSubjectCodes.includes(itemTextUpper)) {
+                    // Check if it's just a common prefix, e.g. "PN." for "PN. GOWRY KOKO"
+                    // If the item is "PN." and "GOWRY" is a token, this "PN." should be filtered.
+                    // This logic is still tricky. Let's make it simpler: if it's a direct name token, filter.
+                     let skip = false;
+                     for(const token of teacherNameTokensArray){
+                         if(itemTextUpper.includes(token) && itemTextUpper.length <= token.length + 2){ // e.g. "AZIZ" in "EN.ABD AZIZ KOKO"
+                             if(!commonSubjectCodes.includes(itemTextUpper)){ // "KOKO" should not be skipped
+                                 skip = true;
+                                 break;
+                             }
+                         }
+                     }
+                     if(skip) continue;
+                }
+
+
+                for (const dayLabel of dayLabels) {
+                    if (item.y >= dayLabel.y0 - item.height*0.5 && item.y <= dayLabel.y1 + item.height*0.5) { // Adjusted y-check
+                        for (const slotDef of timeSlotDefinitions) {
+                            const itemCenterX = item.x + item.width / 2;
+                            if (itemCenterX >= slotDef.x0 && itemCenterX <= slotDef.x1) {
+                                const cellKey = `${dayLabel.day}_${slotDef.time_slot_key}`;
+                                if (!itemsByCell[cellKey]) itemsByCell[cellKey] = [];
+                                if (item.text.trim() && !item.text.match(/^\d{1,2}:\d{2}$/)) {
+                                   itemsByCell[cellKey].push({text: item.text.trim(), x: item.x, y: item.y, top: item.y, bottom: item.y + item.height});
+                                }
+                                break; 
+                            }
+                        }
+                    }
+                }
+            }
+
+            for(const cellKey in itemsByCell){
+                const [day, slot] = cellKey.split('_');
+                // Sort items in a cell more like reading order (top-to-bottom, then left-to-right)
+                // and handle items that might be on the same "line" (similar y, different x)
+                const cellItems = itemsByCell[cellKey];
+                
+                // Group by approximate line (y-coordinate)
+                const lines = {};
+                cellItems.forEach(itm => {
+                    // Find a line this item belongs to or create a new one
+                    let foundLine = false;
+                    for (const lineYStr in lines) {
+                        const lineY = parseFloat(lineYStr);
+                        if (Math.abs(itm.top - lineY) < itm.height * 0.7) { // If y is close enough to existing line
+                            lines[lineYStr].push(itm);
+                            foundLine = true;
+                            break;
+                        }
+                    }
+                    if (!foundLine) {
+                        lines[itm.top.toFixed(2)] = [itm];
+                    }
+                });
+
+                let fullCellText = "";
+                // Sort lines by their y-coordinate, then items within line by x-coordinate
+                Object.keys(lines).sort((a,b) => parseFloat(a) - parseFloat(b)).forEach(lineYStr => {
+                    const lineText = lines[lineYStr].sort((a,b) => a.x - b.x).map(itm => itm.text).join(" ");
+                    if (fullCellText) fullCellText += " "; // Add space between lines if needed, or handle as separate list items
+                    fullCellText += lineText;
+                });
+                
+                if(fullCellText) {
+                    // Split if it seems to be multiple distinct entries (e.g. separated by significant whitespace or known delimiters)
+                    // For now, treat as single entry per cell if any text found.
+                    schedule[day][slot] = [fullCellText.trim()];
+                }
+            }
+            return schedule;
+        }
+
+
+        // Automatically load the default JSON when the page is ready
+        window.addEventListener('DOMContentLoaded', () => {
+            loadAndDisplayJson(DEFAULT_JSON_PATH, `default schedule (${DEFAULT_JSON_PATH})`);
+        });
+
+    </script>
 </body>
 </html>
