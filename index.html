@@ -1,170 +1,65 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Teacher Timetables</title>
-
-  <!-- Tailwind (just for layout/utility classes) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- ─── Custom CSS ──────────────────────────────────────────────────── -->
-  <style>
-    /* sticky first column & header row */
-    .sticky-col {
-      position: -webkit-sticky;
-      position: sticky;
-      left: 0;
-      background: #ffffff;
-      z-index: 10;
-    }
-    .sticky-header th {
-      position: -webkit-sticky;
-      position: sticky;
-      top: 0;
-      z-index: 20;
-    }
-    /* feel free to tweak these highlight colours */
-    .cell-subject   { background:#eef2ff; color:#4338ca; } /* indigo-50 / indigo-800 */
-    .cell-break     { background:#ecfdf5; color:#047857; } /* green-50 / green-700  */
-  </style>
+<meta charset="UTF-8">
+<title>Teacher Timetables</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  /* ====== STYLES ====== */
+  body      { font-family: Arial, sans-serif; margin:0; }
+  section   { padding:20px; page-break-after:always; }
+  h2        { margin:0 0 12px; }
+  table     { border-collapse:collapse; width:100%; }
+  th,td     { border:1px solid #ccc; padding:4px 6px; text-align:center; font-size:12px; }
+  th        { background:#d7dde8; }
+  td        { background:#fffbe8; }
+  td:first-child { font-weight:600; width:120px; background:#d9f0ff; }
+  @media print { body{margin:0} section{page-break-after:always} }
+</style>
 </head>
-<body class="bg-gray-50 text-gray-800 flex flex-col h-full">
+<body>
+<div id="root"></div>
 
-  <!-- ─── Header / Upload bar ─────────────────────────────────────────── -->
-  <header class="p-4 md:p-6 text-center bg-indigo-600 text-white">
-    <h1 class="text-2xl font-bold">SMK Seri Pulai Perdana – Timetable Viewer</h1>
-    <p class="text-sm mt-1">Upload <em>Jadual_nama.pdf</em>, wait a moment, then scroll.</p>
+<!-- ====== EMBEDDED DATA ====== -->
+<script id="data" type="application/json">
+  <<<PASTE JSON HERE>>>
+</script>
 
-    <form id="uploadForm" class="mt-4 flex flex-col items-center gap-2">
-      <input type="file"
-             name="file"
-             accept="application/pdf"
-             class="block w-64 text-sm text-gray-900 file:mr-4 file:p-2
-                    file:border-0 file:text-sm file:bg-white file:text-indigo-600
-                    file:font-semibold">
-      <button class="px-4 py-2 bg-white text-indigo-600 font-semibold rounded shadow">
-        Upload &amp; View
-      </button>
-    </form>
-    <div id="status" class="mt-2 text-sm"></div>
-  </header>
+<script>
+/* ====== RENDER LOGIC ====== */
+const db = JSON.parse(document.getElementById('data').textContent);
+const root = document.getElementById('root');
 
-  <!-- ─── Dynamic timetable cards appear here ─────────────────────────── -->
-  <main id="timetables-container"
-        class="p-4 md:p-8 space-y-12 overflow-y-auto flex-1"></main>
+Object.entries(db).forEach(([name, t])=>{
+  const sec = document.createElement('section');
+  sec.appendChild(heading(name));
+  sec.appendChild(build(t));
+  root.appendChild(sec);
+});
 
-  <!-- ─── JavaScript bundle (all in-line) ─────────────────────────────── -->
-  <script>
-  /* ---------------- Configuration lists ------------------------------ */
-  const VALID_SUBJECTS = [
-    "PH","KOKO","P","IV","MM","PNG","PI","LET","PM","BC","FIZ","KKQ","RB","GE",
-    "NILAM","ASK","IB","PLC","SN","DBM","KIM","PD","RBT","TAW","PPS","BI","MMT",
-    "D","NA INSAN","BA","SJ","PJ","REHAT"
-  ];
-  const VALID_VENUES = [
-    "M.KOM 1","M.KOM 2","M3","MAK.BIO","MAK.KIM","M2","BENGKEL E",
-    "B. LUKISAN","B. DIGITAL","BENGKEL. P","B.NILAM","PAK 21 A","BENGKEL R"
-  ];
+function heading(name){
+  const h = document.createElement('h2');
+  h.textContent = 'NAMA GURU: ' + name;
+  return h;
+}
 
-  /* ---------------- Helper: parse raw cell text ---------------------- */
-  function parseCellContent(content){
-    const r = { subject:'', venue:'' };
-    if(!content || typeof content!=='string') return r;
-
-    const u = content.toUpperCase();
-    if(/\b(PN|EN|CIK|MISS|MR|UST|USTAZ|NAMA GURU)\b/.test(u)) return r;
-
-    VALID_SUBJECTS.forEach(s => {
-      if(new RegExp(`\\b${s}\\b`).test(u)) r.subject = s;
+function build({blocks, rows, rowTitles}){
+  const tbl = document.createElement('table');
+  // header
+  const hr = tbl.insertRow();
+  hr.insertCell().outerHTML = '<th>Nama&nbsp;/&nbsp;Masa</th>';
+  blocks.forEach(b=>hr.insertCell().outerHTML='<th>'+b.replace('-', ' - ')+'</th>');
+  // body
+  rows.forEach((row,i)=>{
+    const tr = tbl.insertRow();
+    tr.insertCell().textContent = rowTitles[i] || '';
+    row.forEach(cell=>{
+      const td = tr.insertCell();
+      if(cell) td.textContent = cell;
     });
-    VALID_VENUES.forEach(v => {
-      if(u.includes(v.replace(/\./g,'\\.'))) r.venue = v;
-    });
-
-    if(u === 'REHAT'){ r.subject = 'REHAT'; r.venue = ''; }
-    return r;
-  }
-
-  /* ---------------- Render timetable JSON into cards ----------------- */
-  function render(data){
-    const host = document.getElementById('timetables-container');
-    host.innerHTML = '';
-
-    data.forEach(t => {
-      const card = document.createElement('div');
-      card.className = 'bg-white rounded-xl shadow-md overflow-hidden';
-
-      /* card header */
-      let html = `
-        <div class="p-4 sm:p-6 border-b">
-          <h2 class="text-xl font-bold text-indigo-700">${t.teacher}</h2>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="min-w-full text-sm">
-            <thead class="bg-gray-100 sticky-header">
-              <tr>
-                <th class="sticky-col p-3 font-semibold w-28">Day</th>
-                ${t.times.map(x => `
-                  <th class="p-3 font-semibold text-center min-w-[95px]">
-                    ${x.replace('-', ' - ')}
-                  </th>`).join('')}
-              </tr>
-            </thead>
-            <tbody>`;
-
-      /* rows per weekday */
-      Object.entries(t.schedule).forEach(([day,row])=>{
-        html += `
-          <tr class="border-t">
-            <td class="sticky-col bg-gray-50 font-semibold p-3">${day}</td>`;
-        row.forEach(cell => {
-          const {subject,venue} = parseCellContent(cell);
-          let cls = '';
-          if(subject && subject !== 'REHAT') cls = 'cell-subject';
-          else if(subject === 'REHAT')      cls = 'cell-break';
-
-          html += `
-            <td class="p-3 border-l text-center h-16 ${cls}">
-              ${subject ? `
-                <div class="font-semibold">
-                  ${subject}
-                  ${venue ? `<div class="text-xs">${venue}</div>` : ''}
-                </div>` : ''}
-            </td>`;
-        });
-        html += '</tr>';
-      });
-
-      html += '</tbody></table></div>';
-      card.innerHTML = html;
-      host.appendChild(card);
-    });
-  }
-
-  /* ---------------- File-upload handler ------------------------------ */
-  document.getElementById('uploadForm').addEventListener('submit', async e=>{
-    e.preventDefault();
-    const file = e.target.file.files[0];
-    if(!file) return;
-
-    const status = document.getElementById('status');
-    status.textContent = 'Processing PDF …';
-
-    const form = new FormData();
-    form.append('file', file);
-
-    try{
-      const res  = await fetch('/api/upload', { method:'POST', body: form });
-      const json = await res.json();
-      if(!res.ok) throw new Error(json.error || 'Unknown error');
-
-      render(json);
-      status.textContent = `Loaded ${json.length} timetables.`;
-    }catch(err){
-      status.textContent = '❌ ' + err.message;
-    }
   });
-  </script>
+  return tbl;
+}
+</script>
 </body>
 </html>
