@@ -7,51 +7,145 @@
 
 <style>
   /* ---- basic look --------------------------------------------------- */
-  body      { font-family: Arial, Helvetica, sans-serif; margin: 0; }
-  section   { padding: 20px; page-break-after: always; }
-  h2        { margin: 0 0 12px; font-size: 16px; }
+  body      { font-family: Arial, Helvetica, sans-serif; margin: 0; background-color: #f4f7f6; }
+  section   {
+    padding: 20px;
+    page-break-after: always;
+    background-color: #ffffff;
+    margin: 20px auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    max-width: 90%; /* Responsive width */
+    overflow-x: auto; /* Enable horizontal scrolling for tables on small screens */
+  }
+  h2        {
+    margin: 0 0 20px; /* Increased margin for better spacing */
+    font-size: 1.5rem; /* Larger font size for headers */
+    color: #333;
+    text-align: center;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 10px;
+  }
 
-  table     { border-collapse: collapse; width: 100%; }
-  th, td    { border: 1px solid #ccc; padding: 4px 6px; font-size: 12px;
-              text-align: center; }
-  th        { background: #d7dde8; }
-  td        { background: #fffbe8; }
-  td.day    { background: #d9f0ff; font-weight: 600; width: 120px;
-              text-align: left; }
-  @media print { body{margin:0} }
+  table     {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 700px; /* Ensure table is wide enough for content */
+  }
+  th, td    {
+    border: 1px solid #c9d6df; /* Softer border color */
+    padding: 8px 12px; /* Increased padding */
+    font-size: 0.85rem; /* Slightly larger font size for readability */
+    text-align: center;
+    word-wrap: break-word; /* Ensure long words break */
+    white-space: normal; /* Allow text to wrap */
+  }
+  th        {
+    background: #dbe9f6; /* Lighter blue header */
+    color: #3f51b5; /* Darker blue text */
+    font-weight: 700;
+    position: sticky;
+    top: 0;
+    z-index: 10; /* Keep headers visible on scroll */
+  }
+  td        {
+    background: #eef5f9; /* Light yellow background */
+    color: #4a4a4a;
+  }
+  td.day    {
+    background: #b0d9f4; /* More prominent day column */
+    font-weight: 600;
+    width: 120px; /* Fixed width for day column */
+    text-align: left;
+    color: #1a237e; /* Dark blue for day names */
+    position: sticky;
+    left: 0;
+    z-index: 5; /* Keep day column visible on horizontal scroll */
+  }
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    section {
+      padding: 15px;
+      margin: 15px auto;
+      max-width: 95%;
+    }
+    h2 {
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+    }
+    th, td {
+      padding: 6px 8px;
+      font-size: 0.8rem;
+    }
+    td.day {
+      min-width: 90px; /* Adjust day column width for mobile */
+    }
+  }
+
+  @media print {
+    body { margin: 0; }
+    section {
+      box-shadow: none;
+      border: 1px solid #ccc;
+      page-break-after: always; /* Ensure each teacher on a new page */
+    }
+  }
 </style>
 </head>
 <body>
 
-<div id="root" style="padding:20px">Loading timetable …</div>
+<div id="root" style="padding:20px; text-align: center;">Loading timetable …</div>
 
 <script>
 /* ─────────────────────────── constants ─────────────────────────────── */
 const FULL  = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
 const ABBR  = ["Mo","Tu","We","Th","Fr"];
-const BLOCKS = [
+
+// Hardcoded BLOCKS with desired display time ranges for headers
+const BLOCKS_DISPLAY = [
   "07:15-07:45","07:45-08:15","08:15-08:45","08:45-09:15",
-  "09:15-09:45","09:45-10:00",
-  "09:45-10:15","10:00-10:30","10:15-10:30",
+  "09:15-09:45","09:45-10:00", // Break/Transition
+  "09:45-10:15","10:00-10:30","10:15-10:30", // Break/Transition
   "10:30-11:00","11:00-11:30","11:30-12:00","12:00-12:30",
   "12:30-13:00","13:00-13:30","13:30-14:00","14:00-14:30",
   "14:30-15:00","15:00-15:30"
 ];
 
 /* ─────────────────── fetch + main render entry point ───────────────── */
-fetch('teacher_schedules.json')
-  .then(r => r.json())
-  .then(renderAll)
-  .catch(err => document.getElementById('root')
-          .textContent = '⚠ ' + err.message);
+// Fetch the JSON data from the specified file
+fetch('teacher_schedules.json') // Fetch the combined JSON
+  .then(r => {
+    if (!r.ok) {
+      throw new Error(`HTTP error! status: ${r.status}`);
+    }
+    return r.json();
+  })
+  .then(data => {
+    // We don't directly use data.time_blocks for header display anymore,
+    // but it's useful to understand the actual keys present in the JSON.
+    // data.time_blocks contains the exact keys like "07:00", "07:15", etc.
+    renderAll(data.teachers);
+  })
+  .catch(err => {
+    // Display error message if fetching or parsing fails
+    const root = document.getElementById('root');
+    root.innerHTML = `<div style="color: red; font-weight: bold; padding: 20px;">
+                        ⚠ Error loading timetable: ${err.message}.<br>
+                        Please ensure 'teacher_schedules.json' exists and is a valid JSON.
+                      </div>`;
+    console.error("Error loading timetable:", err);
+  });
 
-function renderAll(db){
+function renderAll(teachersDb){ // Renamed db to teachersDb for clarity
   const root = document.getElementById('root');
-  root.innerHTML = '';
+  root.innerHTML = ''; // Clear the loading message
 
-  Object.entries(db).forEach(([name, teacherObj])=>{
+  // Iterate over each teacher entry in the JSON database
+  Object.entries(teachersDb).forEach(([name, teacherObj])=>{
       const sec = document.createElement('section');
+      // Create a header for the teacher's name
       sec.innerHTML = `<h2>NAMA GURU: ${name}</h2>`;
+      // Build and append the timetable table for the current teacher
       sec.appendChild(buildTable(teacherObj));
       root.appendChild(sec);
   });
@@ -59,46 +153,72 @@ function renderAll(db){
 
 /* ───────────────── schema-agnostic table builder ───────────────────── */
 function buildTable(t){
-  /* recognise which layout this teacher uses */
-  const hasAbbr = ABBR.some(k => k in t);
-  const hasDays = ('days' in t);
-  const hasRows = ('rows' in t);
+  /*
+  Recognise which layout this teacher uses based on the structure of their data.
+  The current JSON uses the 'abbr' (abbreviated day names like Mo, Tu) schema.
+  */
+  const hasAbbr = ABBR.some(k => k in t); // Check if any abbreviated day is a top-level key
 
   let tbl;
-  if (hasAbbr)          tbl = fromAbbr(t);
-  else if (hasDays)     tbl = fromDays(t.blocks, t.days);
-  else if (hasRows)     tbl = fromRows(t.blocks, t.rows, t.rowTitles||[]);
-  else {                // unknown schema
-      tbl = document.createElement('div');
-      tbl.textContent = '⚠ Unrecognised data';
+  if (hasAbbr) {
+    tbl = fromAbbr(t); // Use the function designed for abbreviated day names
+  } else {
+    // Fallback for unknown schema, providing an error message
+    tbl = document.createElement('div');
+    tbl.textContent = '⚠ Unrecognised data format for this teacher.';
+    tbl.style.color = 'orange';
+    tbl.style.fontWeight = 'bold';
+    tbl.style.textAlign = 'center';
+    tbl.style.padding = '20px';
   }
   return tbl;
 }
 
-/* ---------- helpers for the three recognised schemas ---------------- */
-function headerRow(tbl, blocks){
+/* ---------- helpers for the recognised schemas ---------------- */
+function headerRow(tbl, blocksToDisplay){
   const h = tbl.insertRow();
+  // First header cell for 'Day'
   h.insertCell().outerHTML = '<th>Day</th>';
-  blocks.forEach(b => h.insertCell().outerHTML =
-      `<th>${b.replace('-', ' - ')}</th>`);
+  // Create header cells for each time block to display with the desired range format
+  blocksToDisplay.forEach(b => {
+    h.insertCell().outerHTML = `<th>${b.replace('-', ' - ')}</th>`; 
+  });
 }
 
 function fromAbbr(teacher){
   const tbl = document.createElement('table');
-  headerRow(tbl, BLOCKS);
+  // Pass the hardcoded BLOCKS_DISPLAY (time ranges) to headerRow for header presentation
+  headerRow(tbl, BLOCKS_DISPLAY);
 
   FULL.forEach((dayName, dIdx) => {
       const tr = tbl.insertRow();
+      // Add the day name cell
       tr.insertCell().outerHTML = `<td class="day">${dayName}</td>`;
-      BLOCKS.forEach(block => {
-          const txt = ((teacher[ABBR[dIdx]] || {})[block] || []).join(', ');
+      
+      // Get the data for the current day (e.g., teacher['Mo'])
+      const dayData = teacher[ABBR[dIdx]] || {};
+      
+      // Iterate through each display block (time range)
+      BLOCKS_DISPLAY.forEach(blockRange => {
+          // Extract the start time from the block range, e.g., "07:15" from "07:15-07:45"
+          // This extracted start time is the key used in the JSON.
+          let startTimeKey = blockRange.split('-')[0];
+          
+          // Retrieve the cell content using the exact startTimeKey
+          const cellText = dayData[startTimeKey];
+          
           const td  = tr.insertCell();
-          if (txt) td.textContent = txt;
+          // If content exists for this slot, display it. Otherwise, leave cell empty.
+          if (cellText) {
+              td.textContent = cellText;
+          }
       });
   });
   return tbl;
 }
 
+// fromDays and fromRows functions are kept for schema compatibility,
+// although the current JSON only uses the 'fromAbbr' schema.
 function fromDays(blocks, days){
   const tbl = document.createElement('table');
   headerRow(tbl, blocks);
@@ -113,6 +233,7 @@ function fromDays(blocks, days){
   });
   return tbl;
 }
+
 function fromRows(blocks, rows, titles){
   const tbl = document.createElement('table');
   headerRow(tbl, blocks);
