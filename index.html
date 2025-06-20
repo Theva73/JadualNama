@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <title>Teacher Timetables</title>
   <style>
-    body { font-family: sans-serif; padding: 1rem; background: #f5f7fa; }
-    .teacher-card { background: white; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.1); margin-bottom: 2rem; padding: 1rem; }
+    body { font-family: sans-serif; margin: 1rem; background: #f5f7fa; }
+    .teacher-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.1); margin-bottom: 2rem; padding: 1rem; }
     .teacher-card h2 { margin: 0 0 1rem; font-size: 1.25rem; }
     table.schedule { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
     table.schedule th, table.schedule td { border: 1px solid #d0d7de; padding: 4px; text-align: center; }
@@ -15,7 +15,6 @@
   </style>
 </head>
 <body>
-
   <div id="schedules">Loading…</div>
 
   <script>
@@ -25,42 +24,43 @@
     const DAY_ABBR  = ["Mo","Tu","We","Th","Fr"];
     const DAY_NAME  = { Mo:"Monday", Tu:"Tuesday", We:"Wednesday", Th:"Thursday", Fr:"Friday" };
 
-    fetch("YOUR_JSON_FILENAME.json")        // ← <=== put your real JSON filename here
+    fetch("teacher_schedules.json")
       .then(r => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();
       })
       .then(data => {
-        CONTAINER.innerHTML = "";           // clear “Loading…”
+        CONTAINER.innerHTML = "";  // clear “Loading…”
         const teachers = data;
         const names = Object.keys(teachers);
         if (!names.length) {
-          CONTAINER.innerHTML = "<p>No data found.</p>";
+          CONTAINER.innerHTML = "<p>No schedules found.</p>";
           return;
         }
 
-        // Derive the 19 slots from the first teacher's Mo row
-        const firstWeek = teachers[names[0]].Mo;
-        const slots = Object.keys(firstWeek);
+        // derive the 19 slot keys from the first teacher’s Mo
+        const slots = Object.keys(teachers[names[0]].Mo);
         if (slots.length !== 19) {
-          console.warn("Expected 19 slots, got", slots.length, slots);
+          console.warn("Expected 19 slots, got", slots);
         }
 
-        // Render each teacher
+        // render each teacher
         names.forEach(name => {
           const week = teachers[name];
 
+          // card wrapper
           const card = document.createElement("div");
           card.className = "teacher-card";
-
+          // title
           const h2 = document.createElement("h2");
           h2.textContent = `Nama Guru: ${name}`;
           card.appendChild(h2);
 
+          // table
           const tbl = document.createElement("table");
           tbl.className = "schedule";
 
-          // HEADER
+          // header
           const thead = tbl.createTHead();
           const hr = thead.insertRow();
           hr.insertCell().outerHTML = "<th>Day</th>";
@@ -73,15 +73,19 @@
             hr.appendChild(th);
           });
 
-          // BODY
+          // body
           const tbody = tbl.createTBody();
           DAY_ABBR.forEach(d => {
             const tr = tbody.insertRow();
-            tr.insertCell().textContent = DAY_NAME[d];
+            // day name
+            const tdDay = tr.insertCell();
+            tdDay.textContent = DAY_NAME[d];
+            tdDay.style.fontWeight = "bold";
+            // 19 slots
             slots.forEach(slot => {
               const td = tr.insertCell();
-              const lines = (week[d] && week[d][slot]) || [];
-              td.innerHTML = lines.map(l=>`<div>${l}</div>`).join("");
+              const entries = (week[d] && week[d][slot]) || [];
+              td.innerHTML = entries.map(l => `<div>${l}</div>`).join("");
             });
           });
 
@@ -91,10 +95,11 @@
       })
       .catch(err => {
         console.error(err);
-        CONTAINER.innerHTML = `<p style="color:red">Error loading data: ${err.message}</p>`;
+        CONTAINER.innerHTML = `<p style="color:red">
+          Error loading data: ${err.message}
+        </p>`;
       });
   })();
   </script>
-
 </body>
 </html>
