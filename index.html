@@ -23,7 +23,8 @@
     const DAY_ABBR   = ["Mo","Tu","We","Th","Fr"];
     const DAY_NAME   = { Mo:"Monday", Tu:"Tuesday", We:"Wednesday", Th:"Thursday", Fr:"Friday" };
 
-    fetch("teacher_schedules_clean.json")
+    // ← fetch the actual file you have in your repo:
+    fetch("teacher_schedules.json")
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
@@ -31,30 +32,28 @@
       .then(teachers => {
         CONTAINER.innerHTML = "";
         const names = Object.keys(teachers);
-        if (names.length === 0) {
+        if (!names.length) {
           CONTAINER.innerHTML = "<p>No data available.</p>";
           return;
         }
 
-        // derive the slot‐keys from the first teacher’s Mo row
-        const sampleWeek = teachers[names[0]].Mo;
-        const slots = Object.keys(sampleWeek);
+        // derive the time‐slot keys from the first teacher’s Mo row
+        const sampleRow = teachers[names[0]].Mo;
+        const slots = Object.keys(sampleRow);
         if (slots.length !== 19) {
           console.warn("Expected 19 slots, got", slots.length, slots);
         }
 
-        // for each teacher, build a card + table
+        // render each teacher’s card + table
         names.forEach(name => {
           const week = teachers[name];
 
-          // card wrapper
           const card = document.createElement("div");
           card.className = "teacher-card";
           const h2 = document.createElement("h2");
           h2.textContent = `Nama Guru: ${name}`;
           card.appendChild(h2);
 
-          // table
           const tbl = document.createElement("table");
           tbl.className = "schedule";
 
@@ -73,19 +72,17 @@
           const tbody = tbl.createTBody();
           DAY_ABBR.forEach(d => {
             const tr = tbody.insertRow();
-            // Day label
             const tdDay = tr.insertCell();
             tdDay.textContent = DAY_NAME[d];
             tdDay.style.fontWeight = "bold";
-            // 19 slots
-            slots.forEach(slot => {
+
+            slots.forEach(slotKey => {
               const td = tr.insertCell();
-              const entries = week[d][slot] || [];
-              // render only subject/class/venue
+              const entries = (week[d] && week[d][slotKey]) || [];
               td.innerHTML = entries.map(e => {
-                let parts = [ e.subject ];
-                if (e.class)   parts.push(e.class);
-                if (e.venue)   parts.push(e.venue);
+                const parts = [ e.subject ];
+                if (e.class) parts.push(e.class);
+                if (e.venue) parts.push(e.venue);
                 return `<div>${parts.join(" ")}</div>`;
               }).join("");
             });
