@@ -20,10 +20,9 @@
   <script>
   (function(){
     const CONTAINER = document.getElementById("schedules");
-    const DAY_ABBR   = ["Mo","Tu","We","Th","Fr"];
-    const DAY_NAME   = { Mo:"Monday", Tu:"Tuesday", We:"Wednesday", Th:"Thursday", Fr:"Friday" };
+    const DAY_ABBR  = ["Mo","Tu","We","Th","Fr"];
+    const DAY_NAME  = { Mo:"Monday", Tu:"Tuesday", We:"Wednesday", Th:"Thursday", Fr:"Friday" };
 
-    // ← fetch the actual file you have in your repo:
     fetch("teacher_schedules.json")
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -37,38 +36,43 @@
           return;
         }
 
-        // derive the time‐slot keys from the first teacher’s Mo row
-        const sampleRow = teachers[names[0]].Mo;
-        const slots = Object.keys(sampleRow);
+        // Derive the 19 slot-keys from the first teacher’s Mo row
+        const sampleMo = teachers[names[0]].Mo;
+        const slots = Object.keys(sampleMo);
         if (slots.length !== 19) {
           console.warn("Expected 19 slots, got", slots.length, slots);
         }
 
-        // render each teacher’s card + table
         names.forEach(name => {
           const week = teachers[name];
-
           const card = document.createElement("div");
           card.className = "teacher-card";
+
+          // Title
           const h2 = document.createElement("h2");
           h2.textContent = `Nama Guru: ${name}`;
           card.appendChild(h2);
 
+          // Table
           const tbl = document.createElement("table");
           tbl.className = "schedule";
 
-          // header
+          // HEADER
           const thead = tbl.createTHead();
           const hr = thead.insertRow();
           hr.insertCell().outerHTML = "<th>Day</th>";
+
           slots.forEach(slot => {
-            const [start,end] = slot.split(" - ");
+            // *** SPLIT ON "-" ***
+            const [rawStart, rawEnd] = slot.split("-");
+            const start = rawStart.padStart(5,"0");
+            const end   = rawEnd  .padStart(5,"0");
             const th = document.createElement("th");
             th.innerHTML = `${start}<br>–<br>${end}`;
             hr.appendChild(th);
           });
 
-          // body
+          // BODY
           const tbody = tbl.createTBody();
           DAY_ABBR.forEach(d => {
             const tr = tbody.insertRow();
@@ -76,9 +80,10 @@
             tdDay.textContent = DAY_NAME[d];
             tdDay.style.fontWeight = "bold";
 
-            slots.forEach(slotKey => {
+            slots.forEach(slot => {
               const td = tr.insertCell();
-              const entries = (week[d] && week[d][slotKey]) || [];
+              const entries = (week[d] && week[d][slot]) || [];
+              // render only subject, class, venue
               td.innerHTML = entries.map(e => {
                 const parts = [ e.subject ];
                 if (e.class) parts.push(e.class);
