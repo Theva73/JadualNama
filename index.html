@@ -16,7 +16,7 @@
 </head>
 <body>
 
-  <div id="schedules"></div>
+  <div id="schedules">Loading…</div>
 
   <script>
   (function(){
@@ -25,10 +25,13 @@
     const DAY_ABBR  = ["Mo","Tu","We","Th","Fr"];
     const DAY_NAME  = { Mo:"Monday", Tu:"Tuesday", We:"Wednesday", Th:"Thursday", Fr:"Friday" };
 
-    fetch("teacher_schedules_raw.json")
-      .then(r => r.json())
+    fetch("YOUR_JSON_FILENAME.json")        // ← <=== put your real JSON filename here
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then(data => {
-        // data is { teacherName: { Mo: { slot: [...] }, Tu: { ... }, … }, … }
+        CONTAINER.innerHTML = "";           // clear “Loading…”
         const teachers = data;
         const names = Object.keys(teachers);
         if (!names.length) {
@@ -43,49 +46,42 @@
           console.warn("Expected 19 slots, got", slots.length, slots);
         }
 
-        // For each teacher, build a card + table
+        // Render each teacher
         names.forEach(name => {
           const week = teachers[name];
 
-          // Card wrapper
           const card = document.createElement("div");
           card.className = "teacher-card";
 
-          // Title
           const h2 = document.createElement("h2");
           h2.textContent = `Nama Guru: ${name}`;
           card.appendChild(h2);
 
-          // Table
           const tbl = document.createElement("table");
           tbl.className = "schedule";
 
-          // THEAD
+          // HEADER
           const thead = tbl.createTHead();
           const hr = thead.insertRow();
           hr.insertCell().outerHTML = "<th>Day</th>";
           slots.forEach(slot => {
-            const [start, end] = slot.split("-");
-            const fmtStart = start.padStart(5,"0");
-            const fmtEnd   = end.padStart(5,"0");
+            const [start,end] = slot.split("-");
+            const s = start.padStart(5,"0");
+            const e = end.padStart(5,"0");
             const th = document.createElement("th");
-            th.innerHTML = `${fmtStart}<br>–<br>${fmtEnd}`;
+            th.innerHTML = `${s}<br>–<br>${e}`;
             hr.appendChild(th);
           });
 
-          // TBODY
+          // BODY
           const tbody = tbl.createTBody();
           DAY_ABBR.forEach(d => {
             const tr = tbody.insertRow();
-            // Day label
-            const tdDay = tr.insertCell();
-            tdDay.textContent = DAY_NAME[d];
-            tdDay.style.fontWeight = "bold";
-            // 19 slots
+            tr.insertCell().textContent = DAY_NAME[d];
             slots.forEach(slot => {
               const td = tr.insertCell();
               const lines = (week[d] && week[d][slot]) || [];
-              td.innerHTML = lines.map(l => `<div>${l}</div>`).join("");
+              td.innerHTML = lines.map(l=>`<div>${l}</div>`).join("");
             });
           });
 
