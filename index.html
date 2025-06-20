@@ -28,6 +28,8 @@
       text-align: center;
       vertical-align: middle;
       word-wrap: break-word;
+      /* prevent headers & day names from splitting */
+      white-space: nowrap;
     }
     table.schedule th {
       background: #e3f2fd;
@@ -55,7 +57,7 @@
     let data;
     try {
       const res = await fetch("teacher_schedules.json");
-      if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       data = await res.json();
     } catch (err) {
       container.innerHTML = `<p style="color:red">Error loading data: ${err.message}</p>`;
@@ -63,51 +65,36 @@
       return;
     }
 
-    // Normalize the JSON shape:
-    // - if you have { timeSlots: [...], teachers: {...} }, use that
-    // - otherwise assume data is the teachers map
+    // If your JSON is { teachers: {...} } unwrap it, else assume it's the map itself
     const teachers = data.teachers || data;
-    const teacherNames = Object.keys(teachers);
-    if (!teacherNames.length) {
+    const names = Object.keys(teachers);
+    if (!names.length) {
       container.innerHTML = "<p>No teacher schedules found.</p>";
       return;
     }
 
-    // Derive the 19 slot-keys:
-    // Prefer data.timeSlots if it exists, else pull from the first teacher's Mo
-    const rawSlots = Array.isArray(data.timeSlots)
-      ? data.timeSlots
-      : Object.keys( teachers[teacherNames[0]].Mo );
-
-    // Prepare a list of { key, display } so we can split on either '-' or '–'
-    const slots = rawSlots.map(slot => {
-      const [start,end] = slot.split(/\s*[–-]\s*/);
-      const s = start.padStart(5,"0");
-      const e = end  .padStart(5,"0");
-      return { key: slot, display: `${s} - ${e}`, html: `${s}<br>–<br>${e}` };
-    });
-
-    // Clear the “Loading…” text
-    container.innerHTML = "";
+    // Derive our 19 slots from the first teacher’s Mo row
+    const sampleMo = teachers[names[0]].Mo;
+    const slots    = Object.keys(sampleMo);
 
     // Day ordering
-    const DAY_ABBR = ["Mo","Tu","We","Th","Fr"];
-    const DAY_LABEL= { Mo:"Monday",Tu:"Tuesday",We:"Wednesday",Th:"Thursday",Fr:"Friday" };
+    const DAY_ABBR  = ["Mo","Tu","We","Th","Fr"];
+    const DAY_LABEL = { Mo:"Monday",Tu:"Tuesday",We:"Wednesday",Th:"Thursday",Fr:"Friday" };
+
+    // Clear loading text
+    container.innerHTML = "";
 
     // Build one card+table per teacher
-    teacherNames.forEach(name => {
+    for (const name of names) {
       const week = teachers[name];
 
-      // Card wrapper
-      const card = document.createElement("div");
-      card.className = "teacher-card";
+      const wrapper = document.createElement("div");
+      wrapper.className = "teacher-card";
 
-      // Title
       const h2 = document.createElement("h2");
       h2.textContent = "Nama Guru: " + name;
-      card.appendChild(h2);
+      wrapper.appendChild(h2);
 
-      // Table
       const table = document.createElement("table");
       table.className = "schedule";
 
@@ -115,40 +102,41 @@
       const thead = table.createTHead();
       const hr = thead.insertRow();
       hr.insertCell().outerHTML = "<th>Day</th>";
-      slots.forEach(slot => {
+      for (const slot of slots) {
+        const [start,end] = slot.split(/\s*[–-]\s*/);
+        const s = start.padStart(5,"0");
+        const e = end  .padStart(5,"0");
         const th = document.createElement("th");
-        th.innerHTML = slot.html;
+        th.innerHTML = `${s}<br>–<br>${e}`;
         hr.appendChild(th);
-      });
+      }
 
       // TBODY
       const tbody = table.createTBody();
-      DAY_ABBR.forEach(abbr => {
+      for (const abbr of DAY_ABBR) {
         const tr = tbody.insertRow();
-        // Day name cell
         tr.insertCell().outerHTML = `<th>${DAY_LABEL[abbr]}</th>`;
-        // 19 time-slots
-        slots.forEach(slot => {
+
+        for (const slot of slots) {
           const td = tr.insertCell();
-          const entries = (week[abbr] && week[abbr][slot.key]) || [];
+          const entries = (week[abbr] && week[abbr][slot]) || [];
           if (entries.length) {
             td.innerHTML = entries.map(e => {
-              // Only class, subject, venue
+              // only class, subject, venue
               const parts = [];
-              if (e.class)   parts.push(e.class);
               if (e.subject) parts.push(e.subject);
+              if (e.class)   parts.push(e.class);
               if (e.venue)   parts.push(e.venue);
-              return `<div>${parts.join("<br>")}</div>`;
+              return `<div>${parts.join(" ")}</div>`;
             }).join("");
           }
-        });
-      });
+        }
+      }
 
-      card.appendChild(table);
-      container.appendChild(card);
-    });
+      wrapper.appendChild(table);
+      container.appendChild(wrapper);
+    }
   })();
   </script>
-
 </body>
 </html>
