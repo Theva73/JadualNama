@@ -9,114 +9,137 @@
     .teacher-card h2{margin:0 0 1rem;font-size:1.25rem}
     table.schedule{width:100%;border-collapse:collapse;margin-bottom:1rem}
     table.schedule th,table.schedule td{border:1px solid #d0d7de;padding:4px;text-align:center}
-    table.schedule th{background:#c6e0ff;font-size:.85rem}
+    table.schedule th{background:#c6e0ff;font-size:.82rem;line-height:1.25}
     table.schedule td{background:#eef6fc;height:2.5rem}
-    table.schedule td div{font-size:.85rem;line-height:1.15}
+    table.schedule td div{font-size:.83rem;line-height:1.15;white-space:nowrap}
   </style>
 </head>
 <body>
   <div id="schedules">Loading…</div>
 
   <script>
-  (function () {
-    const CONTAINER = document.getElementById('schedules');
-    const FULL_DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
-    const DAY_ABBR  = ['Mo','Tu','We','Th','Fr'];
-    const DAY_NAME  = {Mo:'Monday',Tu:'Tuesday',We:'Wednesday',Th:'Thursday',Fr:'Friday'};
+  (async () => {
+    const EL   = document.getElementById('schedules');
+    const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
 
-    // words we always strip if they appear alone
+    /* -----------------------------------------------------------------
+       1.  Vocabulary the script is **allowed** to keep inside a cell
+    ----------------------------------------------------------------- */
+    const SUBJECTS = new Set([
+      'PH','KOKO','P','IV','MM','PNG','PI','LET','PM','BC','FIZ','KKQ','RB','GE','NILAM',
+      'ASK','IB','PLC','SN','DBM','KIM','PD','RBT','TAW','PPS','BI','MMT','D','BA','SJ',
+      'PJ','PTS','PTW','AP','TS','TS1','TS2'   // add / remove freely
+    ]);
+    /* Honorifics and titles that should always vanish ---------------- */
     const HONORIFICS = new Set(['EN','PN','PUAN','TUAN','CIK','DR','UST','USTAZ','USTAZAH']);
 
-    /** Return true when token looks like a teacher’s name or honorific */
-    function isTeacherToken(tok, teacherTokens) {
-      const clean = tok.replace(/[^A-Z]/gi,'').toUpperCase();
-      if (!clean) return true;            // strip punctuation-only tokens
-      if (HONORIFICS.has(clean)) return true;
-      return teacherTokens.has(clean);    // one of the teacher’s own name parts
+    /* -----------------------------------------------------------------
+       2.  Fetch JSON and build a global dictionary of all teacher names
+    ----------------------------------------------------------------- */
+    let data;
+    try {
+      const res = await fetch('teacher_schedules.json');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      data = await res.json();
+    } catch (err) {
+      EL.innerHTML = `<p style="color:red">Failed to load data &mdash; ${err.message}</p>`;
+      console.error(err);
+      return;
     }
 
-    fetch('teacher_schedules.json')
-      .then(r => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then(data => {
-        CONTAINER.innerHTML = '';                                 // clear “Loading…”
-        const teachers = data;
-        const teacherNames = Object.keys(teachers);
-        if (!teacherNames.length) {
-          CONTAINER.textContent = 'No schedules found.';
-          return;
-        }
-
-        // derive slot list from first teacher
-        const slots = Object.keys(teachers[teacherNames[0]].Mo);
-
-        teacherNames.forEach(name => {
-          const week = teachers[name];
-
-          // build a fast-lookup set of this teacher’s own name parts
-          const teacherTokens = new Set(
-            name.split(/\s+/).map(t => t.replace(/[^A-Z]/gi,'').toUpperCase())
-          );
-
-          // card wrapper
-          const card = document.createElement('div');
-          card.className = 'teacher-card';
-
-          // title
-          const h2 = document.createElement('h2');
-          h2.textContent = `Nama Guru: ${name}`;
-          card.appendChild(h2);
-
-          // timetable
-          const tbl = document.createElement('table');
-          tbl.className = 'schedule';
-
-          // header row
-          const thead = tbl.createTHead();
-          const hr = thead.insertRow();
-          hr.insertCell().outerHTML = '<th>Day</th>';
-          slots.forEach(slot => {
-            const [s,e] = slot.split('-');
-            const th = document.createElement('th');
-            th.innerHTML = `${s.padStart(5,'0')}<br>–<br>${e.padStart(5,'0')}`;
-            hr.appendChild(th);
-          });
-
-          // body rows
-          const tbody = tbl.createTBody();
-          DAY_ABBR.forEach(d => {
-            const row = tbody.insertRow();
-            const dayCell = row.insertCell();
-            dayCell.textContent = DAY_NAME[d];
-            dayCell.style.fontWeight = 'bold';
-
-            slots.forEach(slot => {
-              const cell = row.insertCell();
-              const raw = (week[d] && week[d][slot]) || [];
-
-              // filter out teacher names / honorifics
-              const filtered = raw.filter(tok => !isTeacherToken(tok, teacherTokens));
-
-              // collapse repeated commas/“&” that may be left behind
-              const tidy = filtered.join(' ').replace(/\s*&\s*/g,' & ').trim();
-
-              // show each logical chunk on its own line
-              cell.innerHTML = tidy
-                .split(/\s*,\s*|\s{2,}/)        // split by commas or double-spaces
-                .filter(Boolean)
-                .map(txt => `<div>${txt}</div>`)
-                .join('');
-            });
-          });
-
-          card.appendChild(tbl);
-          CONTAINER.appendChild(card);
-        });
-      })
-      .catch(err => {
-        console.error(err);
-        CONTAINER.innerHTML =
-          `<p style="color:red">Error loading data: ${err.message}</p>`;
+    // pull every distinct word (length ≥ 2) from *all* teacher names
+    const NAME_PARTS = new Set();
+    Object.keys(data).forEach(full => {
+      full.split(/\s+/).forEach(w => {
+        const letters = w.replace(/[^A-Z]/gi,'').toUpperCase();
+        if (letters.length >= 2) NAME_PARTS.add(letters);
       });
+    });
+
+    /* -----------------------------------------------------------------
+       3.  Helper that recognises “tokens” we must hide
+    ----------------------------------------------------------------- */
+    function looksLikeTeacherToken(raw) {
+      // a digit inside → definitely keep (class / form / combo codes)
+      if (/\d/.test(raw)) return false;
+      // anything with a dot, ampersand, or just punctuation → rubbish
+      if (/[.&]/.test(raw) || !/[A-Z]/i.test(raw)) return true;
+
+      const letters = raw.replace(/[^A-Z]/gi,'').toUpperCase();
+      if (SUBJECTS.has(letters))            return false;      // allowed subject code
+      if (HONORIFICS.has(letters))          return true;       // EN., PN., DR., …
+      if (NAME_PARTS.has(letters))          return true;       // exact name piece
+
+      // partial overlap with a longer name fragment (e.g. EN.AB → ENAB)
+      for (const part of NAME_PARTS)
+        if (part.length >= 3 && letters.includes(part)) return true;
+
+      // single-letter garbage that isn’t a known subject (e.g. “Z”)
+      if (letters.length === 1)             return true;
+
+      return false;                                         // keep everything else
+    }
+
+    /* -----------------------------------------------------------------
+       4.  Build timetable cards
+    ----------------------------------------------------------------- */
+    EL.innerHTML = '';                 // clear the “Loading…” placeholder
+    const firstTeacher = Object.keys(data)[0];
+    const SLOT_LIST    = Object.keys(data[firstTeacher].Mo);   // time columns
+
+    Object.entries(data).forEach(([teacher, weekObj]) => {
+      /* ---------- card wrapper ---------- */
+      const card = document.createElement('div');
+      card.className = 'teacher-card';
+
+      /* ---------- title ---------- */
+      const h2 = document.createElement('h2');
+      h2.textContent = `Nama Guru: ${teacher}`;
+      card.appendChild(h2);
+
+      /* ---------- timetable ---------- */
+      const tbl  = document.createElement('table');
+      tbl.className = 'schedule';
+      const thead = tbl.createTHead();
+      const hRow = thead.insertRow();
+      hRow.insertCell().outerHTML = '<th>Day</th>';
+      SLOT_LIST.forEach(slot => {
+        const [s, e] = slot.split('-');
+        const th = document.createElement('th');
+        th.innerHTML = `${s.padStart(5,'0')}<br>&ndash;<br>${e.padStart(5,'0')}`;
+        hRow.appendChild(th);
+      });
+      const tbody = tbl.createTBody();
+
+      DAYS.forEach(day => {
+        const row = tbody.insertRow();
+        const c0  = row.insertCell();    // day name
+        c0.textContent = day;
+        c0.style.fontWeight = 'bold';
+
+        SLOT_LIST.forEach(slot => {
+          const cell  = row.insertCell();
+          const raw   = (weekObj[day.slice(0,2)] || weekObj[day.slice(0,2).replace('Tu','Tu')])[slot] || [];
+          const kept  = raw.filter(tok => !looksLikeTeacherToken(tok));
+
+          // clean up stray commas / ampersands
+          const pretty = kept
+            .join(' ')
+            .replace(/\s*&\s*/g,' & ')
+            .replace(/\s*,\s*/g,', ')
+            .trim();
+
+          cell.innerHTML = pretty
+            .split(/\s{2,}|,\s*/)   // split on double-space *or* commas
+            .filter(Boolean)
+            .map(txt => `<div>${txt}</div>`)
+            .join('');
+        });
+      });
+
+      card.appendChild(tbl);
+      EL.appendChild(card);
+    });
   })();
   </script>
 </body>
