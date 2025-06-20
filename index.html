@@ -4,138 +4,101 @@
   <meta charset="UTF-8">
   <title>Teacher Timetables</title>
   <style>
-    body { font-family: sans-serif; background: #f5f7fa; padding: 1rem; }
-    .teacher-card {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      margin-bottom: 2rem;
-      padding: 1rem;
-    }
-    .teacher-card h2 {
-      margin: 0 0 1rem;
-      font-size: 1.3rem;
-    }
-    table.schedule {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
-    table.schedule th,
-    table.schedule td {
-      border: 1px solid #d0d7de;
-      padding: 6px;
-      text-align: center;
-      vertical-align: middle;
-      word-wrap: break-word;
-      /* prevent headers & day names from splitting */
-      white-space: nowrap;
-    }
-    table.schedule th {
-      background: #e3f2fd;
-      font-size: 0.85rem;
-      line-height: 1.2;
-    }
-    table.schedule tbody th {
-      background: #bbdefb;
-      text-align: left;
-      font-weight: bold;
-    }
-    table.schedule td div {
-      margin: 2px 0;
-      font-size: 0.85rem;
-    }
+    body { font-family: sans-serif; margin: 1rem; background: #f5f7fa; }
+    .teacher-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.1); margin-bottom: 2rem; padding: 1rem; }
+    .teacher-card h2 { margin: 0 0 1rem; font-size: 1.25rem; }
+    table.schedule { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+    table.schedule th, table.schedule td { border: 1px solid #d0d7de; padding: 4px; text-align: center; }
+    table.schedule th { background: #c6e0ff; font-size: 0.85rem; }
+    table.schedule td { height: 2.5rem; background: #eef6fc; }
+    table.schedule td div { font-size: 0.85rem; }
   </style>
 </head>
 <body>
-
-  <div id="schedules">Loading teacher schedules…</div>
+  <div id="schedules">Loading…</div>
 
   <script>
-  (async function() {
-    const container = document.getElementById("schedules");
-    let data;
-    try {
-      const res = await fetch("teacher_schedules.json");
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      data = await res.json();
-    } catch (err) {
-      container.innerHTML = `<p style="color:red">Error loading data: ${err.message}</p>`;
-      console.error(err);
-      return;
-    }
-
-    // If your JSON is { teachers: {...} } unwrap it, else assume it's the map itself
-    const teachers = data.teachers || data;
-    const names = Object.keys(teachers);
-    if (!names.length) {
-      container.innerHTML = "<p>No teacher schedules found.</p>";
-      return;
-    }
-
-    // Derive our 19 slots from the first teacher’s Mo row
-    const sampleMo = teachers[names[0]].Mo;
-    const slots    = Object.keys(sampleMo);
-
-    // Day ordering
+  (function(){
+    const CONTAINER = document.getElementById("schedules");
+    const FULL_DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
     const DAY_ABBR  = ["Mo","Tu","We","Th","Fr"];
-    const DAY_LABEL = { Mo:"Monday",Tu:"Tuesday",We:"Wednesday",Th:"Thursday",Fr:"Friday" };
+    const DAY_NAME  = { Mo:"Monday", Tu:"Tuesday", We:"Wednesday", Th:"Thursday", Fr:"Friday" };
 
-    // Clear loading text
-    container.innerHTML = "";
-
-    // Build one card+table per teacher
-    for (const name of names) {
-      const week = teachers[name];
-
-      const wrapper = document.createElement("div");
-      wrapper.className = "teacher-card";
-
-      const h2 = document.createElement("h2");
-      h2.textContent = "Nama Guru: " + name;
-      wrapper.appendChild(h2);
-
-      const table = document.createElement("table");
-      table.className = "schedule";
-
-      // THEAD
-      const thead = table.createTHead();
-      const hr = thead.insertRow();
-      hr.insertCell().outerHTML = "<th>Day</th>";
-      for (const slot of slots) {
-        const [start,end] = slot.split(/\s*[–-]\s*/);
-        const s = start.padStart(5,"0");
-        const e = end  .padStart(5,"0");
-        const th = document.createElement("th");
-        th.innerHTML = `${s}<br>–<br>${e}`;
-        hr.appendChild(th);
-      }
-
-      // TBODY
-      const tbody = table.createTBody();
-      for (const abbr of DAY_ABBR) {
-        const tr = tbody.insertRow();
-        tr.insertCell().outerHTML = `<th>${DAY_LABEL[abbr]}</th>`;
-
-        for (const slot of slots) {
-          const td = tr.insertCell();
-          const entries = (week[abbr] && week[abbr][slot]) || [];
-          if (entries.length) {
-            td.innerHTML = entries.map(e => {
-              // only class, subject, venue
-              const parts = [];
-              if (e.subject) parts.push(e.subject);
-              if (e.class)   parts.push(e.class);
-              if (e.venue)   parts.push(e.venue);
-              return `<div>${parts.join(" ")}</div>`;
-            }).join("");
-          }
+    fetch("teacher_schedules.json")
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(data => {
+        CONTAINER.innerHTML = "";  // clear “Loading…”
+        const teachers = data;
+        const names = Object.keys(teachers);
+        if (!names.length) {
+          CONTAINER.innerHTML = "<p>No schedules found.</p>";
+          return;
         }
-      }
 
-      wrapper.appendChild(table);
-      container.appendChild(wrapper);
-    }
+        // derive the 19 slot keys from the first teacher’s Mo
+        const slots = Object.keys(teachers[names[0]].Mo);
+        if (slots.length !== 19) {
+          console.warn("Expected 19 slots, got", slots);
+        }
+
+        // render each teacher
+        names.forEach(name => {
+          const week = teachers[name];
+
+          // card wrapper
+          const card = document.createElement("div");
+          card.className = "teacher-card";
+          // title
+          const h2 = document.createElement("h2");
+          h2.textContent = `Nama Guru: ${name}`;
+          card.appendChild(h2);
+
+          // table
+          const tbl = document.createElement("table");
+          tbl.className = "schedule";
+
+          // header
+          const thead = tbl.createTHead();
+          const hr = thead.insertRow();
+          hr.insertCell().outerHTML = "<th>Day</th>";
+          slots.forEach(slot => {
+            const [start,end] = slot.split("-");
+            const s = start.padStart(5,"0");
+            const e = end.padStart(5,"0");
+            const th = document.createElement("th");
+            th.innerHTML = `${s}<br>–<br>${e}`;
+            hr.appendChild(th);
+          });
+
+          // body
+          const tbody = tbl.createTBody();
+          DAY_ABBR.forEach(d => {
+            const tr = tbody.insertRow();
+            // day name
+            const tdDay = tr.insertCell();
+            tdDay.textContent = DAY_NAME[d];
+            tdDay.style.fontWeight = "bold";
+            // 19 slots
+            slots.forEach(slot => {
+              const td = tr.insertCell();
+              const entries = (week[d] && week[d][slot]) || [];
+              td.innerHTML = entries.map(l => `<div>${l}</div>`).join("");
+            });
+          });
+
+          card.appendChild(tbl);
+          CONTAINER.appendChild(card);
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        CONTAINER.innerHTML = `<p style="color:red">
+          Error loading data: ${err.message}
+        </p>`;
+      });
   })();
   </script>
 </body>
