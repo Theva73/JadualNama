@@ -1,146 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Teacher Timetables</title>
-  <style>
-    body{font-family:Arial,Helvetica,sans-serif;margin:1rem;background:#f5f7fa}
-    .teacher-card{background:#fff;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.1);margin-bottom:2rem;padding:1rem}
-    .teacher-card h2{margin:0 0 1rem;font-size:1.25rem}
-    table.schedule{width:100%;border-collapse:collapse;margin-bottom:1rem}
-    table.schedule th,table.schedule td{border:1px solid #d0d7de;padding:4px;text-align:center}
-    table.schedule th{background:#c6e0ff;font-size:.82rem;line-height:1.25}
-    table.schedule td{background:#eef6fc;height:2.5rem}
-    table.schedule td div{font-size:.83rem;line-height:1.15;white-space:nowrap}
-  </style>
+<meta charset="UTF-8">
+<title>Teacher Timetables</title>
+<style>
+  body{font-family:Arial,Helvetica,sans-serif;margin:1rem;background:#f5f7fa}
+  .teacher-card{background:#fff;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.1);margin-bottom:2rem;padding:1rem}
+  .teacher-card h2{margin:0 0 1rem;font-size:1.25rem}
+  table.schedule{width:100%;border-collapse:collapse;margin-bottom:1rem}
+  table.schedule th,table.schedule td{border:1px solid #d0d7de;padding:4px;text-align:center}
+  table.schedule th{background:#c6e0ff;font-size:.82rem;line-height:1.3}
+  table.schedule td{background:#eef6fc;height:2.5rem}
+  table.schedule td div{white-space:nowrap;font-size:.83rem;line-height:1.15}
+</style>
 </head>
+
 <body>
-  <div id="schedules">Loading…</div>
+<div id="schedules">Loading…</div>
 
-  <script>
-  (async () => {
-    const EL   = document.getElementById('schedules');
-    const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+<script>
+(async () => {
+/* ------------------------------------------------------------------ */
+/* 1.  WHITELISTS – adjust here if you ever add new subjects/classes  */
+/* ------------------------------------------------------------------ */
+const SUBJECTS = [
+  'PH','KOKO','P','IV','MM','PNG','PI','LET','PM','BC','FIZ','KKQ','RB','GE','NILAM',
+  'ASK','IB','PLC','SN','DBM','KIM','PD','RBT','TAW','PPS','BI','MMT','D','NA INSAN','BA'
+];
+const CLASSES = [
+  '5SN1','5SN2','5AP1','5AP2','5PTS1','5PTS2','5TS1','5TS2','5S1','5S2','5S3',
+  '3 KHAWA','3 KINDI','3 BUKH','4SN1','4SN2','4AAP','4AP','4PTW','4PTS','4TS1','4TS2',
+  '4S1','4S2','4S3','2 KHAWA','2 KINDI','1 KHAWA','1 KINDI'
+];
+const VENUES = [
+  'M.KOM 1','M3','MAK.BIO','MAK.KIM','M2','BANGKEL E','B. LUKISAN','B. DIGITAL',
+  'BANGKEL. P','B.NILAM','PAK 21 A','BANGKEL R'
+];
 
-    /* -----------------------------------------------------------------
-       1.  Vocabulary the script is **allowed** to keep inside a cell
-    ----------------------------------------------------------------- */
-    const SUBJECTS = new Set([
-      'PH','KOKO','P','IV','MM','PNG','PI','LET','PM','BC','FIZ','KKQ','RB','GE','NILAM',
-      'ASK','IB','PLC','SN','DBM','KIM','PD','RBT','TAW','PPS','BI','MMT','D','BA','SJ',
-      'PJ','PTS','PTW','AP','TS','TS1','TS2'   // add / remove freely
-    ]);
-    /* Honorifics and titles that should always vanish ---------------- */
-    const HONORIFICS = new Set(['EN','PN','PUAN','TUAN','CIK','DR','UST','USTAZ','USTAZAH']);
+/* ------------------------------------------------------------------ */
+/* 2.  PREP – normalise lists for fast matching                       */
+/* ------------------------------------------------------------------ */
+function norm(str){return str.replace(/[.\s]/g,'').toUpperCase();}
+const WHITELIST = new Set(
+  [...SUBJECTS, ...CLASSES, ...VENUES].map(norm)
+);
 
-    /* -----------------------------------------------------------------
-       2.  Fetch JSON and build a global dictionary of all teacher names
-    ----------------------------------------------------------------- */
-    let data;
-    try {
-      const res = await fetch('teacher_schedules.json');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      data = await res.json();
-    } catch (err) {
-      EL.innerHTML = `<p style="color:red">Failed to load data &mdash; ${err.message}</p>`;
-      console.error(err);
-      return;
-    }
+/* honourifics / junk we always kill immediately ------------------- */
+const HONORIFICS = new Set(['EN','PN','PUAN','TUAN','CIK','DR','UST','USTAZ','USTAZAH']);
 
-    // pull every distinct word (length ≥ 2) from *all* teacher names
-    const NAME_PARTS = new Set();
-    Object.keys(data).forEach(full => {
-      full.split(/\s+/).forEach(w => {
-        const letters = w.replace(/[^A-Z]/gi,'').toUpperCase();
-        if (letters.length >= 2) NAME_PARTS.add(letters);
-      });
-    });
+/* ------------------------------------------------------------------ */
+/* 3.  LOAD JSON DATA                                                 */
+/* ------------------------------------------------------------------ */
+const host = document.getElementById('schedules');
+let data;
+try{
+  const res = await fetch('teacher_schedules.json');
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
+  data = await res.json();
+}catch(err){
+  host.innerHTML = `<p style="color:red">Error loading data – ${err.message}</p>`;
+  console.error(err);return;
+}
 
-    /* -----------------------------------------------------------------
-       3.  Helper that recognises “tokens” we must hide
-    ----------------------------------------------------------------- */
-    function looksLikeTeacherToken(raw) {
-      // a digit inside → definitely keep (class / form / combo codes)
-      if (/\d/.test(raw)) return false;
-      // anything with a dot, ampersand, or just punctuation → rubbish
-      if (/[.&]/.test(raw) || !/[A-Z]/i.test(raw)) return true;
+/* first teacher merely supplies the period column order ------------ */
+const first = Object.keys(data)[0];
+const SLOTS = Object.keys(data[first].Mo);
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
 
-      const letters = raw.replace(/[^A-Z]/gi,'').toUpperCase();
-      if (SUBJECTS.has(letters))            return false;      // allowed subject code
-      if (HONORIFICS.has(letters))          return true;       // EN., PN., DR., …
-      if (NAME_PARTS.has(letters))          return true;       // exact name piece
+/* ------------------------------------------------------------------ */
+/* 4.  RENDER                                                         */
+/* ------------------------------------------------------------------ */
+host.innerHTML='';
+Object.entries(data).forEach(([teacher,week])=>{
+  /* card wrapper --------------------------------------------------- */
+  const card = document.createElement('div');
+  card.className='teacher-card';
 
-      // partial overlap with a longer name fragment (e.g. EN.AB → ENAB)
-      for (const part of NAME_PARTS)
-        if (part.length >= 3 && letters.includes(part)) return true;
+  /* title ---------------------------------------------------------- */
+  const h2 = document.createElement('h2');
+  h2.textContent=`Nama Guru: ${teacher}`;
+  card.appendChild(h2);
 
-      // single-letter garbage that isn’t a known subject (e.g. “Z”)
-      if (letters.length === 1)             return true;
+  /* timetable table ------------------------------------------------ */
+  const tbl=document.createElement('table');tbl.className='schedule';
+  const thead=tbl.createTHead();const hr=thead.insertRow();
+  hr.insertCell().outerHTML='<th>Day</th>';
+  SLOTS.forEach(s=>{
+    const [a,b]=s.split('-');
+    const th=document.createElement('th');
+    th.innerHTML=`${a.padStart(5,'0')}<br>&ndash;<br>${b.padStart(5,'0')}`;
+    hr.appendChild(th);
+  });
+  const tb=tbl.createTBody();
 
-      return false;                                         // keep everything else
-    }
+  DAYS.forEach(day=>{
+    const row=tb.insertRow();
+    const c0=row.insertCell();
+    c0.textContent=day;c0.style.fontWeight='bold';
 
-    /* -----------------------------------------------------------------
-       4.  Build timetable cards
-    ----------------------------------------------------------------- */
-    EL.innerHTML = '';                 // clear the “Loading…” placeholder
-    const firstTeacher = Object.keys(data)[0];
-    const SLOT_LIST    = Object.keys(data[firstTeacher].Mo);   // time columns
+    SLOTS.forEach(slot=>{
+      /* raw array as stored in JSON --------------------------------*/
+      const raw=((week[day.slice(0,2)]||{})[slot])||[];
 
-    Object.entries(data).forEach(([teacher, weekObj]) => {
-      /* ---------- card wrapper ---------- */
-      const card = document.createElement('div');
-      card.className = 'teacher-card';
+      /* 5.  FILTER step: keep only whitelisted pieces -------------- */
+      const selected=[];
+      let buffer='';
 
-      /* ---------- title ---------- */
-      const h2 = document.createElement('h2');
-      h2.textContent = `Nama Guru: ${teacher}`;
-      card.appendChild(h2);
-
-      /* ---------- timetable ---------- */
-      const tbl  = document.createElement('table');
-      tbl.className = 'schedule';
-      const thead = tbl.createTHead();
-      const hRow = thead.insertRow();
-      hRow.insertCell().outerHTML = '<th>Day</th>';
-      SLOT_LIST.forEach(slot => {
-        const [s, e] = slot.split('-');
-        const th = document.createElement('th');
-        th.innerHTML = `${s.padStart(5,'0')}<br>&ndash;<br>${e.padStart(5,'0')}`;
-        hRow.appendChild(th);
-      });
-      const tbody = tbl.createTBody();
-
-      DAYS.forEach(day => {
-        const row = tbody.insertRow();
-        const c0  = row.insertCell();    // day name
-        c0.textContent = day;
-        c0.style.fontWeight = 'bold';
-
-        SLOT_LIST.forEach(slot => {
-          const cell  = row.insertCell();
-          const raw   = (weekObj[day.slice(0,2)] || weekObj[day.slice(0,2).replace('Tu','Tu')])[slot] || [];
-          const kept  = raw.filter(tok => !looksLikeTeacherToken(tok));
-
-          // clean up stray commas / ampersands
-          const pretty = kept
-            .join(' ')
-            .replace(/\s*&\s*/g,' & ')
-            .replace(/\s*,\s*/g,', ')
-            .trim();
-
-          cell.innerHTML = pretty
-            .split(/\s{2,}|,\s*/)   // split on double-space *or* commas
-            .filter(Boolean)
-            .map(txt => `<div>${txt}</div>`)
-            .join('');
+      raw.forEach(tok=>{
+        const clean = tok.replace(/[,;&]/g,' ').trim();     // break “4T&2T” etc.
+        clean.split(/\s+/).forEach(part=>{
+          const up=norm(part);
+          if(!up) return;
+          if(HONORIFICS.has(up)) return;                    // toss honourifics
+          if(WHITELIST.has(up)){                            // exact whitelist
+            selected.push(part.toUpperCase());              // show in caps
+            return;
+          }
+          /* handle multi-word venues/classes like “BANGKEL E” ----- */
+          buffer=buffer?`${buffer} ${part}`:part;
+          if(WHITELIST.has(norm(buffer))){
+            selected.push(buffer.toUpperCase());
+            buffer='';
+          }else if(buffer.split(' ').length>3){buffer='';}  // stop runaway
         });
       });
 
-      card.appendChild(tbl);
-      EL.appendChild(card);
+      /* tidy duplicates & render ----------------------------------- */
+      const unique=[...new Set(selected)];
+      const cell=row.insertCell();
+      cell.innerHTML=unique
+        .map(t=>`<div>${t}</div>`)
+        .join('');
     });
-  })();
-  </script>
+  });
+
+  card.appendChild(tbl);
+  host.appendChild(card);
+});
+})();
+</script>
 </body>
 </html>
